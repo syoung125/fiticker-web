@@ -10,11 +10,18 @@ import { createIconRenderer } from './icon.js';
 
 export const STICKER_BACKGROUNDS = {
   transparent: {
-    label: '투명',
+    label: '투명 · 검은 글씨',
     background: null,
     ink: '#20221d',
     secondary: '#525b36',
     divider: '#a9ac9e',
+  },
+  transparentWhite: {
+    label: '투명 · 흰 글씨',
+    background: null,
+    ink: '#ffffff',
+    secondary: '#f0f2eb',
+    divider: '#cdd2c3',
   },
   lime: {
     label: '연두',

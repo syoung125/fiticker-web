@@ -64,6 +64,8 @@ export function createStickerGallery({ notify }) {
           };
           backgroundLabel.append(select);
           const preview = el('div', 'sticker-preview');
+          if (backgrounds[sticker.id] === 'transparentWhite')
+            preview.classList.add('sticker-preview-dark');
           const image = el('img');
           image.src = url;
           image.alt = `${sticker.title} 스티커 · 길게 눌러 이미지 복사`;

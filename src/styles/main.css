@@ -1163,3 +1163,9 @@ input:not([type='radio']):not([type='file']) {
   padding: 10px 14px;
   min-height: 44px;
 }
+
+/* Preview only: the copied PNG remains transparent. */
+.sticker-preview-dark {
+  background-color: #343830;
+  background-image: conic-gradient(#444a3e 25%, transparent 0 50%, #444a3e 0 75%, transparent 0);
+}
