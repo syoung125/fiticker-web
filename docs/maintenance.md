@@ -8,6 +8,8 @@
 | 컬러, 여백, 카드 모양, 반응형 스타일   | `src/styles/main.css`              |
 | 운동 카테고리, 이모지, 색상            | `src/domain/workouts.js`의 `TYPES` |
 | 주 계산, 시간 표시, 입력 제한          | `src/domain/workouts.js`           |
+| 시간 휠 UI·키보드 선택                 | `src/ui/duration-picker.js`        |
+| 분 단위 선택지·휠 행 계산              | `src/domain/duration-picker.js`    |
 | 캘린더와 기록 카드 출력                | `src/ui/render-editor.js`          |
 | 입력/수정/삭제, 주 이동, 미리보기 흐름 | `src/app.js`                       |
 | 공유 이미지의 제목·색상·배치           | `src/media/poster.js`              |
@@ -36,6 +38,12 @@ const records = {
 ```
 
 현재는 날짜 하나가 기록 하나의 키입니다. 하루 여러 운동이나 영구 저장을 추가하려면 이 모델과 합계·렌더링·이미지 생성·테스트를 함께 변경해야 합니다.
+
+## 시간 선택 휠
+
+시간은 0~23, 분은 0~55를 5분 단위로 선택합니다. 가운데 행이 선택값이며 스크롤·클릭·방향키를 지원합니다. 처음 열면 미입력 상태이며 `선택 해제`로 미입력으로 되돌릴 수 있습니다. 기존 기록에 7분처럼 5분 단위가 아닌 값이 있으면 해당 값을 선택지에 추가해 보존합니다.
+
+휠 행 높이는 CSS의 `--wheel-row-height`와 `src/domain/duration-picker.js`의 `WHEEL_ROW_HEIGHT`를 함께 수정합니다. 휠 위치는 입력 모달을 연 다음 초기화해야 합니다.
 
 ## 이미지 레이아웃
 

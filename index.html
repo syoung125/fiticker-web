@@ -131,30 +131,35 @@
         /></label>
         <fieldset>
           <legend>운동 시간 <span class="optional">선택</span></legend>
-          <div class="time-fields">
-            <label
-              ><input
-                id="hours"
-                type="number"
-                min="0"
-                max="23"
-                step="1"
-                placeholder="0"
-                inputmode="numeric"
-                aria-label="시간"
-              /><span>시간</span></label
-            ><label
-              ><input
-                id="minutes"
-                type="number"
-                min="0"
-                max="59"
-                step="1"
-                placeholder="00"
-                inputmode="numeric"
-                aria-label="분"
-              /><span>분</span></label
-            >
+          <div id="duration-picker" class="duration-picker">
+            <div class="duration-picker-heading">
+              <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
+              <button type="button" class="text-button" data-duration-clear disabled>
+                선택 해제
+              </button>
+            </div>
+            <div class="duration-wheels">
+              <div class="wheel-highlight" aria-hidden="true"></div>
+              <div
+                id="hours-wheel"
+                class="duration-wheel"
+                role="listbox"
+                tabindex="0"
+                aria-label="운동 시간"
+                aria-describedby="duration-help"
+              ></div>
+              <div
+                id="minutes-wheel"
+                class="duration-wheel"
+                role="listbox"
+                tabindex="0"
+                aria-label="운동 분"
+                aria-describedby="duration-help"
+              ></div>
+            </div>
+            <p id="duration-help" class="duration-help">
+              위아래로 밀거나 숫자를 눌러 선택 · 분은 5분 단위
+            </p>
           </div>
         </fieldset>
         <div class="photo-heading">

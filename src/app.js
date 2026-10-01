@@ -3,6 +3,7 @@ import { resizePhoto } from './media/photo.js';
 import { createPoster } from './media/poster.js';
 import { $, el } from './ui/dom.js';
 import { renderEditor } from './ui/render-editor.js';
+import { createDurationPicker } from './ui/duration-picker.js';
 const records = Object.create(null);
 let dates = weekDates(new Date()),
   selectedDate = null,
@@ -14,6 +15,7 @@ let dates = weekDates(new Date()),
   generating = false,
   toastTimer;
 const dialog = $('#workout-dialog');
+const durationPicker = createDurationPicker($('#duration-picker'));
 function toast(message) {
   $('#toast').textContent = message;
   $('#toast').classList.add('visible');
@@ -51,8 +53,6 @@ function openEditor(date) {
   if (r) {
     $(`input[name="type"][value="${r.type}"]`).checked = true;
     $('#custom-name').value = r.type === 'other' ? r.name : '';
-    $('#hours').value = r.minutes === null ? '' : Math.floor(r.minutes / 60);
-    $('#minutes').value = r.minutes === null ? '' : r.minutes % 60;
     $('#memo').value = r.memo;
   }
   draftPhoto = r?.photo || null;
@@ -61,6 +61,8 @@ function openEditor(date) {
   updateType();
   updatePhoto();
   dialog.showModal();
+  // Wheel scroll positions must be initialized after the dialog is visible.
+  durationPicker.set(r?.minutes ?? null);
 }
 for (const [value, t] of Object.entries(TYPES)) {
   const label = el('label', 'type-label');
@@ -121,8 +123,7 @@ $('#workout-form').onsubmit = (e) => {
     const record = validateRecord({
       type: $('input[name="type"]:checked')?.value,
       name: $('#custom-name').value,
-      hours: $('#hours').value,
-      mins: $('#minutes').value,
+      ...durationPicker.read(),
       memo: $('#memo').value,
     });
     records[selectedDate] = { ...record, photo: draftPhoto };
