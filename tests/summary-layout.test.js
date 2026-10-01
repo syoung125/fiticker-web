@@ -56,7 +56,7 @@ test('seven sport rows stay aligned with no text overlapping its neighbor', () =
   }
   const total = labels.find((l) => l.text === '167h 53m');
   ctx.font = total.font;
-  assert.ok(total.x + ctx.measureText(total.text).width < 632);
+  assert.ok(total.x + ctx.measureText(total.text).width / 2 < 632);
   assert.equal(SUMMARY_WIDTH, 948);
 });
 
@@ -81,9 +81,10 @@ test('editor and exported summary use identical text coordinates and accessible 
   };
   renderSummary(canvas, model);
   drawSummary(exported.ctx, model, 66, 393);
+  const rounded = (label) => ({ ...label, x: +label.x.toFixed(6), y: +label.y.toFixed(6) });
   assert.deepEqual(
-    editor.labels,
-    exported.labels.map((label) => ({ ...label, x: label.x - 66, y: label.y - 393 })),
+    editor.labels.map(rounded),
+    exported.labels.map((label) => rounded({ ...label, x: label.x - 66, y: label.y - 393 })),
   );
   assert.equal(canvas.width, SUMMARY_WIDTH);
   assert.match(attrs['aria-label'], /Yoga 1h, Running 45m/);

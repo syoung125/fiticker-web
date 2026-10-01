@@ -93,7 +93,7 @@ test('poster hides the breakdown for one sport', async (t) => {
     labels.some((item) => item.label === 'Yoga' && item.x === 732),
     false,
   );
-  assert.equal(labels.find((item) => item.label === '2h').x, 521);
+  assert.equal(labels.find((item) => item.label === '2h').x, 777);
 });
 
 test('all seven sport totals fit vertically inside the summary panel', async (t) => {

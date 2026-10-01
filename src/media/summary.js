@@ -62,20 +62,48 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
   text('THIS WEEK', 34, 47, 24, 700);
   // Keep the heading above all columns, including both vertical dividers.
   originY += HEADER_HEIGHT;
-  text(String(model.count), 34, 184, detailed ? 82 : 102, 600);
-  text('workouts', 36, 230, 30, 500, 'left', secondary);
-  const columnWidth = SUMMARY_WIDTH / 3;
-  const totalX = detailed ? columnWidth + 34 : 455;
-  const totalWidth = detailed ? columnWidth - 68 : 459;
+  const columnWidth = SUMMARY_WIDTH / (detailed ? 3 : 2);
+  const totalWidth = columnWidth - 68;
+  const valueSize = fitSize(model.total, 82, totalWidth, 600);
+  function bounds(value, size, weight = 500) {
+    font(size, weight);
+    const metrics = ctx.measureText(value);
+    return {
+      ascent: metrics.actualBoundingBoxAscent ?? size * 0.75,
+      descent: metrics.actualBoundingBoxDescent ?? size * 0.2,
+    };
+  }
+  const values = [String(model.count), model.total];
+  const labels = ['workouts', 'total time'];
+  const valueBounds = values.map((value) => bounds(value, valueSize, 600));
+  const labelBounds = labels.map((label) => bounds(label, 30));
+  const ascent = Math.max(...valueBounds.map((b) => b.ascent));
+  const descent = Math.max(...valueBounds.map((b) => b.descent));
+  const labelAscent = Math.max(...labelBounds.map((b) => b.ascent));
+  const labelDescent = Math.max(...labelBounds.map((b) => b.descent));
+  const gap = 20;
+  const blockHeight = ascent + descent + gap + labelAscent + labelDescent;
+  const valueY = (BODY_HEIGHT - blockHeight) / 2 + ascent;
+  const labelY = valueY + descent + gap + labelAscent;
+  values.forEach((value, index) => {
+    const centerX = columnWidth * (index + 0.5);
+    text(value, centerX, valueY, valueSize, 600, 'center');
+    text(labels[index], centerX, labelY, 30, 500, 'center', secondary);
+  });
   ctx.fillStyle = '#b7cd70';
-  ctx.fillRect(originX + (detailed ? columnWidth : 420), originY + 28, 1, BODY_HEIGHT - 56);
-  text(model.total, totalX, 184, fitSize(model.total, detailed ? 82 : 96, totalWidth, 600), 600);
-  text('total time', totalX + 2, 230, 30, 500, 'left', secondary);
+  ctx.fillRect(originX + columnWidth, originY + 28, 1, BODY_HEIGHT - 56);
   if (detailed) {
     ctx.fillStyle = '#b7cd70';
     ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, BODY_HEIGHT - 56);
     const lineHeight = 34;
-    const start = (BODY_HEIGHT - model.sports.length * lineHeight) / 2 + 26;
+    const rowBounds = model.sports.flatMap((sport) => [
+      bounds(sport.name, 32),
+      bounds(sport.time, fitSize(sport.time, 32, 125)),
+    ]);
+    const rowAscent = Math.max(...rowBounds.map((b) => b.ascent));
+    const rowDescent = Math.max(...rowBounds.map((b) => b.descent));
+    const listHeight = (model.sports.length - 1) * lineHeight + rowAscent + rowDescent;
+    const start = (BODY_HEIGHT - listHeight) / 2 + rowAscent;
     model.sports.forEach((sport, index) => {
       const timeSize = fitSize(sport.time, 32, 125);
       font(timeSize);
