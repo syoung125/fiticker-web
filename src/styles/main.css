@@ -235,8 +235,11 @@ h1 span {
 .day:hover {
   background: #eeefe5;
 }
-.day.is-today {
-  border-color: #999e8c;
+.day:focus {
+  outline: none;
+}
+.day:focus-visible {
+  background: #eeefe5;
 }
 .day .weekday {
   font-size: 10px;
