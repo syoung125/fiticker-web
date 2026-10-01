@@ -31,6 +31,7 @@ function actionIcon(pathData) {
 
 export function createStickerGallery({ notify }) {
   const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
+  const timeVisibility = { calendar: true, square: true };
   let revision = 0,
     signature = '',
     urls = [];
@@ -49,7 +50,12 @@ export function createStickerGallery({ notify }) {
             return [key, { type, name, minutes }];
           }),
       );
-      const nextSignature = JSON.stringify([dateKey(dates[0]), snapshot, backgrounds]);
+      const nextSignature = JSON.stringify([
+        dateKey(dates[0]),
+        snapshot,
+        backgrounds,
+        timeVisibility,
+      ]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       const current = ++revision;
@@ -63,7 +69,7 @@ export function createStickerGallery({ notify }) {
       }
       status.textContent = '스티커 만드는 중…';
       try {
-        const stickers = await createStickers(dates, snapshot, backgrounds);
+        const stickers = await createStickers(dates, snapshot, backgrounds, timeVisibility);
         if (current !== revision) return;
         const nodes = stickers.map((sticker) => {
           const url = URL.createObjectURL(sticker.blob);
@@ -93,6 +99,21 @@ export function createStickerGallery({ notify }) {
           ];
           if (sticker.id === 'square')
             controls.push(backgroundControl('squareSummary', '요약 배경'));
+          if (sticker.id === 'calendar' || sticker.id === 'square') {
+            const label = el('label', 'sticker-time-toggle');
+            const toggle = el('input');
+            toggle.type = 'checkbox';
+            toggle.checked = timeVisibility[sticker.id];
+            toggle.dataset.stickerTime = sticker.id;
+            toggle.setAttribute('aria-label', `${sticker.title} 시간 표시`);
+            toggle.onchange = async () => {
+              timeVisibility[sticker.id] = toggle.checked;
+              await gallery.update(dates, snapshot);
+              $(`[data-sticker-time="${sticker.id}"]`)?.focus({ preventScroll: true });
+            };
+            label.append(toggle, document.createTextNode('시간 표시'));
+            controls.push(label);
+          }
           const preview = el('div', 'sticker-preview');
           if (backgrounds[sticker.id] === 'transparentWhite')
             preview.classList.add('sticker-preview-dark');

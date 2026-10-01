@@ -1203,3 +1203,19 @@ input:not([type='radio']):not([type='file']) {
 [data-sheet='type'] + [data-sheet='time']:not([hidden]) {
   margin-top: 20px;
 }
+
+.sticker-time-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.sticker-time-toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #24271f;
+}

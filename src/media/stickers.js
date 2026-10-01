@@ -78,7 +78,14 @@ export const STICKERS = [
     title: '주간 캘린더',
     width: 948,
     height: 300,
-    draw(ctx, dates, records, theme = STICKER_BACKGROUNDS.transparent, showHeading = true) {
+    draw(
+      ctx,
+      dates,
+      records,
+      theme = STICKER_BACKGROUNDS.transparent,
+      showHeading = true,
+      showTime = true,
+    ) {
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
@@ -102,7 +109,7 @@ export const STICKERS = [
         const record = records[dateKey(date)];
         if (record) {
           icon(TYPES[record.type].icon, center, 199, 51, theme.ink);
-          if (record.minutes !== null) {
+          if (showTime && record.minutes !== null) {
             ctx.fillStyle = theme.secondary;
             ctx.font = '500 23px "Manrope", sans-serif';
             ctx.fillText(duration(record.minutes), center, 270);
@@ -125,6 +132,7 @@ export const STICKERS = [
       records,
       theme = STICKER_BACKGROUNDS.white,
       summaryTheme = { ...theme, background: null },
+      showTime = true,
     ) {
       if (theme.background) {
         ctx.fillStyle = theme.background;
@@ -155,13 +163,19 @@ export const STICKERS = [
         records,
         { ...theme, background: null },
         false,
+        showTime,
       );
       ctx.restore();
     },
   },
 ];
 let fonts;
-export async function createStickers(dates, records, backgrounds = DEFAULT_STICKER_BACKGROUNDS) {
+export async function createStickers(
+  dates,
+  records,
+  backgrounds = DEFAULT_STICKER_BACKGROUNDS,
+  timeVisibility = {},
+) {
   fonts ??= loadSummaryFonts();
   await fonts;
   return Promise.all(
@@ -176,7 +190,23 @@ export async function createStickers(dates, records, backgrounds = DEFAULT_STICK
         const summaryTheme =
           STICKER_BACKGROUNDS[backgrounds.squareSummary] ??
           STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS.squareSummary];
-        sticker.draw(canvas.getContext('2d'), dates, records, theme, summaryTheme);
+        sticker.draw(
+          canvas.getContext('2d'),
+          dates,
+          records,
+          theme,
+          summaryTheme,
+          timeVisibility.square !== false,
+        );
+      } else if (sticker.id === 'calendar') {
+        sticker.draw(
+          canvas.getContext('2d'),
+          dates,
+          records,
+          theme,
+          true,
+          timeVisibility.calendar !== false,
+        );
       } else sticker.draw(canvas.getContext('2d'), dates, records, theme);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('스티커를 만들지 못했어요. 다시 시도해 주세요.');

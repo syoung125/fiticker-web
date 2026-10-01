@@ -120,3 +120,44 @@ test('square overall and summary backgrounds render independently in every combi
     }
   }
 });
+
+test('calendar time toggle hides daily times without removing square summary totals', () => {
+  const previous = globalThis.document;
+  globalThis.document = {
+    createElement: () => ({
+      getContext: () => ({
+        fillText() {},
+        getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      }),
+    }),
+  };
+  try {
+    const dates = weekDates(new Date(2026, 9, 1));
+    const records = { '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 60 } };
+    for (const id of ['calendar', 'square']) {
+      const sticker = STICKERS.find((item) => item.id === id);
+      for (const visible of [true, false]) {
+        const labels = [];
+        const ctx = new Proxy(
+          {},
+          {
+            get(target, key) {
+              if (key === 'measureText') return () => ({ width: 40 });
+              if (key === 'fillText') return (text) => labels.push(text);
+              return target[key] ?? (() => {});
+            },
+          },
+        );
+        sticker.draw(ctx, dates, records, undefined, undefined, visible);
+        assert.equal(
+          labels.filter((text) => text === '1h').length,
+          (id === 'square' ? 1 : 0) + Number(visible),
+        );
+        assert.ok(labels.includes('MON') && labels.includes('28'));
+      }
+    }
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
+  }
+});
