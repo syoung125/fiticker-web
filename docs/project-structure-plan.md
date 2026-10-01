@@ -14,7 +14,7 @@ Vite + vanilla JavaScript ES modules. Source code lives in src/, static assets i
 - [x] Add dev/build/preview/test/format scripts, Vite config, Node version and lockfile.
 - [x] Document clone-to-development and file ownership, data model, deployment and troubleshooting.
 - [x] Verify npm ci, tests, formatting, production build, source/artifact separation.
-- [ ] Commit all project sources, switch Pages to Actions, push and verify deployment.
+- [x] Commit all project sources, switch Pages to Actions, push and verify deployment.
 
 No feature expansion or framework rewrite; preserve current behavior. Browser visual verification remains subject to available browser tools.
 
