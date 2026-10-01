@@ -75,6 +75,7 @@ export function renderEditor({ dates, records, generating, onEdit }) {
       for (const [action, label] of [
         ['time', r.minutes === null ? '＋ 시간 입력' : '시간 수정'],
         ['photo', r.photo ? '사진 변경' : '＋ 사진 추가'],
+        ...(r.photo ? [['remove-photo', '사진 삭제']] : []),
         ['type', '종목 변경'],
         ['memo', r.memo ? '메모 수정' : '메모 추가'],
         ['delete', '삭제'],

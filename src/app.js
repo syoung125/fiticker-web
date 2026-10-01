@@ -1,4 +1,5 @@
 import { dateKey, weekDates, navigateWeek, summarize } from './domain/workouts.js';
+import { createPhotoPicker } from './ui/photo-picker.js';
 import { createRecordSheet } from './ui/record-sheet.js';
 import { createPoster } from './media/poster.js';
 import { $, el } from './ui/dom.js';
@@ -11,9 +12,11 @@ let dates = weekDates(new Date()),
   exportKey = null,
   generating = false,
   toastTimer;
+const photoPicker = createPhotoPicker({ records, onChange: render, notify: toast });
 const recordSheet = createRecordSheet({
   records,
   onSave(key, action) {
+    if (action === 'delete') photoPicker.invalidate(key);
     render();
     $(`[data-date="${key}"]`)?.focus({ preventScroll: true });
     toast(action === 'delete' ? '기록을 삭제했어요.' : '기록을 저장했어요.');
@@ -30,7 +33,11 @@ function render() {
     dates,
     records,
     generating,
-    onEdit: (date, action) => recordSheet.open(date, action),
+    onEdit: (date, action) => {
+      if (action === 'photo') photoPicker.open(date);
+      else if (action === 'remove-photo') photoPicker.remove(date);
+      else recordSheet.open(date, action);
+    },
   });
 }
 function moveWeek(n) {
