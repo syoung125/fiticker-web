@@ -19,10 +19,16 @@ export function createRecordSheet({ records, onSave }) {
 
   function commit(data) {
     try {
+      const offerTime = action === 'type' && !records[key];
       if (action === 'delete') delete records[key];
       else records[key] = updateRecord(records[key], action, data);
       dialog.close();
       onSave(key, action);
+      if (offerTime) {
+        open(new Date(`${key}T12:00:00`), 'time');
+        $('#skip-time').hidden = false;
+        $('#dialog-title').textContent = '시간도 기록할까요?';
+      }
     } catch (e) {
       error.textContent = e.message;
     }
@@ -42,6 +48,7 @@ export function createRecordSheet({ records, onSave }) {
     $('#types').append(button);
   }
   $('#close-dialog').onclick = () => dialog.close();
+  $('#skip-time').onclick = () => dialog.close();
   dialog.addEventListener('click', (event) => {
     if (event.target !== dialog) return;
     const r = dialog.getBoundingClientRect();
@@ -65,35 +72,35 @@ export function createRecordSheet({ records, onSave }) {
     else if (action === 'memo') commit({ memo: $('#memo').value });
     else if (action === 'delete') commit();
   };
-  return {
-    open(date, mode = 'type') {
-      key = dateKey(date);
-      action = mode;
-      form.reset();
-      const record = records[key];
-      $('#dialog-title').textContent = titles[action];
-      $('#sheet-date').textContent = date.toLocaleDateString('ko-KR', {
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-      });
-      document.querySelectorAll('[data-sheet]').forEach((section) => {
-        section.hidden = section.dataset.sheet !== action;
-      });
-      $('#custom-label').hidden = true;
-      $('#custom-name').required = false;
-      $('#custom-name').value = record?.type === 'other' ? record.name : '';
-      document.querySelectorAll('[data-type]').forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.type === record?.type));
-      });
-      $('#memo').value = record?.memo ?? '';
-      $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
-      error.textContent = '';
-      save.disabled = false;
-      save.hidden = action === 'type';
-      save.textContent = action === 'delete' ? '기록 삭제' : '저장';
-      dialog.showModal();
-      if (action === 'time') picker.set(record?.minutes ?? null);
-    },
-  };
+  function open(date, mode = 'type') {
+    key = dateKey(date);
+    action = mode;
+    form.reset();
+    $('#skip-time').hidden = true;
+    const record = records[key];
+    $('#dialog-title').textContent = titles[action];
+    $('#sheet-date').textContent = date.toLocaleDateString('ko-KR', {
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    });
+    document.querySelectorAll('[data-sheet]').forEach((section) => {
+      section.hidden = section.dataset.sheet !== action;
+    });
+    $('#custom-label').hidden = true;
+    $('#custom-name').required = false;
+    $('#custom-name').value = record?.type === 'other' ? record.name : '';
+    document.querySelectorAll('[data-type]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.type === record?.type));
+    });
+    $('#memo').value = record?.memo ?? '';
+    $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
+    error.textContent = '';
+    save.disabled = false;
+    save.hidden = action === 'type';
+    save.textContent = action === 'delete' ? '기록 삭제' : '저장';
+    dialog.showModal();
+    if (action === 'time') picker.set(record?.minutes ?? null);
+  }
+  return { open };
 }

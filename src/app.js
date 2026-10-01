@@ -1,4 +1,5 @@
 import { dateKey, weekDates, navigateWeek, summarize } from './domain/workouts.js';
+import { createStickerGallery } from './ui/sticker-gallery.js';
 import { createPhotoPicker } from './ui/photo-picker.js';
 import { createRecordSheet } from './ui/record-sheet.js';
 import { createPoster } from './media/poster.js';
@@ -12,6 +13,7 @@ let dates = weekDates(new Date()),
   exportKey = null,
   generating = false,
   toastTimer;
+const stickerGallery = createStickerGallery({ notify: toast });
 const photoPicker = createPhotoPicker({ records, onChange: render, notify: toast });
 const recordSheet = createRecordSheet({
   records,
@@ -29,6 +31,7 @@ function toast(message) {
   toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 2600);
 }
 function render() {
+  void stickerGallery.update(dates, records);
   renderEditor({
     dates,
     records,

@@ -32,7 +32,7 @@ export function summaryModel(dates, records) {
 }
 
 // The editor, thumbnail and PNG use this exact renderer, including text fitting.
-export function drawSummary(ctx, model, originX = 0, originY = 0) {
+export function drawSummary(ctx, model, originX = 0, originY = 0, { transparent = false } = {}) {
   const detailed = model.sports.length > 0;
   const ink = '#20221d',
     secondary = '#525b36';
@@ -55,10 +55,12 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
     return size;
   }
   ctx.save();
-  ctx.fillStyle = '#dfff7a';
-  ctx.beginPath();
-  ctx.roundRect(originX, originY, SUMMARY_WIDTH, SUMMARY_HEIGHT, 30);
-  ctx.fill();
+  if (!transparent) {
+    ctx.fillStyle = '#dfff7a';
+    ctx.beginPath();
+    ctx.roundRect(originX, originY, SUMMARY_WIDTH, SUMMARY_HEIGHT, 30);
+    ctx.fill();
+  }
   text('THIS WEEK', 34, 47, 24, 700);
   // Keep the heading above all columns, including both vertical dividers.
   originY += HEADER_HEIGHT;
