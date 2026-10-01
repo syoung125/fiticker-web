@@ -19,7 +19,7 @@ export function renderEditor({ dates, records, onEdit }) {
     button.dataset.date = key;
     button.setAttribute(
       'aria-label',
-      `${date.getMonth() + 1}월 ${date.getDate()}일 ${record ? record.name + ' 종목 변경' : '운동 추가'}`,
+      `${date.getMonth() + 1}월 ${date.getDate()}일 ${record ? record.name + ' 기록 편집' : '운동 추가'}`,
     );
     if (key === dateKey(new Date())) button.setAttribute('aria-current', 'date');
     button.append(
@@ -27,21 +27,12 @@ export function renderEditor({ dates, records, onEdit }) {
       el('span', 'date', date.getDate()),
       el('span', record ? 'day-icon' : 'day-icon plus', record ? TYPES[record.type].icon : '＋'),
     );
-    button.onclick = () => onEdit(date, 'type');
+    button.onclick = () => onEdit(date, record ? 'edit' : 'type');
     cell.append(button);
     if (record) {
-      const time = el(
-        'button',
-        'day-time',
-        record.minutes === null ? '시간 입력' : duration(record.minutes),
+      button.append(
+        el('span', 'day-time', record.minutes === null ? '0m' : duration(record.minutes)),
       );
-      time.type = 'button';
-      time.setAttribute(
-        'aria-label',
-        `${date.getMonth() + 1}월 ${date.getDate()}일 운동 시간 ${record.minutes === null ? '입력' : '수정'}`,
-      );
-      time.onclick = () => onEdit(date, 'time');
-      cell.append(time);
     }
     $('#calendar').append(cell);
   });

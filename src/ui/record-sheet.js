@@ -9,9 +9,10 @@ export function createRecordSheet({ records, onSave }) {
   const save = $('#save-record');
   const error = $('#form-error');
   const picker = createDurationPicker($('#duration-picker'));
-  let key, action;
+  let key, action, selectedType;
   const titles = {
     type: '어떤 운동을 했나요?',
+    edit: '운동 기록 편집',
     time: '운동 시간',
     memo: '오늘의 메모',
     delete: '기록 삭제',
@@ -39,6 +40,16 @@ export function createRecordSheet({ records, onSave }) {
     button.dataset.type = type;
     button.append(el('span', '', info.icon), document.createTextNode(info.ko));
     button.onclick = () => {
+      if (action === 'edit') {
+        selectedType = type;
+        document.querySelectorAll('[data-type]').forEach((item) => {
+          item.setAttribute('aria-pressed', String(item.dataset.type === type));
+        });
+        $('#custom-label').hidden = type !== 'other';
+        $('#custom-name').required = type === 'other';
+        if (type === 'other') $('#custom-name').focus();
+        return;
+      }
       if (type !== 'other') return commit({ type });
       $('#custom-label').hidden = false;
       $('#custom-name').required = true;
@@ -72,6 +83,8 @@ export function createRecordSheet({ records, onSave }) {
     event.preventDefault();
     if (save.disabled) return;
     if (action === 'type') commit({ type: 'other', name: $('#custom-name').value });
+    else if (action === 'edit')
+      commit({ type: selectedType, name: $('#custom-name').value, ...picker.read() });
     else if (action === 'time') commit(picker.read());
     else if (action === 'memo') commit({ memo: $('#memo').value });
     else if (action === 'delete') commit();
@@ -82,7 +95,8 @@ export function createRecordSheet({ records, onSave }) {
     form.reset();
     $('#skip-time').hidden = true;
     const record = records[key];
-    $('#open-delete').hidden = action !== 'type' || !record;
+    selectedType = record?.type;
+    $('#open-delete').hidden = !record || !['type', 'edit'].includes(action);
     $('#dialog-title').textContent = titles[action];
     $('#sheet-date').textContent = date.toLocaleDateString('ko-KR', {
       month: 'long',
@@ -90,10 +104,13 @@ export function createRecordSheet({ records, onSave }) {
       weekday: 'long',
     });
     document.querySelectorAll('[data-sheet]').forEach((section) => {
-      section.hidden = section.dataset.sheet !== action;
+      section.hidden =
+        action === 'edit'
+          ? !['type', 'time'].includes(section.dataset.sheet)
+          : section.dataset.sheet !== action;
     });
-    $('#custom-label').hidden = true;
-    $('#custom-name').required = false;
+    $('#custom-label').hidden = action !== 'edit' || record?.type !== 'other';
+    $('#custom-name').required = action === 'edit' && record?.type === 'other';
     $('#custom-name').value = record?.type === 'other' ? record.name : '';
     document.querySelectorAll('[data-type]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.type === record?.type));
@@ -105,7 +122,7 @@ export function createRecordSheet({ records, onSave }) {
     save.hidden = action === 'type';
     save.textContent = action === 'delete' ? '기록 삭제' : '저장';
     dialog.showModal();
-    if (action === 'time') picker.set(record?.minutes ?? null);
+    if (action === 'time' || action === 'edit') picker.set(record?.minutes ?? null);
   }
   return { open };
 }

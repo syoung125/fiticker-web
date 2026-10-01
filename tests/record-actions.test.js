@@ -36,3 +36,17 @@ test('single-action edits preserve every unrelated field and do not mutate the r
   assert.equal(original.minutes, 45);
   assert.throws(() => updateRecord(original, 'time', { hours: '24' }));
 });
+
+test('combined edit saves sport and duration together while preserving other details', () => {
+  const original = { type: 'yoga', name: 'Yoga', minutes: 45, memo: '메모', photo: 'photo-data' };
+  assert.deepEqual(updateRecord(original, 'edit', { type: 'running', hours: '1', mins: '15' }), {
+    ...original,
+    type: 'running',
+    name: 'Running',
+    minutes: 75,
+  });
+  assert.equal(updateRecord(original, 'edit', { type: 'yoga', hours: '', mins: '' }).minutes, null);
+  assert.throws(() => updateRecord(original, 'edit', { type: 'other', name: ' ', hours: '1' }));
+  assert.equal(original.minutes, 45);
+  assert.equal(original.type, 'yoga');
+});

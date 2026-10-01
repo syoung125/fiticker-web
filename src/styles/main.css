@@ -1185,8 +1185,7 @@ input:not([type='radio']):not([type='file']) {
 }
 .day-time {
   width: 100%;
-  min-height: 40px;
-  padding: 6px 1px;
+  padding: 2px 1px;
   border-radius: 8px;
   background: transparent;
   font-size: 11px;
@@ -1194,6 +1193,6 @@ input:not([type='radio']):not([type='file']) {
   color: #525b36;
   overflow-wrap: anywhere;
 }
-.day-time:hover {
-  background: #e9ecdf;
+[data-sheet='type'] + [data-sheet='time']:not([hidden]) {
+  margin-top: 20px;
 }

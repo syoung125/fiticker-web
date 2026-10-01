@@ -7,6 +7,10 @@ export function updateRecord(record, action, data = {}) {
     return { ...selected, photo: null, ...record, type: selected.type, name: selected.name };
   }
   if (!record) throw new Error('먼저 운동을 선택해 주세요.');
+  if (action === 'edit') {
+    const checked = validateRecord(data);
+    return { ...record, type: checked.type, name: checked.name, minutes: checked.minutes };
+  }
   if (action === 'photo') return { ...record, photo: data.photo ?? null };
   if (action === 'time') {
     const checked = validateRecord({ type: record.type, name: record.name, ...data });
