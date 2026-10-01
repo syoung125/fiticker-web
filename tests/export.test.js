@@ -75,23 +75,25 @@ test('poster lists combined sport time to the right of total only for multiple s
     '2026-09-30': { type: 'running', name: 'Running', minutes: 45 },
   });
   const total = labels.find((item) => item.label === '2h 15m');
-  const yoga = labels.find((item) => item.label === 'Yoga 1h 30m');
-  const running = labels.find((item) => item.label === 'Running 45m');
+  const yoga = labels.find((item) => item.label === 'Yoga' && item.x === 698);
+  const running = labels.find((item) => item.label === 'Running' && item.x === 698);
   assert.ok(yoga.x > total.x && running.x > total.x);
-  assert.ok(yoga.y > 437 && running.y < 600);
-  assert.equal(labels.filter((item) => item.label === 'Yoga 1h 30m').length, 1);
+  assert.ok(yoga.y > 420 && running.y < 610);
+  assert.ok(labels.some((item) => item.label === '1h 30m' && item.x === 980 && item.y === yoga.y));
+  assert.ok(labels.some((item) => item.label === '45m' && item.x === 980 && item.y === running.y));
+  assert.equal(labels.filter((item) => item.label === 'Yoga' && item.x === 698).length, 1);
 });
 
-test('poster keeps its original summary layout for one sport', async (t) => {
+test('poster hides the breakdown for one sport', async (t) => {
   const labels = await posterLabels(t, {
     '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 60 },
     '2026-09-29': { type: 'yoga', name: 'Yoga', minutes: 60 },
   });
   assert.equal(
-    labels.some((item) => item.label === 'Yoga 2h'),
+    labels.some((item) => item.label === 'Yoga' && item.x === 698),
     false,
   );
-  assert.equal(labels.find((item) => item.label === '2h').x, 518);
+  assert.equal(labels.find((item) => item.label === '2h').x, 521);
 });
 
 test('all seven sport totals fit vertically inside the summary panel', async (t) => {
@@ -110,10 +112,10 @@ test('all seven sport totals fit vertically inside the summary panel', async (t)
     keys.map((key, i) => [key, { type: types[i], name: names[i], minutes: 60 }]),
   );
   const labels = await posterLabels(t, records);
-  const rows = labels.filter((item) => names.some((name) => item.label === `${name} 1h`));
+  const rows = labels.filter((item) => item.x === 698 && names.includes(item.label));
   assert.equal(rows.length, 7);
   for (const row of rows) {
-    assert.equal(row.x, 673);
-    assert.ok(row.y >= 450 && row.y <= 600);
+    assert.equal(row.x, 698);
+    assert.ok(row.y >= 420 && row.y <= 675);
   }
 });

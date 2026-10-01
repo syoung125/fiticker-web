@@ -3,15 +3,16 @@ import {
   DAYS,
   dateKey,
   summarize,
-  summarizeBySport,
   duration,
   weekLabel,
   weekNumber,
 } from '../domain/workouts.js';
 import { loadImage } from './photo.js';
 import { createIconRenderer } from './icon.js';
+import { summaryModel, drawSummary, loadSummaryFonts, SUMMARY_HEIGHT } from './summary.js';
 export async function createPoster(dates, records) {
   await Promise.allSettled([
+    loadSummaryFonts(),
     document.fonts.load('800 100px Manrope'),
     document.fonts.load('500 28px "Noto Sans KR"'),
   ]);
@@ -75,41 +76,10 @@ export async function createPoster(dates, records) {
     'right',
   );
   const summary = summarize(dates, records);
-  rect(66, 393, 948, 221, 30, lime);
-  text('THIS WEEK', 99, 439, 19, 700);
-  const sports = summarizeBySport(dates, records);
-  const showBreakdown = sports.length >= 2;
-  const dividerX = showBreakdown ? 321 : 481;
-  const totalX = showBreakdown ? 355 : 518;
-  text(String(summary.count), 99, 549, 89, 600);
-  text('workouts', 101, 583, 21, 500);
-  g.fillStyle = '#bacf77';
-  g.fillRect(dividerX, 437, 2, 135);
-  // Reserve the right side only when the week contains multiple sports.
-  const totalLabel = duration(summary.minutes);
-  let totalSize = showBreakdown ? 60 : 72;
-  const totalWidth = showBreakdown ? 275 : 465;
-  g.font = `600 ${totalSize}px "Manrope", "Noto Sans KR", sans-serif`;
-  while (g.measureText(totalLabel).width > totalWidth && totalSize > 20) {
-    totalSize--;
-    g.font = `600 ${totalSize}px "Manrope", "Noto Sans KR", sans-serif`;
-  }
-  text(totalLabel, totalX, 549, totalSize, 600);
-  text('total time', totalX + 3, 583, 21, 500);
-  if (showBreakdown) {
-    const lineHeight = 23;
-    const firstBaseline = 522 - ((sports.length - 1) * lineHeight) / 2;
-    sports.forEach((sport, index) => {
-      const label = `${sport.name} ${sport.minutes === null ? '시간 미입력' : duration(sport.minutes)}`;
-      let size = 20;
-      g.font = `500 ${size}px "Manrope", "Noto Sans KR", sans-serif`;
-      while (g.measureText(label).width > 310 && size > 9) {
-        size--;
-        g.font = `500 ${size}px "Manrope", "Noto Sans KR", sans-serif`;
-      }
-      text(label, 673, firstBaseline + index * lineHeight, size, 500, '#525b36');
-    });
-  }
+  drawSummary(g, summaryModel(dates, records), 66, 393);
+  const summaryExtraHeight = SUMMARY_HEIGHT - 221;
+  g.save();
+  g.translate(0, summaryExtraHeight);
   const dayWidth = 948 / 7;
   dates.forEach((d, i) => {
     const x = 66 + i * dayWidth;
@@ -129,8 +99,8 @@ export async function createPoster(dates, records) {
   const rows = Math.ceil(entries.length / cols);
   const gap = 20;
   const w = (948 - gap * (cols - 1)) / cols;
-  const h = rows === 1 ? 510 : rows === 2 ? 405 : 275;
-  const photoH = rows === 1 ? 270 : rows === 2 ? 192 : 102;
+  const h = (rows === 1 ? 510 : rows === 2 ? 405 : 275) - summaryExtraHeight / rows;
+  const photoH = (rows === 1 ? 270 : rows === 2 ? 192 : 102) - summaryExtraHeight / rows;
   for (let j = 0; j < entries.length; j++) {
     const { d, i, r } = entries[j],
       type = TYPES[r.type],
@@ -171,6 +141,7 @@ export async function createPoster(dates, records) {
     );
     if (r.memo) wrap(r.memo, x + inset, titleY + 74, w - 40, rows === 3 ? 19 : 23, 3);
   }
+  g.restore();
   line(1828);
   text('EVERY MOVE COUNTS.', 66, 1875, 20, 700, muted);
   text('↗', 1014, 1880, 40, 500, ink, 'right');

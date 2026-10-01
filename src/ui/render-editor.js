@@ -1,18 +1,15 @@
-import { TYPES, DAYS, dateKey, weekLabel, summarize, duration } from '../domain/workouts.js';
+import { TYPES, DAYS, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import { $, el } from './dom.js';
+import { summaryModel } from '../media/summary.js';
+import { renderSummary } from './render-summary.js';
 export function renderEditor({ dates, records, generating, onEdit }) {
   $('#week-title').textContent = weekLabel(dates[0]);
   $('#date-range').textContent =
     `${dateKey(dates[0]).replaceAll('-', '.')} — ${dateKey(dates[6]).replaceAll('-', '.')}`;
-  const { count, minutes } = summarize(dates, records);
-  $('#count').textContent = count;
-  $('#total').replaceChildren();
-  const chunks = duration(minutes).match(/\d+|[hm]/g);
-  chunks.forEach((p) =>
-    $('#total').append(/[hm]/.test(p) ? el('small', '', p + ' ') : document.createTextNode(p)),
-  );
-  $('#mini-count').textContent = count;
-  $('#mini-time').textContent = duration(minutes);
+  const model = summaryModel(dates, records);
+  const { count } = model;
+  renderSummary($('#summary-canvas'), model);
+  renderSummary($('#mini-summary-canvas'), model);
   $('#record-count').textContent = String(count).padStart(2, '0');
   $('#generate').disabled = generating || count === 0;
   $('#generate-hint').textContent = count

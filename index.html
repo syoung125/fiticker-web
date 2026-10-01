@@ -45,14 +45,14 @@
               </div>
             </div>
             <section class="summary" aria-label="주간 운동 합계">
-              <div class="summary-title">THIS WEEK <span>↗</span></div>
-              <div class="metrics">
-                <div><strong id="count">0</strong><span>workouts</span></div>
-                <div>
-                  <strong id="total">0<small>m</small></strong
-                  ><span>total time</span>
-                </div>
-              </div>
+              <canvas
+                id="summary-canvas"
+                class="summary-canvas"
+                width="948"
+                height="294"
+                role="img"
+                aria-label="주간 운동 합계"
+              ></canvas>
             </section>
             <section class="calendar-panel" aria-label="주간 캘린더">
               <div id="calendar" class="calendar"></div>
@@ -70,10 +70,12 @@
             <div class="mini-poster" aria-hidden="true">
               <div class="poster-top">MOVE DIARY <span>WEEKLY</span></div>
               <div class="poster-title">MY<br />WEEK.</div>
-              <div class="mini-stats">
-                <div><b id="mini-count">0</b><span>workouts</span></div>
-                <div><b id="mini-time">0m</b><span>total time</span></div>
-              </div>
+              <canvas
+                id="mini-summary-canvas"
+                class="summary-canvas"
+                width="948"
+                height="294"
+              ></canvas>
               <div id="mini-week" class="mini-week"></div>
               <div class="poster-bottom">EVERY MOVE COUNTS. <span>↗</span></div>
             </div>

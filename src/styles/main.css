@@ -206,49 +206,14 @@ h1 span {
   padding: 10px 5px;
 }
 .summary {
-  background: var(--lime);
-  border-radius: 22px;
-  padding: 25px 30px 28px;
+  overflow: hidden;
+  border-radius: 16px;
 }
-.summary-title {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-}
-.summary-title span {
-  font-size: 24px;
-  line-height: 15px;
-}
-.metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 19px;
-}
-.metrics > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.metrics > div + div {
-  border-left: 1px solid #b7cd70;
-  padding-left: 31px;
-}
-.metrics strong {
-  font-family: Manrope, sans-serif;
-  font-size: 56px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -3px;
-}
-.metrics strong small {
-  font-size: 31px;
-  letter-spacing: -1px;
-}
-.metrics span {
-  font-size: 12px;
-  color: #525b36;
+.summary-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 948 / 294;
 }
 .calendar-panel {
   margin-top: 18px;
@@ -473,30 +438,6 @@ h1 span {
   letter-spacing: -3px;
   line-height: 0.99;
   margin: 26px 0 18px;
-}
-.mini-stats {
-  background: var(--lime);
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 13px;
-}
-.mini-stats > div {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.mini-stats > div + div {
-  border-left: 1px solid #b7cd70;
-  padding-left: 12px;
-}
-.mini-stats b {
-  font-size: 25px;
-  font-weight: 600;
-  letter-spacing: -1px;
-}
-.mini-stats span {
-  font-size: 7px;
 }
 .mini-week {
   display: grid;
@@ -933,15 +874,6 @@ input:not([type='radio']):not([type='file']) {
   .export-panel {
     padding: 20px;
   }
-  .metrics strong {
-    font-size: 42px;
-  }
-  .metrics > div + div {
-    padding-left: 20px;
-  }
-  .summary {
-    padding: 23px;
-  }
   .day {
     gap: 7px;
   }
@@ -1011,19 +943,6 @@ input:not([type='radio']):not([type='file']) {
   .icon-button {
     height: 33px;
     width: 33px;
-  }
-  .summary {
-    padding: 24px;
-    border-radius: 20px;
-  }
-  .metrics strong {
-    font-size: 51px;
-  }
-  .metrics strong small {
-    font-size: 27px;
-  }
-  .metrics > div + div {
-    padding-left: 26px;
   }
   .calendar-panel {
     padding: 17px 8px 15px;

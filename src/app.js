@@ -4,6 +4,7 @@ import { createPoster } from './media/poster.js';
 import { $, el } from './ui/dom.js';
 import { renderEditor } from './ui/render-editor.js';
 import { createDurationPicker } from './ui/duration-picker.js';
+import { loadSummaryFonts } from './media/summary.js';
 const records = Object.create(null);
 let dates = weekDates(new Date()),
   selectedDate = null,
@@ -197,3 +198,6 @@ $('#share').onclick = async () => {
   }
 };
 render();
+
+// Redraw the live summary when web fonts become available, just like PNG export.
+loadSummaryFonts().then(() => render());
