@@ -1,4 +1,6 @@
-# MOVE DIARY implementation plan
+# MOVE DIARY initial implementation plan
+
+Historical plan for the initial static version. For the current development project, see [maintenance.md](maintenance.md) and the root README.
 
 Goal: the supplied v0.1 brief, published on GitHub Pages.
 Architecture: dependency-free HTML/CSS/ES modules, in-memory records, local photo resizing, dedicated Canvas PNG output. No server or persistence.

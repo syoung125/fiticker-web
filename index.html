@@ -1,12 +1,183 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f7f7f0"><meta name="description" content="한 주의 운동을 한 장으로. 운동 기록과 사진으로 나만의 주간 운동 이미지를 만들어 보세요."><title>MOVE DIARY — 한 주의 움직임, 한 장에.</title><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
-<body><header class="topbar"><a class="brand" href="./" aria-label="MOVE DIARY 처음으로"><span class="brand-mark">↗</span> MOVE DIARY<span class="version">/ 01</span></a><span class="top-note">YOUR WEEK. YOUR MOVES.</span></header>
-<main><section id="editor"><div class="intro"><div><p class="eyebrow"><span class="dot"></span> WEEKLY MOVEMENT JOURNAL</p><h1>한 주의 움직임,<br><span>한 장에.</span></h1><p class="subtitle">차곡차곡 쌓은 운동을, 나만의 주간 이미지로.</p></div><div class="intro-badge" aria-hidden="true">MOVE<br>RECORD<br><span>REPEAT ↗</span></div></div>
-<div class="workspace"><div class="main-column"><div class="week-heading"><div><p class="eyebrow">YOUR WEEK</p><h2 id="week-title"></h2><p id="date-range" class="muted"></p></div><div class="week-nav"><button id="previous" class="icon-button" aria-label="이전 주">←</button><button id="today" class="small-button">이번 주</button><button id="next" class="icon-button" aria-label="다음 주">→</button></div></div>
-<section class="summary" aria-label="주간 운동 합계"><div class="summary-title">THIS WEEK <span>↗</span></div><div class="metrics"><div><strong id="count">0</strong><span>workouts</span></div><div><strong id="total">0<small>m</small></strong><span>total time</span></div></div></section>
-<section class="calendar-panel" aria-label="주간 캘린더"><div id="calendar" class="calendar"></div><p class="calendar-hint"><span>＋</span> 날짜를 눌러 운동을 기록하세요</p></section>
-<div class="records-heading"><h3>Daily records <span id="record-count">00</span></h3><span>매일의 작은 움직임</span></div><div id="records" class="records"></div></div>
-<aside class="export-panel"><div class="aside-top"><span class="eyebrow">MADE TO SHARE</span><span>↗</span></div><h2>이번 주의 나를<br>기록하는 한 장.</h2><div class="mini-poster" aria-hidden="true"><div class="poster-top">MOVE DIARY <span>WEEKLY</span></div><div class="poster-title">MY<br>WEEK.</div><div class="mini-stats"><div><b id="mini-count">0</b><span>workouts</span></div><div><b id="mini-time">0m</b><span>total time</span></div></div><div id="mini-week" class="mini-week"></div><div class="poster-bottom">EVERY MOVE COUNTS. <span>↗</span></div></div><div class="format-info"><span>STORY FORMAT</span><span>1080 × 1920</span></div><button id="generate" class="primary" disabled>이미지 만들기 <span>↗</span></button><p id="generate-hint" class="aside-note">운동을 하나 이상 기록하면 만들 수 있어요.</p></aside></div></section>
-<section id="preview" hidden><button id="back" class="text-button">← 기록으로 돌아가기</button><div class="preview-heading"><p class="eyebrow">YOUR WEEK, CAPTURED.</p><h1>움직인 만큼,<br>남겨두기.</h1><p class="subtitle">이번 주 운동 기록이 한 장에 담겼어요.</p></div><div class="preview-layout"><img id="result" alt="주간 운동 기록 공유 이미지" width="1080" height="1920"><div class="download-panel"><h2>Ready to share.</h2><p>스토리에 딱 맞는 9:16 이미지.<br>저장해서 이번 주의 움직임을 공유하세요.</p><a id="download" class="primary" download="move-diary.png">이미지 저장 <span>↓</span></a><button id="share" class="secondary" hidden>이미지 공유 ↗</button><p class="muted">PNG · 1080 × 1920<br>모바일에서 저장이 안 되면 이미지를 길게 눌러 저장하세요.</p></div></div></section></main>
-<footer><span>MOVE DIARY</span><p>기록과 사진은 이 기기에서만 처리돼요. 새로고침하면 기록이 사라집니다.</p><span>JUST KEEP MOVING. ↗</span></footer>
-<dialog id="workout-dialog" aria-labelledby="dialog-title"><form id="workout-form"><div class="dialog-heading"><div><p class="eyebrow">LOG YOUR MOVE</p><h2 id="dialog-title"></h2></div><button type="button" id="close-dialog" class="icon-button" aria-label="닫기">✕</button></div><fieldset><legend>운동 종류 <span class="required">*</span></legend><div id="types" class="types"></div></fieldset><label id="custom-label" hidden>운동 이름<input id="custom-name" maxlength="20" placeholder="예: 테니스" autocomplete="off"></label><fieldset><legend>운동 시간 <span class="optional">선택</span></legend><div class="time-fields"><label><input id="hours" type="number" min="0" max="23" step="1" placeholder="0" inputmode="numeric" aria-label="시간"><span>시간</span></label><label><input id="minutes" type="number" min="0" max="59" step="1" placeholder="00" inputmode="numeric" aria-label="분"><span>분</span></label></div></fieldset><div class="photo-heading"><label for="photo">사진 <span class="optional">선택</span></label><button type="button" id="remove-photo" class="text-button" hidden>사진 삭제</button></div><label class="photo-upload" for="photo"><img id="photo-preview" alt="선택한 운동 사진" hidden><span id="photo-prompt">＋ 사진 추가 <small>JPG, PNG, WebP · 최대 20MB</small></span><input id="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label><label class="memo-label" for="memo">메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label><input id="memo" placeholder="오늘의 운동은 어땠나요?" autocomplete="off"><p id="form-error" class="error" role="alert"></p><div class="form-actions"><button type="button" id="delete-record" class="delete-button" hidden>기록 삭제</button><button type="submit" class="primary" id="save-record">기록 저장 <span>↗</span></button></div></form></dialog><div id="toast" role="status" aria-live="polite"></div></body></html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f0" />
+    <meta
+      name="description"
+      content="한 주의 운동을 한 장으로. 운동 기록과 사진으로 나만의 주간 운동 이미지를 만들어 보세요."
+    />
+    <title>MOVE DIARY — 한 주의 움직임, 한 장에.</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="MOVE DIARY 처음으로"
+        ><span class="brand-mark">↗</span> MOVE DIARY<span class="version">/ 01</span></a
+      ><span class="top-note">YOUR WEEK. YOUR MOVES.</span>
+    </header>
+    <main>
+      <section id="editor">
+        <div class="intro">
+          <div>
+            <p class="eyebrow"><span class="dot"></span> WEEKLY MOVEMENT JOURNAL</p>
+            <h1>한 주의 움직임,<br /><span>한 장에.</span></h1>
+            <p class="subtitle">차곡차곡 쌓은 운동을, 나만의 주간 이미지로.</p>
+          </div>
+          <div class="intro-badge" aria-hidden="true">
+            MOVE<br />RECORD<br /><span>REPEAT ↗</span>
+          </div>
+        </div>
+        <div class="workspace">
+          <div class="main-column">
+            <div class="week-heading">
+              <div>
+                <p class="eyebrow">YOUR WEEK</p>
+                <h2 id="week-title"></h2>
+                <p id="date-range" class="muted"></p>
+              </div>
+              <div class="week-nav">
+                <button id="previous" class="icon-button" aria-label="이전 주">←</button
+                ><button id="today" class="small-button">이번 주</button
+                ><button id="next" class="icon-button" aria-label="다음 주">→</button>
+              </div>
+            </div>
+            <section class="summary" aria-label="주간 운동 합계">
+              <div class="summary-title">THIS WEEK <span>↗</span></div>
+              <div class="metrics">
+                <div><strong id="count">0</strong><span>workouts</span></div>
+                <div>
+                  <strong id="total">0<small>m</small></strong
+                  ><span>total time</span>
+                </div>
+              </div>
+            </section>
+            <section class="calendar-panel" aria-label="주간 캘린더">
+              <div id="calendar" class="calendar"></div>
+              <p class="calendar-hint"><span>＋</span> 날짜를 눌러 운동을 기록하세요</p>
+            </section>
+            <div class="records-heading">
+              <h3>Daily records <span id="record-count">00</span></h3>
+              <span>매일의 작은 움직임</span>
+            </div>
+            <div id="records" class="records"></div>
+          </div>
+          <aside class="export-panel">
+            <div class="aside-top"><span class="eyebrow">MADE TO SHARE</span><span>↗</span></div>
+            <h2>이번 주의 나를<br />기록하는 한 장.</h2>
+            <div class="mini-poster" aria-hidden="true">
+              <div class="poster-top">MOVE DIARY <span>WEEKLY</span></div>
+              <div class="poster-title">MY<br />WEEK.</div>
+              <div class="mini-stats">
+                <div><b id="mini-count">0</b><span>workouts</span></div>
+                <div><b id="mini-time">0m</b><span>total time</span></div>
+              </div>
+              <div id="mini-week" class="mini-week"></div>
+              <div class="poster-bottom">EVERY MOVE COUNTS. <span>↗</span></div>
+            </div>
+            <div class="format-info"><span>STORY FORMAT</span><span>1080 × 1920</span></div>
+            <button id="generate" class="primary" disabled>이미지 만들기 <span>↗</span></button>
+            <p id="generate-hint" class="aside-note">운동을 하나 이상 기록하면 만들 수 있어요.</p>
+          </aside>
+        </div>
+      </section>
+      <section id="preview" hidden>
+        <button id="back" class="text-button">← 기록으로 돌아가기</button>
+        <div class="preview-heading">
+          <p class="eyebrow">YOUR WEEK, CAPTURED.</p>
+          <h1>움직인 만큼,<br />남겨두기.</h1>
+          <p class="subtitle">이번 주 운동 기록이 한 장에 담겼어요.</p>
+        </div>
+        <div class="preview-layout">
+          <img id="result" alt="주간 운동 기록 공유 이미지" width="1080" height="1920" />
+          <div class="download-panel">
+            <h2>Ready to share.</h2>
+            <p>스토리에 딱 맞는 9:16 이미지.<br />저장해서 이번 주의 움직임을 공유하세요.</p>
+            <a id="download" class="primary" download="move-diary.png">이미지 저장 <span>↓</span></a
+            ><button id="share" class="secondary" hidden>이미지 공유 ↗</button>
+            <p class="muted">
+              PNG · 1080 × 1920<br />모바일에서 저장이 안 되면 이미지를 길게 눌러 저장하세요.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>MOVE DIARY</span>
+      <p>기록과 사진은 이 기기에서만 처리돼요. 새로고침하면 기록이 사라집니다.</p>
+      <span>JUST KEEP MOVING. ↗</span>
+    </footer>
+    <dialog id="workout-dialog" aria-labelledby="dialog-title">
+      <form id="workout-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">LOG YOUR MOVE</p>
+            <h2 id="dialog-title"></h2>
+          </div>
+          <button type="button" id="close-dialog" class="icon-button" aria-label="닫기">✕</button>
+        </div>
+        <fieldset>
+          <legend>운동 종류 <span class="required">*</span></legend>
+          <div id="types" class="types"></div>
+        </fieldset>
+        <label id="custom-label" hidden
+          >운동 이름<input
+            id="custom-name"
+            maxlength="20"
+            placeholder="예: 테니스"
+            autocomplete="off"
+        /></label>
+        <fieldset>
+          <legend>운동 시간 <span class="optional">선택</span></legend>
+          <div class="time-fields">
+            <label
+              ><input
+                id="hours"
+                type="number"
+                min="0"
+                max="23"
+                step="1"
+                placeholder="0"
+                inputmode="numeric"
+                aria-label="시간"
+              /><span>시간</span></label
+            ><label
+              ><input
+                id="minutes"
+                type="number"
+                min="0"
+                max="59"
+                step="1"
+                placeholder="00"
+                inputmode="numeric"
+                aria-label="분"
+              /><span>분</span></label
+            >
+          </div>
+        </fieldset>
+        <div class="photo-heading">
+          <label for="photo">사진 <span class="optional">선택</span></label
+          ><button type="button" id="remove-photo" class="text-button" hidden>사진 삭제</button>
+        </div>
+        <label class="photo-upload" for="photo"
+          ><img id="photo-preview" alt="선택한 운동 사진" hidden /><span id="photo-prompt"
+            >＋ 사진 추가 <small>JPG, PNG, WebP · 최대 20MB</small></span
+          ><input
+            id="photo"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif" /></label
+        ><label class="memo-label" for="memo"
+          >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
+        ><input id="memo" placeholder="오늘의 운동은 어땠나요?" autocomplete="off" />
+        <p id="form-error" class="error" role="alert"></p>
+        <div class="form-actions">
+          <button type="button" id="delete-record" class="delete-button" hidden>기록 삭제</button
+          ><button type="submit" class="primary" id="save-record">기록 저장 <span>↗</span></button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
