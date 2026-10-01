@@ -83,9 +83,7 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
   const labelDescent = Math.max(...labelBounds.map((b) => b.descent));
   const gap = 20;
   const blockHeight = ascent + descent + gap + labelAscent + labelDescent;
-  // Lift the large metrics slightly to balance their visual weight against the sport list.
-  const opticalLift = 12;
-  const valueY = (BODY_HEIGHT - blockHeight) / 2 + ascent - opticalLift;
+  const valueY = (BODY_HEIGHT - blockHeight) / 2 + ascent;
   const labelY = valueY + descent + gap + labelAscent;
   values.forEach((value, index) => {
     const centerX = columnWidth * (index + 0.5);
@@ -105,7 +103,8 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
     const rowAscent = Math.max(...rowBounds.map((b) => b.ascent));
     const rowDescent = Math.max(...rowBounds.map((b) => b.descent));
     const listHeight = (model.sports.length - 1) * lineHeight + rowAscent + rowDescent;
-    const start = (BODY_HEIGHT - listHeight) / 2 + rowAscent;
+    // Lift the sport list slightly to visually align it with the large metric groups.
+    const start = (BODY_HEIGHT - listHeight) / 2 + rowAscent - 12;
     model.sports.forEach((sport, index) => {
       const timeSize = fitSize(sport.time, 32, 125);
       font(timeSize);
