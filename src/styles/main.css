@@ -784,6 +784,9 @@ input:not([type='radio']):not([type='file']) {
   display: flex;
   gap: 12px;
 }
+.form-actions .primary {
+  justify-content: center;
+}
 .delete-button {
   white-space: nowrap;
   font-size: 11px;
