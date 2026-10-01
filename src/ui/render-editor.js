@@ -1,8 +1,9 @@
-import { TYPES, DAYS, dateKey, weekLabel, duration } from '../domain/workouts.js';
+import { TYPES, DAYS, dateKey, weekLabel, weekDates, duration } from '../domain/workouts.js';
 import { $, el } from './dom.js';
 import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
 export function renderEditor({ dates, records, generating, onEdit }) {
+  $('#next').disabled = dates[0] >= weekDates(new Date())[0];
   $('#week-title').textContent = weekLabel(dates[0]);
   $('#date-range').textContent =
     `${dateKey(dates[0]).replaceAll('-', '.')} — ${dateKey(dates[6]).replaceAll('-', '.')}`;

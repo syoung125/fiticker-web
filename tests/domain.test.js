@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   weekDates,
+  navigateWeek,
   dateKey,
   weekLabel,
   summarize,
@@ -33,4 +34,16 @@ test('invalid duration and empty custom names rejected', () => {
   assert.throws(() => validateRecord({ type: 'yoga', hours: '-1', mins: '0', memo: '' }));
   assert.throws(() => validateRecord({ type: 'yoga', hours: '0', mins: '60', memo: '' }));
   assert.equal(validateRecord({ type: 'yoga', hours: '', mins: '', memo: '' }).minutes, null);
+});
+
+test('week navigation stops at the current week, including Sunday and year boundaries', () => {
+  const now = new Date(2027, 0, 3, 0);
+  const current = weekDates(now);
+  assert.deepEqual(navigateWeek(current[0], 1, now), current);
+  const previous = navigateWeek(current[0], -1, now);
+  assert.equal(dateKey(previous[0]), '2026-12-21');
+  assert.deepEqual(navigateWeek(previous[0], 1, now), current);
+  assert.deepEqual(navigateWeek(previous[0], 5, now), current);
+  const monday = new Date(2027, 0, 4, 0);
+  assert.equal(dateKey(navigateWeek(current[0], 1, monday)[0]), '2027-01-04');
 });

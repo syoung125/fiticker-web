@@ -1,4 +1,11 @@
-import { TYPES, dateKey, weekDates, summarize, validateRecord } from './domain/workouts.js';
+import {
+  TYPES,
+  dateKey,
+  weekDates,
+  navigateWeek,
+  summarize,
+  validateRecord,
+} from './domain/workouts.js';
 import { resizePhoto } from './media/photo.js';
 import { createPoster } from './media/poster.js';
 import { $, el } from './ui/dom.js';
@@ -142,17 +149,11 @@ $('#delete-record').onclick = () => {
   toast('기록을 삭제했어요.');
 };
 function moveWeek(n) {
-  const d = new Date(dates[0]);
-  d.setDate(d.getDate() + n * 7);
-  dates = weekDates(d);
+  dates = navigateWeek(dates[0], n);
   render();
 }
 $('#previous').onclick = () => moveWeek(-1);
 $('#next').onclick = () => moveWeek(1);
-$('#today').onclick = () => {
-  dates = weekDates(new Date());
-  render();
-};
 $('#generate').onclick = async () => {
   if (generating) return;
   generating = true;

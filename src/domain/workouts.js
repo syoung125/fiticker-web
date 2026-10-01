@@ -20,6 +20,13 @@ export function weekDates(date) {
     (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, 12),
   );
 }
+export function navigateWeek(start, offset, now = new Date()) {
+  const target = new Date(start);
+  target.setDate(target.getDate() + offset * 7);
+  const dates = weekDates(target);
+  const current = weekDates(now);
+  return dates[0] > current[0] ? current : dates;
+}
 export function weekLabel(start) {
   const thu = weekDates(start)[3];
   return `${thu.getFullYear()}년 ${thu.getMonth() + 1}월 ${Math.ceil(thu.getDate() / 7)}주`;

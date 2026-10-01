@@ -196,14 +196,8 @@ h1 span {
   display: grid;
   place-items: center;
 }
-.icon-button:hover,
-.small-button:hover {
+.icon-button:hover:not(:disabled) {
   background: #eceee2;
-}
-.small-button {
-  background: transparent;
-  font-size: 11px;
-  padding: 10px 5px;
 }
 .summary {
   overflow: hidden;
