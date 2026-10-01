@@ -3,6 +3,7 @@ import {
   DAYS,
   dateKey,
   summarize,
+  summarizeBySport,
   duration,
   weekLabel,
   weekNumber,
@@ -76,12 +77,39 @@ export async function createPoster(dates, records) {
   const summary = summarize(dates, records);
   rect(66, 393, 948, 221, 30, lime);
   text('THIS WEEK', 99, 439, 19, 700);
+  const sports = summarizeBySport(dates, records);
+  const showBreakdown = sports.length >= 2;
+  const dividerX = showBreakdown ? 321 : 481;
+  const totalX = showBreakdown ? 355 : 518;
   text(String(summary.count), 99, 549, 89, 600);
   text('workouts', 101, 583, 21, 500);
   g.fillStyle = '#bacf77';
-  g.fillRect(481, 437, 2, 135);
-  text(duration(summary.minutes), 518, 549, 72, 600);
-  text('total time', 521, 583, 21, 500);
+  g.fillRect(dividerX, 437, 2, 135);
+  // Reserve the right side only when the week contains multiple sports.
+  const totalLabel = duration(summary.minutes);
+  let totalSize = showBreakdown ? 60 : 72;
+  const totalWidth = showBreakdown ? 275 : 465;
+  g.font = `600 ${totalSize}px "Manrope", "Noto Sans KR", sans-serif`;
+  while (g.measureText(totalLabel).width > totalWidth && totalSize > 20) {
+    totalSize--;
+    g.font = `600 ${totalSize}px "Manrope", "Noto Sans KR", sans-serif`;
+  }
+  text(totalLabel, totalX, 549, totalSize, 600);
+  text('total time', totalX + 3, 583, 21, 500);
+  if (showBreakdown) {
+    const lineHeight = 23;
+    const firstBaseline = 522 - ((sports.length - 1) * lineHeight) / 2;
+    sports.forEach((sport, index) => {
+      const label = `${sport.name} ${sport.minutes === null ? '시간 미입력' : duration(sport.minutes)}`;
+      let size = 20;
+      g.font = `500 ${size}px "Manrope", "Noto Sans KR", sans-serif`;
+      while (g.measureText(label).width > 310 && size > 9) {
+        size--;
+        g.font = `500 ${size}px "Manrope", "Noto Sans KR", sans-serif`;
+      }
+      text(label, 673, firstBaseline + index * lineHeight, size, 500, '#525b36');
+    });
+  }
   const dayWidth = 948 / 7;
   dates.forEach((d, i) => {
     const x = 66 + i * dayWidth;

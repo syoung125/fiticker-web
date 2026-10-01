@@ -42,6 +42,21 @@ export function summarize(dates, records) {
     { count: 0, minutes: 0 },
   );
 }
+export function summarizeBySport(dates, records) {
+  const groups = new Map();
+  for (const day of dates) {
+    const record = records[dateKey(day)];
+    if (!record) continue;
+    const name = record.type === 'other' ? record.name.trim() : TYPES[record.type].label;
+    const key = record.type === 'other' ? `other:${name}` : record.type;
+    if (!groups.has(key)) groups.set(key, { name, minutes: null });
+    if (record.minutes != null) {
+      const group = groups.get(key);
+      group.minutes = (group.minutes ?? 0) + record.minutes;
+    }
+  }
+  return [...groups.values()];
+}
 export function duration(m) {
   return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? ` ${m % 60}m` : ''}` : `${m}m`;
 }
