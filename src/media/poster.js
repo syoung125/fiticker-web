@@ -85,7 +85,6 @@ export async function createPoster(dates, records) {
     const x = 66 + i * dayWidth;
     const centerX = x + dayWidth / 2;
     const r = records[dateKey(d)];
-    if (r) rect(x + 4, 652, dayWidth - 8, 149, 20, '#e7e1f6');
     text(DAYS[i], centerX, 681, 17, 600, muted, 'center');
     text(String(d.getDate()), centerX, 725, 30, 600, ink, 'center');
     if (r) icon(TYPES[r.type].icon, centerX, 763, 35, ink);
