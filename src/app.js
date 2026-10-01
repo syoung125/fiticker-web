@@ -1,29 +1,24 @@
-import {
-  TYPES,
-  dateKey,
-  weekDates,
-  navigateWeek,
-  summarize,
-  validateRecord,
-} from './domain/workouts.js';
-import { resizePhoto } from './media/photo.js';
+import { dateKey, weekDates, navigateWeek, summarize } from './domain/workouts.js';
+import { createRecordSheet } from './ui/record-sheet.js';
 import { createPoster } from './media/poster.js';
 import { $, el } from './ui/dom.js';
 import { renderEditor } from './ui/render-editor.js';
-import { createDurationPicker } from './ui/duration-picker.js';
 import { loadSummaryFonts } from './media/summary.js';
 const records = Object.create(null);
 let dates = weekDates(new Date()),
-  selectedDate = null,
-  draftPhoto = null,
-  photoVersion = 0,
   resultURL = null,
   resultBlob = null,
   exportKey = null,
   generating = false,
   toastTimer;
-const dialog = $('#workout-dialog');
-const durationPicker = createDurationPicker($('#duration-picker'));
+const recordSheet = createRecordSheet({
+  records,
+  onSave(key, action) {
+    render();
+    $(`[data-date="${key}"]`)?.focus({ preventScroll: true });
+    toast(action === 'delete' ? '기록을 삭제했어요.' : '기록을 저장했어요.');
+  },
+});
 function toast(message) {
   $('#toast').textContent = message;
   $('#toast').classList.add('visible');
@@ -31,123 +26,13 @@ function toast(message) {
   toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 2600);
 }
 function render() {
-  renderEditor({ dates, records, generating, onEdit: openEditor });
-}
-function updatePhoto() {
-  const has = Boolean(draftPhoto);
-  $('#photo-preview').hidden = !has;
-  $('#photo-prompt').hidden = has;
-  $('#remove-photo').hidden = !has;
-  if (has) $('#photo-preview').src = draftPhoto;
-  else $('#photo-preview').removeAttribute('src');
-}
-function updateType() {
-  const type = $('input[name="type"]:checked')?.value;
-  $('#custom-label').hidden = type !== 'other';
-  $('#custom-name').required = type === 'other';
-}
-function openEditor(date) {
-  selectedDate = dateKey(date);
-  photoVersion++;
-  $('#save-record').disabled = false;
-  const r = records[selectedDate];
-  $('#workout-form').reset();
-  $('#dialog-title').textContent = date.toLocaleDateString('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
+  renderEditor({
+    dates,
+    records,
+    generating,
+    onEdit: (date, action) => recordSheet.open(date, action),
   });
-  $('#form-error').textContent = '';
-  if (r) {
-    $(`input[name="type"][value="${r.type}"]`).checked = true;
-    $('#custom-name').value = r.type === 'other' ? r.name : '';
-    $('#memo').value = r.memo;
-  }
-  draftPhoto = r?.photo || null;
-  $('#delete-record').hidden = !r;
-  $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
-  updateType();
-  updatePhoto();
-  dialog.showModal();
-  // Wheel scroll positions must be initialized after the dialog is visible.
-  durationPicker.set(r?.minutes ?? null);
 }
-for (const [value, t] of Object.entries(TYPES)) {
-  const label = el('label', 'type-label');
-  const input = el('input');
-  input.type = 'radio';
-  input.name = 'type';
-  input.value = value;
-  input.required = true;
-  input.addEventListener('change', updateType);
-  label.append(input, el('span', '', t.icon), document.createTextNode(t.ko));
-  $('#types').append(label);
-}
-$('#close-dialog').onclick = () => dialog.close();
-dialog.addEventListener('close', () => {
-  photoVersion++;
-});
-dialog.addEventListener('click', (e) => {
-  if (e.target === dialog) {
-    const r = dialog.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)
-      dialog.close();
-  }
-});
-$('#memo').addEventListener('input', () => {
-  $('#memo').value = Array.from($('#memo').value).slice(0, 30).join('');
-  $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
-});
-$('#photo').addEventListener('change', async () => {
-  const file = $('#photo').files[0];
-  if (!file) return;
-  const version = ++photoVersion;
-  $('#save-record').disabled = true;
-  $('#form-error').textContent = '사진을 준비하고 있어요…';
-  try {
-    const photo = await resizePhoto(file);
-    if (version === photoVersion) {
-      draftPhoto = photo;
-      updatePhoto();
-      $('#form-error').textContent = '';
-    }
-  } catch (e) {
-    if (version === photoVersion) $('#form-error').textContent = e.message;
-  } finally {
-    if (version === photoVersion) $('#save-record').disabled = false;
-  }
-});
-$('#remove-photo').onclick = () => {
-  photoVersion++;
-  draftPhoto = null;
-  $('#photo').value = '';
-  $('#form-error').textContent = '';
-  $('#save-record').disabled = false;
-  updatePhoto();
-};
-$('#workout-form').onsubmit = (e) => {
-  e.preventDefault();
-  try {
-    const record = validateRecord({
-      type: $('input[name="type"]:checked')?.value,
-      name: $('#custom-name').value,
-      ...durationPicker.read(),
-      memo: $('#memo').value,
-    });
-    records[selectedDate] = { ...record, photo: draftPhoto };
-    dialog.close();
-    render();
-    toast('오늘의 움직임을 기록했어요.');
-  } catch (error) {
-    $('#form-error').textContent = error.message;
-  }
-};
-$('#delete-record').onclick = () => {
-  delete records[selectedDate];
-  dialog.close();
-  render();
-  toast('기록을 삭제했어요.');
-};
 function moveWeek(n) {
   dates = navigateWeek(dates[0], n);
   render();

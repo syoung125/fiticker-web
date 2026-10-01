@@ -114,73 +114,82 @@
       <form id="workout-form">
         <div class="dialog-heading">
           <div>
-            <p class="eyebrow">LOG YOUR MOVE</p>
+            <p id="sheet-date" class="eyebrow"></p>
             <h2 id="dialog-title"></h2>
           </div>
           <button type="button" id="close-dialog" class="icon-button" aria-label="닫기">✕</button>
         </div>
-        <fieldset>
-          <legend>운동 종류 <span class="required">*</span></legend>
-          <div id="types" class="types"></div>
-        </fieldset>
-        <label id="custom-label" hidden
-          >운동 이름<input
-            id="custom-name"
-            maxlength="20"
-            placeholder="예: 테니스"
-            autocomplete="off"
-        /></label>
-        <fieldset>
-          <legend>운동 시간 <span class="optional">선택</span></legend>
-          <div id="duration-picker" class="duration-picker">
-            <div class="duration-picker-heading">
-              <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
-              <button type="button" class="text-button" data-duration-clear disabled>
-                선택 해제
-              </button>
+        <section data-sheet="type">
+          <fieldset>
+            <legend>운동 종류 <span class="required">*</span></legend>
+            <div id="types" class="types"></div>
+          </fieldset>
+          <label id="custom-label" hidden
+            >운동 이름<input
+              id="custom-name"
+              maxlength="20"
+              placeholder="예: 테니스"
+              autocomplete="off"
+          /></label>
+        </section>
+        <section data-sheet="time" hidden>
+          <fieldset>
+            <legend>운동 시간 <span class="optional">선택</span></legend>
+            <div id="duration-picker" class="duration-picker">
+              <div class="duration-picker-heading">
+                <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
+                <button type="button" class="text-button" data-duration-clear disabled>
+                  선택 해제
+                </button>
+              </div>
+              <div class="duration-wheels">
+                <div class="wheel-highlight" aria-hidden="true"></div>
+                <div
+                  id="hours-wheel"
+                  class="duration-wheel"
+                  role="listbox"
+                  tabindex="0"
+                  aria-label="운동 시간"
+                  aria-describedby="duration-help"
+                ></div>
+                <div
+                  id="minutes-wheel"
+                  class="duration-wheel"
+                  role="listbox"
+                  tabindex="0"
+                  aria-label="운동 분"
+                  aria-describedby="duration-help"
+                ></div>
+              </div>
+              <p id="duration-help" class="duration-help">
+                위아래로 밀거나 숫자를 눌러 선택 · 분은 5분 단위
+              </p>
             </div>
-            <div class="duration-wheels">
-              <div class="wheel-highlight" aria-hidden="true"></div>
-              <div
-                id="hours-wheel"
-                class="duration-wheel"
-                role="listbox"
-                tabindex="0"
-                aria-label="운동 시간"
-                aria-describedby="duration-help"
-              ></div>
-              <div
-                id="minutes-wheel"
-                class="duration-wheel"
-                role="listbox"
-                tabindex="0"
-                aria-label="운동 분"
-                aria-describedby="duration-help"
-              ></div>
-            </div>
-            <p id="duration-help" class="duration-help">
-              위아래로 밀거나 숫자를 눌러 선택 · 분은 5분 단위
-            </p>
+          </fieldset>
+        </section>
+        <section data-sheet="photo" hidden>
+          <div class="photo-heading">
+            <label for="photo">사진 <span class="optional">선택</span></label
+            ><button type="button" id="remove-photo" class="text-button" hidden>사진 삭제</button>
           </div>
-        </fieldset>
-        <div class="photo-heading">
-          <label for="photo">사진 <span class="optional">선택</span></label
-          ><button type="button" id="remove-photo" class="text-button" hidden>사진 삭제</button>
-        </div>
-        <label class="photo-upload" for="photo"
-          ><img id="photo-preview" alt="선택한 운동 사진" hidden /><span id="photo-prompt"
-            >＋ 사진 추가 <small>JPG, PNG, WebP · 최대 20MB</small></span
-          ><input
-            id="photo"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif" /></label
-        ><label class="memo-label" for="memo"
-          >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
-        ><input id="memo" placeholder="오늘의 운동은 어땠나요?" autocomplete="off" />
+          <label class="photo-upload" for="photo"
+            ><img id="photo-preview" alt="선택한 운동 사진" hidden /><span id="photo-prompt"
+              >＋ 사진 추가 <small>JPG, PNG, WebP · 최대 20MB</small></span
+            ><input
+              id="photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+          /></label>
+        </section>
+        <section data-sheet="memo" hidden>
+          <label class="memo-label" for="memo"
+            >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
+          ><input id="memo" placeholder="오늘의 운동은 어땠나요?" autocomplete="off" />
+        </section>
+        <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
         <p id="form-error" class="error" role="alert"></p>
         <div class="form-actions">
-          <button type="button" id="delete-record" class="delete-button" hidden>기록 삭제</button
-          ><button type="submit" class="primary" id="save-record">기록 저장 <span>↗</span></button>
+          <button type="submit" class="primary" id="save-record">저장</button>
         </div>
       </form>
     </dialog>

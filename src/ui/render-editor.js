@@ -27,6 +27,7 @@ export function renderEditor({ dates, records, generating, onEdit }) {
       `day${r ? ' has-record' : ''}${key === dateKey(new Date()) ? ' is-today' : ''}`,
     );
     button.type = 'button';
+    button.dataset.date = key;
     button.setAttribute(
       'aria-label',
       `${date.getMonth() + 1}월 ${date.getDate()}일 ${r ? r.name + ' 수정' : '운동 추가'}`,
@@ -47,7 +48,7 @@ export function renderEditor({ dates, records, generating, onEdit }) {
     );
     $('#mini-week').append(mini);
     if (r) {
-      const card = el('button', 'record-card');
+      const card = el('article', 'record-card');
       card.setAttribute(
         'aria-label',
         `${date.getMonth() + 1}월 ${date.getDate()}일 ${r.name} 기록 수정`,
@@ -70,7 +71,21 @@ export function renderEditor({ dates, records, generating, onEdit }) {
       );
       if (r.memo) body.append(el('p', 'record-memo', r.memo));
       card.append(visual, body);
-      card.onclick = () => onEdit(date);
+      const actions = el('div', 'record-actions');
+      for (const [action, label] of [
+        ['time', r.minutes === null ? '＋ 시간 입력' : '시간 수정'],
+        ['photo', r.photo ? '사진 변경' : '＋ 사진 추가'],
+        ['type', '종목 변경'],
+        ['memo', r.memo ? '메모 수정' : '메모 추가'],
+        ['delete', '삭제'],
+      ]) {
+        const control = el('button', `record-action record-action-${action}`, label);
+        control.type = 'button';
+        control.setAttribute('aria-label', `${date.getMonth() + 1}월 ${date.getDate()}일 ${label}`);
+        control.onclick = () => onEdit(date, action);
+        actions.append(control);
+      }
+      body.append(actions);
       $('#records').append(card);
     }
   });
