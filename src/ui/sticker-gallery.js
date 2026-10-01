@@ -1,5 +1,8 @@
 import {
   createStickers,
+  STICKERS,
+  STICKER_CATEGORIES,
+  matchesStickerCategory,
   copySticker,
   STICKER_BACKGROUNDS,
   DEFAULT_STICKER_BACKGROUNDS,
@@ -31,7 +34,29 @@ function actionIcon(pathData) {
 
 export function createStickerGallery({ notify }) {
   const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
-  const timeVisibility = { calendar: true, square: true };
+  const timeVisibility = Object.fromEntries(STICKERS.map((sticker) => [sticker.id, true]));
+  let activeCategory = 'all';
+  function filterCards() {
+    document.querySelectorAll('[data-sticker-category]').forEach((card) => {
+      card.hidden = !matchesStickerCategory(
+        { category: card.dataset.stickerCategory },
+        activeCategory,
+      );
+    });
+  }
+  const filters = $('#sticker-filters');
+  for (const category of STICKER_CATEGORIES) {
+    const chip = el('button', 'sticker-filter', category.label);
+    chip.type = 'button';
+    chip.setAttribute('aria-pressed', String(category.id === activeCategory));
+    chip.onclick = () => {
+      activeCategory = category.id;
+      for (const button of filters.children)
+        button.setAttribute('aria-pressed', String(button === chip));
+      filterCards();
+    };
+    filters.append(chip);
+  }
   let revision = 0,
     signature = '',
     urls = [];
@@ -75,6 +100,7 @@ export function createStickerGallery({ notify }) {
           const url = URL.createObjectURL(sticker.blob);
           urls.push(url);
           const card = el('article', 'sticker-card');
+          card.dataset.stickerCategory = sticker.category;
           function backgroundControl(key, label) {
             const backgroundLabel = el('label', 'sticker-background', label + ' ');
             const select = el('select');
@@ -95,11 +121,11 @@ export function createStickerGallery({ notify }) {
             return backgroundLabel;
           }
           const controls = [
-            backgroundControl(sticker.id, sticker.id === 'square' ? '전체 배경' : '배경'),
+            backgroundControl(sticker.id, sticker.category === 'combined' ? '전체 배경' : '배경'),
           ];
-          if (sticker.id === 'square')
-            controls.push(backgroundControl('squareSummary', '요약 배경'));
-          if (sticker.id === 'calendar' || sticker.id === 'square') {
+          if (sticker.summaryBackgroundKey)
+            controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
+          if (sticker.category !== 'summary') {
             const label = el('div', 'sticker-time-toggle');
             const toggle = el('button', 'sticker-time-switch');
             toggle.type = 'button';
@@ -150,6 +176,7 @@ export function createStickerGallery({ notify }) {
           return card;
         });
         list.replaceChildren(...nodes);
+        filterCards();
         status.textContent = '스티커마다 배경을 고를 수 있어요. 선택한 배경 그대로 복사·저장돼요.';
       } catch (error) {
         if (current !== revision) return;

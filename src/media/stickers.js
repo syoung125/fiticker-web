@@ -1,3 +1,4 @@
+import { EXTRA_STICKERS } from './sticker-designs.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import {
   drawSummary,
@@ -60,6 +61,8 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
 };
 
 export function stickerDimensions(id, showTime = true) {
+  const extra = EXTRA_STICKERS.find((sticker) => sticker.id === id);
+  if (extra) return extra.dimensions(showTime);
   if (id === 'calendar') return { width: 948, height: showTime ? 300 : 240 };
   if (id === 'square') {
     const size = showTime ? 1080 : 1020;
@@ -72,6 +75,7 @@ export function stickerDimensions(id, showTime = true) {
 export const STICKERS = [
   {
     id: 'summary',
+    category: 'summary',
     title: '주간 요약',
     width: SUMMARY_WIDTH,
     height: SUMMARY_HEIGHT,
@@ -84,6 +88,7 @@ export const STICKERS = [
   },
   {
     id: 'calendar',
+    category: 'calendar',
     title: '주간 캘린더',
     width: 948,
     height: 300,
@@ -132,6 +137,8 @@ export const STICKERS = [
   },
   {
     id: 'square',
+    category: 'combined',
+    summaryBackgroundKey: 'squareSummary',
     title: '주간 기록 · 정방형',
     width: 1080,
     height: 1080,
@@ -180,6 +187,21 @@ export const STICKERS = [
     },
   },
 ];
+STICKERS.push(...EXTRA_STICKERS);
+for (const sticker of EXTRA_STICKERS) {
+  DEFAULT_STICKER_BACKGROUNDS[sticker.id] = sticker.defaultBackground;
+  if (sticker.summaryBackgroundKey)
+    DEFAULT_STICKER_BACKGROUNDS[sticker.summaryBackgroundKey] = 'lime';
+}
+export const STICKER_CATEGORIES = [
+  { id: 'all', label: '전체' },
+  { id: 'summary', label: '요약' },
+  { id: 'calendar', label: '캘린더' },
+  { id: 'combined', label: '요약+캘린더' },
+];
+export function matchesStickerCategory(sticker, category) {
+  return category === 'all' || sticker.category === category;
+}
 let fonts;
 export async function createStickers(
   dates,
@@ -198,26 +220,26 @@ export async function createStickers(
       const theme =
         STICKER_BACKGROUNDS[backgrounds[sticker.id]] ??
         STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS[sticker.id]];
-      if (sticker.id === 'square') {
+      if (sticker.category === 'combined') {
         const summaryTheme =
-          STICKER_BACKGROUNDS[backgrounds.squareSummary] ??
-          STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS.squareSummary];
+          STICKER_BACKGROUNDS[backgrounds[sticker.summaryBackgroundKey]] ??
+          STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS[sticker.summaryBackgroundKey]];
         sticker.draw(
           canvas.getContext('2d'),
           dates,
           records,
           theme,
           summaryTheme,
-          timeVisibility.square !== false,
+          timeVisibility[sticker.id] !== false,
         );
-      } else if (sticker.id === 'calendar') {
+      } else if (sticker.category === 'calendar') {
         sticker.draw(
           canvas.getContext('2d'),
           dates,
           records,
           theme,
-          true,
-          timeVisibility.calendar !== false,
+          sticker.id === 'calendar' ? true : undefined,
+          timeVisibility[sticker.id] !== false,
         );
       } else sticker.draw(canvas.getContext('2d'), dates, records, theme);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));

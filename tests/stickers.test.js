@@ -5,6 +5,9 @@ import {
   STICKER_BACKGROUNDS,
   copySticker,
   stickerDimensions,
+  matchesStickerCategory,
+  createStickers,
+  DEFAULT_STICKER_BACKGROUNDS,
 } from '../src/media/stickers.js';
 import { weekDates } from '../src/domain/workouts.js';
 
@@ -177,4 +180,61 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   assert.equal(square.width, square.height);
   assert.equal(stickerDimensions('square', true).height - square.height, 60);
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
+});
+
+test('gallery has twelve unique stickers and four in each category', () => {
+  assert.equal(STICKERS.length, 12);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 12);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 12);
+  for (const category of ['summary', 'calendar', 'combined']) {
+    assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, category)).length, 4);
+  }
+});
+
+test('all designs export PNG with independent options and compact dimensions', async () => {
+  const previous = globalThis.document;
+  globalThis.document = {
+    fonts: { load: async () => [] },
+    createElement: () => {
+      const ctx = new Proxy(
+        {},
+        {
+          get(target, key) {
+            if (key === 'measureText') return () => ({ width: 40 });
+            if (key === 'getImageData')
+              return () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 });
+            return target[key] ?? (() => {});
+          },
+        },
+      );
+      return {
+        getContext: () => ctx,
+        toBlob: (callback) => callback(new Blob(['png'], { type: 'image/png' })),
+      };
+    },
+  };
+  try {
+    const times = Object.fromEntries(STICKERS.map((item) => [item.id, false]));
+    const result = await createStickers(
+      weekDates(new Date(2026, 9, 1)),
+      {
+        '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 60 },
+      },
+      DEFAULT_STICKER_BACKGROUNDS,
+      times,
+    );
+    assert.equal(result.length, 12);
+    for (const sticker of result) {
+      assert.equal(sticker.blob.type, 'image/png');
+      assert.deepEqual(
+        { width: sticker.width, height: sticker.height },
+        stickerDimensions(sticker.id, false),
+      );
+      if (sticker.category !== 'summary')
+        assert.ok(sticker.height < stickerDimensions(sticker.id, true).height);
+    }
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
+  }
 });

@@ -1244,3 +1244,23 @@ input:not([type='radio']):not([type='file']) {
 .sticker-time-switch[aria-checked='true'] .switch-thumb {
   transform: translateX(14px);
 }
+
+.sticker-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.sticker-filter {
+  padding: 10px 16px;
+  min-height: 40px;
+  border-radius: 999px;
+  background: #eceee5;
+  color: #62665a;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.sticker-filter[aria-pressed='true'] {
+  background: #24271f;
+  color: white;
+}
