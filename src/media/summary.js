@@ -83,7 +83,9 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
   const labelDescent = Math.max(...labelBounds.map((b) => b.descent));
   const gap = 20;
   const blockHeight = ascent + descent + gap + labelAscent + labelDescent;
-  const valueY = (BODY_HEIGHT - blockHeight) / 2 + ascent;
+  // Lift the large metrics slightly to balance their visual weight against the sport list.
+  const opticalLift = 12;
+  const valueY = (BODY_HEIGHT - blockHeight) / 2 + ascent - opticalLift;
   const labelY = valueY + descent + gap + labelAscent;
   values.forEach((value, index) => {
     const centerX = columnWidth * (index + 0.5);
