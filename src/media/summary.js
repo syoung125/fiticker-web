@@ -26,7 +26,7 @@ export function summaryModel(dates, records) {
         ? []
         : sports.map((sport) => ({
             name: sport.name,
-            time: sport.minutes === null ? '시간 미입력' : duration(sport.minutes),
+            time: duration(sport.minutes ?? 0),
           })),
   };
 }
