@@ -49,6 +49,10 @@ export function createRecordSheet({ records, onSave }) {
   }
   $('#close-dialog').onclick = () => dialog.close();
   $('#skip-time').onclick = () => dialog.close();
+  $('#open-delete').onclick = () => {
+    dialog.close();
+    open(new Date(`${key}T12:00:00`), 'delete');
+  };
   dialog.addEventListener('click', (event) => {
     if (event.target !== dialog) return;
     const r = dialog.getBoundingClientRect();
@@ -78,6 +82,7 @@ export function createRecordSheet({ records, onSave }) {
     form.reset();
     $('#skip-time').hidden = true;
     const record = records[key];
+    $('#open-delete').hidden = action !== 'type' || !record;
     $('#dialog-title').textContent = titles[action];
     $('#sheet-date').textContent = date.toLocaleDateString('ko-KR', {
       month: 'long',

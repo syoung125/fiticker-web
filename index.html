@@ -55,13 +55,10 @@
             </section>
             <section class="calendar-panel" aria-label="주간 캘린더">
               <div id="calendar" class="calendar"></div>
-              <p class="calendar-hint"><span>＋</span> 날짜를 눌러 운동을 기록하세요</p>
+              <p class="calendar-hint">
+                <span>＋</span> 아이콘으로 종목 변경 · 아래 시간을 눌러 시간 수정
+              </p>
             </section>
-            <div class="records-heading">
-              <h3>Daily records <span id="record-count">00</span></h3>
-              <span>매일의 작은 움직임</span>
-            </div>
-            <div id="records" class="records"></div>
             <section class="sticker-section" aria-labelledby="sticker-title">
               <p class="eyebrow">YOUR WEEK, YOUR STICKERS</p>
               <h2 id="sticker-title">내 운동 스티커</h2>
@@ -73,52 +70,6 @@
                 저장해 사진 스티커로 추가할 수 있어요.
               </p>
             </section>
-            <details class="legacy-export">
-              <summary>한 장 이미지로도 저장하기</summary>
-              <aside class="export-panel">
-                <div class="aside-top">
-                  <span class="eyebrow">MADE TO SHARE</span><span>↗</span>
-                </div>
-                <h2>이번 주의 나를<br />기록하는 한 장.</h2>
-                <div class="mini-poster" aria-hidden="true">
-                  <div class="poster-top">MOVE DIARY <span>WEEKLY</span></div>
-                  <div class="poster-title">MY<br />WEEK.</div>
-                  <canvas
-                    id="mini-summary-canvas"
-                    class="summary-canvas"
-                    width="948"
-                    height="354"
-                  ></canvas>
-                  <div id="mini-week" class="mini-week"></div>
-                  <div class="poster-bottom">EVERY MOVE COUNTS. <span>↗</span></div>
-                </div>
-                <div class="format-info"><span>STORY FORMAT</span><span>1080 × 1920</span></div>
-                <button id="generate" class="primary" disabled>이미지 만들기 <span>↗</span></button>
-                <p id="generate-hint" class="aside-note">
-                  운동을 하나 이상 기록하면 만들 수 있어요.
-                </p>
-              </aside>
-            </details>
-          </div>
-        </div>
-      </section>
-      <section id="preview" hidden>
-        <button id="back" class="text-button">← 기록으로 돌아가기</button>
-        <div class="preview-heading">
-          <p class="eyebrow">YOUR WEEK, CAPTURED.</p>
-          <h1>움직인 만큼,<br />남겨두기.</h1>
-          <p class="subtitle">이번 주 운동 기록이 한 장에 담겼어요.</p>
-        </div>
-        <div class="preview-layout">
-          <img id="result" alt="주간 운동 기록 공유 이미지" width="1080" height="1920" />
-          <div class="download-panel">
-            <h2>Ready to share.</h2>
-            <p>스토리에 딱 맞는 9:16 이미지.<br />저장해서 이번 주의 움직임을 공유하세요.</p>
-            <a id="download" class="primary" download="move-diary.png">이미지 저장 <span>↓</span></a
-            ><button id="share" class="secondary" hidden>이미지 공유 ↗</button>
-            <p class="muted">
-              PNG · 1080 × 1920<br />모바일에서 저장이 안 되면 이미지를 길게 눌러 저장하세요.
-            </p>
           </div>
         </div>
       </section>
@@ -194,6 +145,7 @@
         <p id="form-error" class="error" role="alert"></p>
         <div class="form-actions">
           <button type="button" id="skip-time" class="text-button" hidden>시간 없이 완료</button>
+          <button type="button" id="open-delete" class="delete-button" hidden>기록 삭제</button>
           <button type="submit" class="primary" id="save-record">저장</button>
         </div>
       </form>

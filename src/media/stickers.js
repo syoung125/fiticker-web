@@ -1,4 +1,4 @@
-import { DAYS, TYPES, dateKey, weekLabel } from '../domain/workouts.js';
+import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import {
   drawSummary,
   summaryModel,
@@ -52,7 +52,11 @@ export const STICKER_BACKGROUNDS = {
     divider: '#626857',
   },
 };
-export const DEFAULT_STICKER_BACKGROUNDS = { summary: 'lime', calendar: 'transparent' };
+export const DEFAULT_STICKER_BACKGROUNDS = {
+  summary: 'lime',
+  calendar: 'transparent',
+  square: 'white',
+};
 
 // A registry keeps each sticker independently renderable and makes new widgets additive.
 export const STICKERS = [
@@ -72,19 +76,19 @@ export const STICKERS = [
     id: 'calendar',
     title: '주간 캘린더',
     width: 948,
-    height: 256,
-    draw(ctx, dates, records, theme = STICKER_BACKGROUNDS.transparent) {
+    height: 300,
+    draw(ctx, dates, records, theme = STICKER_BACKGROUNDS.transparent, showHeading = true) {
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
-        ctx.roundRect(0, 0, 948, 256, 30);
+        ctx.roundRect(0, 0, 948, 300, 30);
         ctx.fill();
       }
       const icon = createIconRenderer(ctx);
       ctx.fillStyle = theme.ink;
       ctx.textAlign = 'left';
       ctx.font = '600 24px "Manrope", "Noto Sans KR", sans-serif';
-      ctx.fillText(weekLabel(dates[0]), 24, 40);
+      if (showHeading) ctx.fillText(weekLabel(dates[0]), 24, 40);
       dates.forEach((date, index) => {
         const center = (948 / 7) * (index + 0.5);
         ctx.textAlign = 'center';
@@ -95,12 +99,54 @@ export const STICKERS = [
         ctx.font = '600 38px "Manrope", sans-serif';
         ctx.fillText(String(date.getDate()), center, 143);
         const record = records[dateKey(date)];
-        if (record) icon(TYPES[record.type].icon, center, 199, 51, theme.ink);
-        else {
+        if (record) {
+          icon(TYPES[record.type].icon, center, 199, 51, theme.ink);
+          if (record.minutes !== null) {
+            ctx.fillStyle = theme.secondary;
+            ctx.font = '500 23px "Manrope", sans-serif';
+            ctx.fillText(duration(record.minutes), center, 270);
+          }
+        } else {
           ctx.fillStyle = theme.secondary;
           ctx.fillText('—', center, 211);
         }
       });
+    },
+  },
+  {
+    id: 'square',
+    title: '주간 기록 · 정방형',
+    width: 1080,
+    height: 1080,
+    draw(ctx, dates, records, theme = STICKER_BACKGROUNDS.white) {
+      if (theme.background) {
+        ctx.fillStyle = theme.background;
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 1080, 1080, 48);
+        ctx.fill();
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = theme.ink;
+      ctx.font = '700 52px "Manrope", "Noto Sans KR", sans-serif';
+      ctx.fillText(weekLabel(dates[0]), 66, 124);
+      ctx.fillStyle = theme.secondary;
+      ctx.font = '500 24px "Manrope", sans-serif';
+      ctx.fillText(
+        `${dateKey(dates[0]).replaceAll('-', '.')} — ${dateKey(dates[6]).replaceAll('-', '.')}`,
+        66,
+        176,
+      );
+      drawSummary(ctx, summaryModel(dates, records), 66, 244, { ...theme, transparent: true });
+      ctx.save();
+      ctx.translate(66, 674);
+      STICKERS.find((sticker) => sticker.id === 'calendar').draw(
+        ctx,
+        dates,
+        records,
+        { ...theme, background: null },
+        false,
+      );
+      ctx.restore();
     },
   },
 ];

@@ -72,3 +72,25 @@ test('every background option reaches the PNG renderer with matching text contra
     }
   }
 });
+
+test('square sticker combines week title, totals and all seven dates in a 1:1 image', () => {
+  const sticker = STICKERS.find((item) => item.id === 'square');
+  assert.equal(sticker.width, 1080);
+  assert.equal(sticker.height, 1080);
+  const labels = [];
+  const ctx = new Proxy(
+    {},
+    {
+      get(target, key) {
+        if (key === 'measureText') return () => ({ width: 40 });
+        if (key === 'fillText') return (text) => labels.push(text);
+        return target[key] ?? (() => {});
+      },
+    },
+  );
+  sticker.draw(ctx, weekDates(new Date(2026, 9, 1)), {});
+  assert.ok(labels.includes('2026년 10월 1주'));
+  assert.ok(labels.includes('THIS WEEK'));
+  assert.ok(labels.includes('workouts') && labels.includes('total time'));
+  assert.ok(labels.includes('MON') && labels.includes('SUN'));
+});

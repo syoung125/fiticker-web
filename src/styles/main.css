@@ -1172,3 +1172,25 @@ input:not([type='radio']):not([type='file']) {
   background-color: #343830;
   background-image: conic-gradient(#444a3e 25%, transparent 0 50%, #444a3e 0 75%, transparent 0);
 }
+
+.calendar-day {
+  min-width: 0;
+  text-align: center;
+}
+.calendar-day .day {
+  width: 100%;
+}
+.day-time {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 1px;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: #525b36;
+  overflow-wrap: anywhere;
+}
+.day-time:hover {
+  background: #e9ecdf;
+}

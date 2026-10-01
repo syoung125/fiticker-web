@@ -2,101 +2,47 @@ import { TYPES, DAYS, dateKey, weekLabel, weekDates, duration } from '../domain/
 import { $, el } from './dom.js';
 import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
-export function renderEditor({ dates, records, generating, onEdit }) {
+
+export function renderEditor({ dates, records, onEdit }) {
   $('#next').disabled = dates[0] >= weekDates(new Date())[0];
   $('#week-title').textContent = weekLabel(dates[0]);
   $('#date-range').textContent =
     `${dateKey(dates[0]).replaceAll('-', '.')} — ${dateKey(dates[6]).replaceAll('-', '.')}`;
-  const model = summaryModel(dates, records);
-  const { count } = model;
-  renderSummary($('#summary-canvas'), model);
-  renderSummary($('#mini-summary-canvas'), model);
-  $('#record-count').textContent = String(count).padStart(2, '0');
-  $('#generate').disabled = generating || count === 0;
-  $('#generate-hint').textContent = count
-    ? '내 기록으로 만든, 나만의 주간 이미지.'
-    : '운동을 하나 이상 기록하면 만들 수 있어요.';
+  renderSummary($('#summary-canvas'), summaryModel(dates, records));
   $('#calendar').replaceChildren();
-  $('#records').replaceChildren();
-  $('#mini-week').replaceChildren();
-  dates.forEach((date, i) => {
+  dates.forEach((date, index) => {
     const key = dateKey(date),
-      r = records[key];
-    const button = el(
-      'button',
-      `day${r ? ' has-record' : ''}${key === dateKey(new Date()) ? ' is-today' : ''}`,
-    );
+      record = records[key];
+    const cell = el('div', 'calendar-day');
+    const button = el('button', `day${key === dateKey(new Date()) ? ' is-today' : ''}`);
     button.type = 'button';
     button.dataset.date = key;
     button.setAttribute(
       'aria-label',
-      `${date.getMonth() + 1}월 ${date.getDate()}일 ${r ? r.name + ' 수정' : '운동 추가'}`,
+      `${date.getMonth() + 1}월 ${date.getDate()}일 ${record ? record.name + ' 종목 변경' : '운동 추가'}`,
     );
     if (key === dateKey(new Date())) button.setAttribute('aria-current', 'date');
     button.append(
-      el('span', 'weekday', DAYS[i]),
+      el('span', 'weekday', DAYS[index]),
       el('span', 'date', date.getDate()),
-      el('span', r ? 'day-icon' : 'day-icon plus', r ? TYPES[r.type].icon : '＋'),
+      el('span', record ? 'day-icon' : 'day-icon plus', record ? TYPES[record.type].icon : '＋'),
     );
-    button.onclick = () => onEdit(date);
-    $('#calendar').append(button);
-    const mini = el('div');
-    mini.append(
-      el('span', '', DAYS[i]),
-      el('span', '', date.getDate()),
-      el('i', '', r ? TYPES[r.type].icon : '—'),
-    );
-    $('#mini-week').append(mini);
-    if (r) {
-      const card = el('article', 'record-card');
-      card.setAttribute(
+    button.onclick = () => onEdit(date, 'type');
+    cell.append(button);
+    if (record) {
+      const time = el(
+        'button',
+        'day-time',
+        record.minutes === null ? '시간 입력' : duration(record.minutes),
+      );
+      time.type = 'button';
+      time.setAttribute(
         'aria-label',
-        `${date.getMonth() + 1}월 ${date.getDate()}일 ${r.name} 기록 수정`,
+        `${date.getMonth() + 1}월 ${date.getDate()}일 운동 시간 ${record.minutes === null ? '입력' : '수정'}`,
       );
-      const visual = el('div', 'record-visual');
-      visual.style.background = TYPES[r.type].color;
-      visual.append(
-        el('span', 'record-day', `${DAYS[i]} ${String(date.getDate()).padStart(2, '0')}`),
-      );
-      if (r.photo) {
-        const img = el('img');
-        img.src = r.photo;
-        img.alt = `${r.name} 운동 사진`;
-        visual.append(img);
-      } else visual.append(el('span', '', TYPES[r.type].icon));
-      const body = el('div', 'record-body');
-      body.append(
-        el('strong', '', r.name),
-        el('span', 'record-duration', r.minutes === null ? '시간 미입력' : duration(r.minutes)),
-      );
-      if (r.memo) body.append(el('p', 'record-memo', r.memo));
-      card.append(visual, body);
-      const actions = el('div', 'record-actions');
-      for (const [action, label] of [
-        ['time', r.minutes === null ? '＋ 시간 입력' : '시간 수정'],
-        ['photo', r.photo ? '사진 변경' : '＋ 사진 추가'],
-        ...(r.photo ? [['remove-photo', '사진 삭제']] : []),
-        ['type', '종목 변경'],
-        ['memo', r.memo ? '메모 수정' : '메모 추가'],
-        ['delete', '삭제'],
-      ]) {
-        const control = el('button', `record-action record-action-${action}`, label);
-        control.type = 'button';
-        control.setAttribute('aria-label', `${date.getMonth() + 1}월 ${date.getDate()}일 ${label}`);
-        control.onclick = () => onEdit(date, action);
-        actions.append(control);
-      }
-      body.append(actions);
-      $('#records').append(card);
+      time.onclick = () => onEdit(date, 'time');
+      cell.append(time);
     }
+    $('#calendar').append(cell);
   });
-  if (!count) {
-    const empty = el('div', 'empty-records');
-    empty.append(
-      el('span', 'empty-symbol', '＋'),
-      el('h3', '', '아직 비어 있는 이번 주'),
-      el('p', '', '위의 날짜를 눌러 첫 움직임을 남겨보세요.'),
-    );
-    $('#records').append(empty);
-  }
 }
