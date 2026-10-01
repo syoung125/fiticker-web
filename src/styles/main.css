@@ -199,6 +199,13 @@ h1 span {
 .icon-button:hover:not(:disabled) {
   background: #eceee2;
 }
+#close-dialog {
+  border: 0;
+  outline: none;
+}
+#close-dialog:focus-visible {
+  background: #eceee2;
+}
 .summary {
   overflow: hidden;
   border-radius: 16px;
