@@ -1,7 +1,9 @@
 import { summarize, summarizeBySport, duration } from '../domain/workouts.js';
 
 export const SUMMARY_WIDTH = 948;
-export const SUMMARY_HEIGHT = 294;
+const HEADER_HEIGHT = 60;
+const BODY_HEIGHT = 294;
+export const SUMMARY_HEIGHT = HEADER_HEIGHT + BODY_HEIGHT;
 const FONT = '"Manrope", "Noto Sans KR", sans-serif';
 
 export function loadSummaryFonts() {
@@ -58,20 +60,22 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
   ctx.roundRect(originX, originY, SUMMARY_WIDTH, SUMMARY_HEIGHT, 30);
   ctx.fill();
   text('THIS WEEK', 34, 47, 24, 700);
+  // Keep the heading above all columns, including both vertical dividers.
+  originY += HEADER_HEIGHT;
   text(String(model.count), 34, 184, detailed ? 82 : 102, 600);
   text('workouts', 36, 230, 30, 500, 'left', secondary);
   const columnWidth = SUMMARY_WIDTH / 3;
   const totalX = detailed ? columnWidth + 34 : 455;
   const totalWidth = detailed ? columnWidth - 68 : 459;
   ctx.fillStyle = '#b7cd70';
-  ctx.fillRect(originX + (detailed ? columnWidth : 420), originY + 28, 1, SUMMARY_HEIGHT - 56);
+  ctx.fillRect(originX + (detailed ? columnWidth : 420), originY + 28, 1, BODY_HEIGHT - 56);
   text(model.total, totalX, 184, fitSize(model.total, detailed ? 82 : 96, totalWidth, 600), 600);
   text('total time', totalX + 2, 230, 30, 500, 'left', secondary);
   if (detailed) {
     ctx.fillStyle = '#b7cd70';
-    ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, SUMMARY_HEIGHT - 56);
+    ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, BODY_HEIGHT - 56);
     const lineHeight = 34;
-    const start = (SUMMARY_HEIGHT - model.sports.length * lineHeight) / 2 + 26;
+    const start = (BODY_HEIGHT - model.sports.length * lineHeight) / 2 + 26;
     model.sports.forEach((sport, index) => {
       const timeSize = fitSize(sport.time, 32, 125);
       font(timeSize);

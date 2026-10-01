@@ -78,7 +78,7 @@ test('poster lists combined sport time to the right of total only for multiple s
   const yoga = labels.find((item) => item.label === 'Yoga' && item.x === 732);
   const running = labels.find((item) => item.label === 'Running' && item.x === 732);
   assert.ok(yoga.x > total.x && running.x > total.x);
-  assert.ok(yoga.y > 420 && running.y < 610);
+  assert.ok(yoga.y > 420 && running.y < 700);
   assert.ok(labels.some((item) => item.label === '1h 30m' && item.x === 980 && item.y === yoga.y));
   assert.ok(labels.some((item) => item.label === '45m' && item.x === 980 && item.y === running.y));
   assert.equal(labels.filter((item) => item.label === 'Yoga' && item.x === 732).length, 1);
@@ -116,6 +116,6 @@ test('all seven sport totals fit vertically inside the summary panel', async (t)
   assert.equal(rows.length, 7);
   for (const row of rows) {
     assert.equal(row.x, 732);
-    assert.ok(row.y >= 420 && row.y <= 675);
+    assert.ok(row.y >= 480 && row.y <= 735);
   }
 });
