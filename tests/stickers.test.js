@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { STICKERS, STICKER_BACKGROUNDS, copySticker } from '../src/media/stickers.js';
+import {
+  STICKERS,
+  STICKER_BACKGROUNDS,
+  copySticker,
+  stickerDimensions,
+} from '../src/media/stickers.js';
 import { weekDates } from '../src/domain/workouts.js';
 
 test('summary retains its card background while calendar is transparent', () => {
@@ -160,4 +165,16 @@ test('calendar time toggle hides daily times without removing square summary tot
     if (previous === undefined) delete globalThis.document;
     else globalThis.document = previous;
   }
+});
+
+test('hidden daily times remove export space while square keeps equal sides', () => {
+  assert.deepEqual(stickerDimensions('calendar', false), { width: 948, height: 240 });
+  assert.equal(
+    stickerDimensions('calendar', true).height - stickerDimensions('calendar', false).height,
+    60,
+  );
+  const square = stickerDimensions('square', false);
+  assert.equal(square.width, square.height);
+  assert.equal(stickerDimensions('square', true).height - square.height, 60);
+  assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });

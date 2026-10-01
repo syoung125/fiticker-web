@@ -59,6 +59,15 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
   squareSummary: 'lime',
 };
 
+export function stickerDimensions(id, showTime = true) {
+  if (id === 'calendar') return { width: 948, height: showTime ? 300 : 240 };
+  if (id === 'square') {
+    const size = showTime ? 1080 : 1020;
+    return { width: size, height: size };
+  }
+  return { width: SUMMARY_WIDTH, height: SUMMARY_HEIGHT };
+}
+
 // A registry keeps each sticker independently renderable and makes new widgets additive.
 export const STICKERS = [
   {
@@ -89,7 +98,7 @@ export const STICKERS = [
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
-        ctx.roundRect(0, 0, 948, 300, 30);
+        ctx.roundRect(0, 0, 948, stickerDimensions('calendar', showTime).height, 30);
         ctx.fill();
       }
       const icon = createIconRenderer(ctx);
@@ -134,29 +143,31 @@ export const STICKERS = [
       summaryTheme = { ...theme, background: null },
       showTime = true,
     ) {
+      const { width: size } = stickerDimensions('square', showTime);
+      const inset = (size - SUMMARY_WIDTH) / 2;
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
-        ctx.roundRect(0, 0, 1080, 1080, 48);
+        ctx.roundRect(0, 0, size, size, 48);
         ctx.fill();
       }
       ctx.textAlign = 'left';
       ctx.fillStyle = theme.ink;
       ctx.font = '700 52px "Manrope", "Noto Sans KR", sans-serif';
-      ctx.fillText(weekLabel(dates[0]), 66, 124);
+      ctx.fillText(weekLabel(dates[0]), inset, 124);
       ctx.fillStyle = theme.secondary;
       ctx.font = '500 24px "Manrope", sans-serif';
       ctx.fillText(
         `${dateKey(dates[0]).replaceAll('-', '.')} — ${dateKey(dates[6]).replaceAll('-', '.')}`,
-        66,
+        inset,
         176,
       );
-      drawSummary(ctx, summaryModel(dates, records), 66, 244, {
+      drawSummary(ctx, summaryModel(dates, records), inset, 244, {
         ...summaryTheme,
         transparent: summaryTheme.background === null,
       });
       ctx.save();
-      ctx.translate(66, 674);
+      ctx.translate(inset, 674);
       STICKERS.find((sticker) => sticker.id === 'calendar').draw(
         ctx,
         dates,
@@ -181,8 +192,9 @@ export async function createStickers(
   return Promise.all(
     STICKERS.map(async (sticker) => {
       const canvas = document.createElement('canvas');
-      canvas.width = sticker.width;
-      canvas.height = sticker.height;
+      const dimensions = stickerDimensions(sticker.id, timeVisibility[sticker.id] !== false);
+      canvas.width = dimensions.width;
+      canvas.height = dimensions.height;
       const theme =
         STICKER_BACKGROUNDS[backgrounds[sticker.id]] ??
         STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS[sticker.id]];
@@ -210,7 +222,7 @@ export async function createStickers(
       } else sticker.draw(canvas.getContext('2d'), dates, records, theme);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('스티커를 만들지 못했어요. 다시 시도해 주세요.');
-      return { ...sticker, blob };
+      return { ...sticker, ...dimensions, blob };
     }),
   );
 }

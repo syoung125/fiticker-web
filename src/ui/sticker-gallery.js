@@ -100,18 +100,20 @@ export function createStickerGallery({ notify }) {
           if (sticker.id === 'square')
             controls.push(backgroundControl('squareSummary', '요약 배경'));
           if (sticker.id === 'calendar' || sticker.id === 'square') {
-            const label = el('label', 'sticker-time-toggle');
-            const toggle = el('input');
-            toggle.type = 'checkbox';
-            toggle.checked = timeVisibility[sticker.id];
+            const label = el('div', 'sticker-time-toggle');
+            const toggle = el('button', 'sticker-time-switch');
+            toggle.type = 'button';
+            toggle.setAttribute('role', 'switch');
+            toggle.setAttribute('aria-checked', String(timeVisibility[sticker.id]));
             toggle.dataset.stickerTime = sticker.id;
             toggle.setAttribute('aria-label', `${sticker.title} 시간 표시`);
-            toggle.onchange = async () => {
-              timeVisibility[sticker.id] = toggle.checked;
+            toggle.onclick = async () => {
+              timeVisibility[sticker.id] = !timeVisibility[sticker.id];
               await gallery.update(dates, snapshot);
               $(`[data-sticker-time="${sticker.id}"]`)?.focus({ preventScroll: true });
             };
-            label.append(toggle, document.createTextNode('시간 표시'));
+            toggle.append(el('span', 'switch-thumb'));
+            label.append(el('span', '', '시간 표시'), toggle);
             controls.push(label);
           }
           const preview = el('div', 'sticker-preview');
