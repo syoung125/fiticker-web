@@ -94,3 +94,29 @@ test('square sticker combines week title, totals and all seven dates in a 1:1 im
   assert.ok(labels.includes('workouts') && labels.includes('total time'));
   assert.ok(labels.includes('MON') && labels.includes('SUN'));
 });
+
+test('square overall and summary backgrounds render independently in every combination', () => {
+  const square = STICKERS.find((item) => item.id === 'square');
+  const dates = weekDates(new Date(2026, 9, 1));
+  for (const outer of Object.values(STICKER_BACKGROUNDS)) {
+    for (const summary of Object.values(STICKER_BACKGROUNDS)) {
+      const fills = [],
+        labels = [];
+      const ctx = new Proxy(
+        {},
+        {
+          get(target, key) {
+            if (key === 'measureText') return () => ({ width: 40 });
+            if (key === 'fill') return () => fills.push(target.fillStyle);
+            if (key === 'fillText') return (text) => labels.push([text, target.fillStyle]);
+            return target[key] ?? (() => {});
+          },
+        },
+      );
+      square.draw(ctx, dates, {}, outer, summary);
+      assert.deepEqual(fills, [outer.background, summary.background].filter(Boolean));
+      assert.ok(labels.some(([text, color]) => text === '2026년 10월 1주' && color === outer.ink));
+      assert.ok(labels.some(([text, color]) => text === 'THIS WEEK' && color === summary.ink));
+    }
+  }
+});

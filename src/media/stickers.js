@@ -56,6 +56,7 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
   summary: 'lime',
   calendar: 'transparent',
   square: 'white',
+  squareSummary: 'lime',
 };
 
 // A registry keeps each sticker independently renderable and makes new widgets additive.
@@ -118,7 +119,13 @@ export const STICKERS = [
     title: '주간 기록 · 정방형',
     width: 1080,
     height: 1080,
-    draw(ctx, dates, records, theme = STICKER_BACKGROUNDS.white) {
+    draw(
+      ctx,
+      dates,
+      records,
+      theme = STICKER_BACKGROUNDS.white,
+      summaryTheme = { ...theme, background: null },
+    ) {
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
@@ -136,7 +143,10 @@ export const STICKERS = [
         66,
         176,
       );
-      drawSummary(ctx, summaryModel(dates, records), 66, 244, { ...theme, transparent: true });
+      drawSummary(ctx, summaryModel(dates, records), 66, 244, {
+        ...summaryTheme,
+        transparent: summaryTheme.background === null,
+      });
       ctx.save();
       ctx.translate(66, 674);
       STICKERS.find((sticker) => sticker.id === 'calendar').draw(
@@ -162,7 +172,12 @@ export async function createStickers(dates, records, backgrounds = DEFAULT_STICK
       const theme =
         STICKER_BACKGROUNDS[backgrounds[sticker.id]] ??
         STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS[sticker.id]];
-      sticker.draw(canvas.getContext('2d'), dates, records, theme);
+      if (sticker.id === 'square') {
+        const summaryTheme =
+          STICKER_BACKGROUNDS[backgrounds.squareSummary] ??
+          STICKER_BACKGROUNDS[DEFAULT_STICKER_BACKGROUNDS.squareSummary];
+        sticker.draw(canvas.getContext('2d'), dates, records, theme, summaryTheme);
+      } else sticker.draw(canvas.getContext('2d'), dates, records, theme);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('스티커를 만들지 못했어요. 다시 시도해 주세요.');
       return { ...sticker, blob };

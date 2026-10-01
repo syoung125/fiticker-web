@@ -69,22 +69,30 @@ export function createStickerGallery({ notify }) {
           const url = URL.createObjectURL(sticker.blob);
           urls.push(url);
           const card = el('article', 'sticker-card');
-          const backgroundLabel = el('label', 'sticker-background', '배경 ');
-          const select = el('select');
-          select.dataset.stickerBackground = sticker.id;
-          select.setAttribute('aria-label', `${sticker.title} 배경`);
-          for (const [value, theme] of Object.entries(STICKER_BACKGROUNDS)) {
-            const option = el('option', '', theme.label);
-            option.value = value;
-            select.append(option);
+          function backgroundControl(key, label) {
+            const backgroundLabel = el('label', 'sticker-background', label + ' ');
+            const select = el('select');
+            select.dataset.stickerBackground = key;
+            select.setAttribute('aria-label', `${sticker.title} ${label}`);
+            for (const [value, theme] of Object.entries(STICKER_BACKGROUNDS)) {
+              const option = el('option', '', theme.label);
+              option.value = value;
+              select.append(option);
+            }
+            select.value = backgrounds[key];
+            select.onchange = async () => {
+              backgrounds[key] = select.value;
+              await gallery.update(dates, snapshot);
+              $(`[data-sticker-background="${key}"]`)?.focus({ preventScroll: true });
+            };
+            backgroundLabel.append(select);
+            return backgroundLabel;
           }
-          select.value = backgrounds[sticker.id];
-          select.onchange = async () => {
-            backgrounds[sticker.id] = select.value;
-            await gallery.update(dates, snapshot);
-            $(`[data-sticker-background="${sticker.id}"]`)?.focus({ preventScroll: true });
-          };
-          backgroundLabel.append(select);
+          const controls = [
+            backgroundControl(sticker.id, sticker.id === 'square' ? '전체 배경' : '배경'),
+          ];
+          if (sticker.id === 'square')
+            controls.push(backgroundControl('squareSummary', '요약 배경'));
           const preview = el('div', 'sticker-preview');
           if (backgrounds[sticker.id] === 'transparentWhite')
             preview.classList.add('sticker-preview-dark');
@@ -115,7 +123,7 @@ export function createStickerGallery({ notify }) {
           download.href = url;
           download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
-          card.append(el('h3', '', sticker.title), backgroundLabel, preview, actions);
+          card.append(el('h3', '', sticker.title), ...controls, preview, actions);
           return card;
         });
         list.replaceChildren(...nodes);
