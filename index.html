@@ -144,8 +144,30 @@
         <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
         <p id="form-error" class="error" role="alert"></p>
         <div class="form-actions">
-          <button type="button" id="skip-time" class="text-button" hidden>시간 없이 완료</button>
-          <button type="button" id="open-delete" class="delete-button" hidden>기록 삭제</button>
+          <button type="button" id="skip-time" class="text-button" hidden>skip</button>
+          <button
+            type="button"
+            id="open-delete"
+            class="delete-button"
+            aria-label="기록 삭제"
+            title="기록 삭제"
+            hidden
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+            </svg>
+          </button>
           <button type="submit" class="primary" id="save-record">저장</button>
         </div>
       </form>

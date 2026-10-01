@@ -791,8 +791,12 @@ input:not([type='radio']):not([type='file']) {
   justify-content: center;
 }
 .delete-button {
-  white-space: nowrap;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 44px;
   background: transparent;
   color: #a03728;
   padding: 8px;
