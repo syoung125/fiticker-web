@@ -6,7 +6,12 @@ test('poster uses fallback when fonts fail and exports 1080 by 1920 PNG', async 
   const context = new Proxy(
     {},
     {
-      get: (_, name) => (name === 'measureText' ? () => ({ width: 50 }) : () => {}),
+      get: (_, name) => {
+        if (name === 'measureText') return () => ({ width: 50 });
+        if (name === 'getImageData')
+          return () => ({ width: 1, height: 1, data: new Uint8ClampedArray([0, 0, 0, 255]) });
+        return () => {};
+      },
       set: () => true,
     },
   );
@@ -18,11 +23,12 @@ test('poster uses fallback when fonts fail and exports 1080 by 1920 PNG', async 
       },
     },
     createElement: () => {
-      canvas = {
+      const surface = {
         getContext: () => context,
         toBlob: (cb) => cb(new Blob(['png'], { type: 'image/png' })),
       };
-      return canvas;
+      canvas ??= surface;
+      return surface;
     },
   };
   const result = await createPoster(weekDates(new Date(2026, 9, 1)), {

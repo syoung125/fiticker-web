@@ -8,6 +8,7 @@ import {
   weekNumber,
 } from '../domain/workouts.js';
 import { loadImage } from './photo.js';
+import { createIconRenderer } from './icon.js';
 export async function createPoster(dates, records) {
   await Promise.allSettled([
     document.fonts.load('800 100px Manrope'),
@@ -17,6 +18,7 @@ export async function createPoster(dates, records) {
   c.width = 1080;
   c.height = 1920;
   const g = c.getContext('2d');
+  const icon = createIconRenderer(g);
   const ink = '#20221d',
     muted = '#747968',
     lime = '#dfff7a';
@@ -56,7 +58,7 @@ export async function createPoster(dates, records) {
   }
   rect(0, 0, 1080, 1920, 0, '#f7f7ee');
   rect(66, 65, 39, 39, 20, lime);
-  text('↗', 85, 94, 31, 600, ink, 'center');
+  icon('↗', 66 + 39 / 2, 65 + 39 / 2, 31, ink);
   text('MOVE DIARY', 119, 95, 28, 800);
   text(`WEEK ${String(weekNumber(dates[0])).padStart(2, '0')}`, 1014, 95, 22, 500, ink, 'right');
   line(130);
@@ -80,21 +82,16 @@ export async function createPoster(dates, records) {
   g.fillRect(481, 437, 2, 135);
   text(duration(summary.minutes), 518, 549, 72, 600);
   text('total time', 521, 583, 21, 500);
+  const dayWidth = 948 / 7;
   dates.forEach((d, i) => {
-    const x = 66 + i * (948 / 7),
-      r = records[dateKey(d)];
-    if (r) rect(x + 4, 652, 127, 149, 20, '#e7e1f6');
-    text(DAYS[i], x + 67, 681, 17, 600, muted, 'center');
-    text(String(d.getDate()), x + 67, 725, 30, 600, ink, 'center');
-    text(
-      r ? TYPES[r.type].icon : '—',
-      x + 67,
-      774,
-      r ? 35 : 26,
-      500,
-      r ? ink : '#b4b8a7',
-      'center',
-    );
+    const x = 66 + i * dayWidth;
+    const centerX = x + dayWidth / 2;
+    const r = records[dateKey(d)];
+    if (r) rect(x + 4, 652, dayWidth - 8, 149, 20, '#e7e1f6');
+    text(DAYS[i], centerX, 681, 17, 600, muted, 'center');
+    text(String(d.getDate()), centerX, 725, 30, 600, ink, 'center');
+    if (r) icon(TYPES[r.type].icon, centerX, 763, 35, ink);
+    else text('—', centerX, 774, 26, 500, '#b4b8a7', 'center');
   });
   line(832);
   text('DAILY RECORDS', 66, 880, 20, 700);
@@ -124,8 +121,7 @@ export async function createPoster(dates, records) {
         dh = img.height * scale;
       g.drawImage(img, x + (w - dw) / 2, y + (photoH - dh) / 2, dw, dh);
       g.restore();
-    } else
-      text(type.icon, x + w / 2, y + photoH / 2 + 21, rows === 3 ? 53 : 75, 500, ink, 'center');
+    } else icon(type.icon, x + w / 2, y + photoH / 2, rows === 3 ? 53 : 75, ink);
     rect(x + 12, y + 12, 102, 29, 8, '#ffffffeb');
     text(`${DAYS[i]} ${d.getDate()}`, x + 63, y + 33, 15, 700, ink, 'center');
     const inset = 20,
