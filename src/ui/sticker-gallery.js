@@ -7,6 +7,28 @@ import {
 import { dateKey } from '../domain/workouts.js';
 import { $, el } from './dom.js';
 
+function actionIcon(pathData) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  for (const [name, value] of Object.entries({
+    viewBox: '0 0 24 24',
+    width: '20',
+    height: '20',
+    fill: 'none',
+    stroke: 'currentColor',
+    'stroke-width': '1.7',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  }))
+    svg.setAttribute(name, value);
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', pathData);
+  svg.append(path);
+  return svg;
+}
+
 export function createStickerGallery({ notify }) {
   const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
   let revision = 0,
@@ -73,7 +95,9 @@ export function createStickerGallery({ notify }) {
           image.height = sticker.height;
           preview.append(image);
           const actions = el('div', 'sticker-actions');
-          const copy = el('button', 'sticker-copy', '복사');
+          const copy = el('button', 'sticker-copy');
+          copy.title = '스티커 복사';
+          copy.append(actionIcon('M9 9h11v11H9z M5 15H3V3h12v2'));
           copy.type = 'button';
           copy.setAttribute('aria-label', `${sticker.title} 스티커 복사`);
           copy.onclick = async () => {
@@ -84,7 +108,10 @@ export function createStickerGallery({ notify }) {
               notify('이미지를 꾹 눌러 복사하거나 PNG 저장을 이용해 주세요.');
             }
           };
-          const download = el('a', 'sticker-download', 'PNG 저장');
+          const download = el('a', 'sticker-download');
+          download.title = 'PNG 저장';
+          download.setAttribute('aria-label', `${sticker.title} 스티커 PNG 저장`);
+          download.append(actionIcon('M12 3v12 M7 10l5 5 5-5 M4 16v5h16v-5'));
           download.href = url;
           download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
