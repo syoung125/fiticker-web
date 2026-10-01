@@ -32,10 +32,20 @@ export function summaryModel(dates, records) {
 }
 
 // The editor, thumbnail and PNG use this exact renderer, including text fitting.
-export function drawSummary(ctx, model, originX = 0, originY = 0, { transparent = false } = {}) {
+export function drawSummary(
+  ctx,
+  model,
+  originX = 0,
+  originY = 0,
+  {
+    transparent = false,
+    background = '#dfff7a',
+    ink = '#20221d',
+    secondary = '#525b36',
+    divider = '#b7cd70',
+  } = {},
+) {
   const detailed = model.sports.length > 0;
-  const ink = '#20221d',
-    secondary = '#525b36';
   function font(size, weight = 500) {
     ctx.font = `${weight} ${size}px ${FONT}`;
   }
@@ -56,7 +66,7 @@ export function drawSummary(ctx, model, originX = 0, originY = 0, { transparent 
   }
   ctx.save();
   if (!transparent) {
-    ctx.fillStyle = '#dfff7a';
+    ctx.fillStyle = background;
     ctx.beginPath();
     ctx.roundRect(originX, originY, SUMMARY_WIDTH, SUMMARY_HEIGHT, 30);
     ctx.fill();
@@ -92,10 +102,10 @@ export function drawSummary(ctx, model, originX = 0, originY = 0, { transparent 
     text(value, centerX, valueY, valueSize, 600, 'center');
     text(labels[index], centerX, labelY, 30, 500, 'center', secondary);
   });
-  ctx.fillStyle = '#b7cd70';
+  ctx.fillStyle = divider;
   ctx.fillRect(originX + columnWidth, originY + 28, 1, BODY_HEIGHT - 56);
   if (detailed) {
-    ctx.fillStyle = '#b7cd70';
+    ctx.fillStyle = divider;
     ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, BODY_HEIGHT - 56);
     const lineHeight = 34;
     const rowBounds = model.sports.flatMap((sport) => [

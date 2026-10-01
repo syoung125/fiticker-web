@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { STICKERS, copySticker } from '../src/media/stickers.js';
+import { STICKERS, STICKER_BACKGROUNDS, copySticker } from '../src/media/stickers.js';
 import { weekDates } from '../src/domain/workouts.js';
 
 test('summary retains its card background while calendar is transparent', () => {
@@ -48,4 +48,27 @@ test('copy writes an actual PNG immediately during the user gesture', async () =
   assert.equal(written[0].data['image/png'], png);
   await promise;
   await assert.rejects(copySticker(png, {}, Item));
+});
+
+test('every background option reaches the PNG renderer with matching text contrast', () => {
+  const dates = weekDates(new Date(2026, 9, 1));
+  for (const sticker of STICKERS) {
+    for (const theme of Object.values(STICKER_BACKGROUNDS)) {
+      const fills = [],
+        textColors = [];
+      const state = {};
+      const ctx = new Proxy(state, {
+        get(target, key) {
+          if (key === 'measureText') return () => ({ width: 40 });
+          if (key === 'fill') return () => fills.push(target.fillStyle);
+          if (key === 'fillText') return () => textColors.push(target.fillStyle);
+          return target[key] ?? (() => {});
+        },
+      });
+      sticker.draw(ctx, dates, {}, theme);
+      assert.deepEqual(fills, theme.background ? [theme.background] : []);
+      assert.ok(textColors.includes(theme.ink));
+      assert.ok(textColors.includes(theme.secondary));
+    }
+  }
 });

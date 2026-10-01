@@ -1,8 +1,14 @@
-import { createStickers, copySticker } from '../media/stickers.js';
+import {
+  createStickers,
+  copySticker,
+  STICKER_BACKGROUNDS,
+  DEFAULT_STICKER_BACKGROUNDS,
+} from '../media/stickers.js';
 import { dateKey } from '../domain/workouts.js';
 import { $, el } from './dom.js';
 
 export function createStickerGallery({ notify }) {
+  const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
   let revision = 0,
     signature = '',
     urls = [];
@@ -10,7 +16,7 @@ export function createStickerGallery({ notify }) {
     urls.forEach((url) => URL.revokeObjectURL(url));
     urls = [];
   }
-  return {
+  const gallery = {
     async update(dates, records) {
       const snapshot = Object.fromEntries(
         dates
@@ -21,7 +27,7 @@ export function createStickerGallery({ notify }) {
             return [key, { type, name, minutes }];
           }),
       );
-      const nextSignature = JSON.stringify([dateKey(dates[0]), snapshot]);
+      const nextSignature = JSON.stringify([dateKey(dates[0]), snapshot, backgrounds]);
       if (signature === nextSignature) return;
       signature = nextSignature;
       const current = ++revision;
@@ -35,12 +41,28 @@ export function createStickerGallery({ notify }) {
       }
       status.textContent = '스티커 만드는 중…';
       try {
-        const stickers = await createStickers(dates, snapshot);
+        const stickers = await createStickers(dates, snapshot, backgrounds);
         if (current !== revision) return;
         const nodes = stickers.map((sticker) => {
           const url = URL.createObjectURL(sticker.blob);
           urls.push(url);
           const card = el('article', 'sticker-card');
+          const backgroundLabel = el('label', 'sticker-background', '배경 ');
+          const select = el('select');
+          select.dataset.stickerBackground = sticker.id;
+          select.setAttribute('aria-label', `${sticker.title} 배경`);
+          for (const [value, theme] of Object.entries(STICKER_BACKGROUNDS)) {
+            const option = el('option', '', theme.label);
+            option.value = value;
+            select.append(option);
+          }
+          select.value = backgrounds[sticker.id];
+          select.onchange = async () => {
+            backgrounds[sticker.id] = select.value;
+            await gallery.update(dates, snapshot);
+            $(`[data-sticker-background="${sticker.id}"]`)?.focus({ preventScroll: true });
+          };
+          backgroundLabel.append(select);
           const preview = el('div', 'sticker-preview');
           const image = el('img');
           image.src = url;
@@ -64,12 +86,11 @@ export function createStickerGallery({ notify }) {
           download.href = url;
           download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
-          card.append(el('h3', '', sticker.title), preview, actions);
+          card.append(el('h3', '', sticker.title), backgroundLabel, preview, actions);
           return card;
         });
         list.replaceChildren(...nodes);
-        status.textContent =
-          '기록을 바꾸면 자동으로 바뀌어요. 요약은 연두색 카드, 캘린더는 투명 배경이에요.';
+        status.textContent = '스티커마다 배경을 고를 수 있어요. 선택한 배경 그대로 복사·저장돼요.';
       } catch (error) {
         if (current !== revision) return;
         signature = '';
@@ -77,4 +98,5 @@ export function createStickerGallery({ notify }) {
       }
     },
   };
+  return gallery;
 }
