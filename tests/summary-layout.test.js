@@ -41,7 +41,7 @@ test('seven sport rows stay aligned with no text overlapping its neighbor', () =
       time: '23h 59m',
     })),
   });
-  const names = labels.filter((l) => l.align === 'left' && l.x === 632);
+  const names = labels.filter((l) => l.align === 'left' && l.x === 666);
   const times = labels.filter((l) => l.align === 'right' && l.x === 914);
   assert.equal(names.length, 7);
   assert.equal(times.length, 7);
@@ -56,7 +56,7 @@ test('seven sport rows stay aligned with no text overlapping its neighbor', () =
   }
   const total = labels.find((l) => l.text === '167h 53m');
   ctx.font = total.font;
-  assert.ok(total.x + ctx.measureText(total.text).width < 600);
+  assert.ok(total.x + ctx.measureText(total.text).width < 632);
   assert.equal(SUMMARY_WIDTH, 948);
 });
 

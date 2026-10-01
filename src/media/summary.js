@@ -58,24 +58,25 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
   ctx.roundRect(originX, originY, SUMMARY_WIDTH, SUMMARY_HEIGHT, 30);
   ctx.fill();
   text('THIS WEEK', 34, 47, 24, 700);
-  text(String(model.count), 34, 184, 102, 600);
+  text(String(model.count), 34, 184, detailed ? 82 : 102, 600);
   text('workouts', 36, 230, 30, 500, 'left', secondary);
-  const totalX = detailed ? 238 : 455;
-  const totalWidth = detailed ? 352 : 459;
+  const columnWidth = SUMMARY_WIDTH / 3;
+  const totalX = detailed ? columnWidth + 34 : 455;
+  const totalWidth = detailed ? columnWidth - 68 : 459;
   ctx.fillStyle = '#b7cd70';
-  ctx.fillRect(originX + (detailed ? 206 : 420), originY + 94, 1, 145);
+  ctx.fillRect(originX + (detailed ? columnWidth : 420), originY + 28, 1, SUMMARY_HEIGHT - 56);
   text(model.total, totalX, 184, fitSize(model.total, detailed ? 82 : 96, totalWidth, 600), 600);
   text('total time', totalX + 2, 230, 30, 500, 'left', secondary);
   if (detailed) {
     ctx.fillStyle = '#b7cd70';
-    ctx.fillRect(originX + 606, originY + 28, 1, SUMMARY_HEIGHT - 56);
+    ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, SUMMARY_HEIGHT - 56);
     const lineHeight = 34;
     const start = (SUMMARY_HEIGHT - model.sports.length * lineHeight) / 2 + 26;
     model.sports.forEach((sport, index) => {
       const timeSize = fitSize(sport.time, 32, 125);
       font(timeSize);
       const timeWidth = ctx.measureText(sport.time).width;
-      const nameWidth = 914 - 632 - timeWidth - 16;
+      const nameWidth = 914 - (columnWidth * 2 + 34) - timeWidth - 16;
       font(32);
       let name = sport.name;
       // Preserve readable type rather than shrinking long custom names to a few pixels.
@@ -86,7 +87,7 @@ export function drawSummary(ctx, model, originX = 0, originY = 0) {
         name = letters.join('') + '…';
       }
       const y = start + index * lineHeight;
-      text(name, 632, y, 32, 500, 'left', secondary);
+      text(name, columnWidth * 2 + 34, y, 32, 500, 'left', secondary);
       text(sport.time, 914, y, timeSize, 500, 'right', secondary);
     });
   }
