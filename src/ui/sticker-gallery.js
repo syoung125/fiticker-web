@@ -37,24 +37,42 @@ export function createStickerGallery({ notify }) {
   const timeVisibility = Object.fromEntries(STICKERS.map((sticker) => [sticker.id, true]));
   let activeCategory = 'all';
   let latestDates, latestRecords;
-  const themeSelect = $('#sticker-theme');
-  for (const [value, label] of [
-    ['default', '기본 테마'],
-    ...Object.entries(STICKER_BACKGROUNDS).map(([key, theme]) => [key, theme.label]),
-    ['custom', '개별 설정'],
-  ]) {
-    const option = el('option', '', label);
-    option.value = value;
-    option.disabled = value === 'custom';
-    themeSelect.append(option);
-  }
-  themeSelect.onchange = async () => {
-    for (const key of Object.keys(backgrounds)) {
-      backgrounds[key] =
-        themeSelect.value === 'default' ? DEFAULT_STICKER_BACKGROUNDS[key] : themeSelect.value;
+  const palette = $('#sticker-theme');
+  function markTheme(value) {
+    for (const button of palette.children) {
+      button.setAttribute('aria-pressed', String(button.dataset.theme === value));
     }
-    if (latestDates) await gallery.update(latestDates, latestRecords);
-  };
+  }
+  for (const [value, theme] of [
+    ['default', { label: '기본 테마' }],
+    ...Object.entries(STICKER_BACKGROUNDS),
+  ]) {
+    const button = el('button', 'theme-swatch');
+    button.type = 'button';
+    button.dataset.theme = value;
+    button.title = theme.label;
+    button.setAttribute('aria-label', theme.label);
+    const color = el('span', 'theme-swatch-color');
+    color.setAttribute('aria-hidden', 'true');
+    if (value === 'default') color.classList.add('theme-swatch-default');
+    else {
+      if (theme.background === null) color.classList.add('theme-swatch-transparent');
+      else color.style.background = theme.background;
+      const ink = el('span', 'theme-swatch-ink');
+      ink.style.background = theme.ink;
+      color.append(ink);
+    }
+    button.append(color);
+    button.onclick = async () => {
+      for (const key of Object.keys(backgrounds)) {
+        backgrounds[key] = value === 'default' ? DEFAULT_STICKER_BACKGROUNDS[key] : value;
+      }
+      markTheme(value);
+      if (latestDates) await gallery.update(latestDates, latestRecords);
+    };
+    palette.append(button);
+  }
+  markTheme('default');
   function filterCards() {
     document.querySelectorAll('[data-sticker-category]').forEach((card) => {
       card.hidden = !matchesStickerCategory(
@@ -133,7 +151,7 @@ export function createStickerGallery({ notify }) {
             select.value = backgrounds[key];
             select.onchange = async () => {
               backgrounds[key] = select.value;
-              themeSelect.value = 'custom';
+              markTheme('custom');
               await gallery.update(dates, snapshot);
               $(`[data-sticker-background="${key}"]`)?.focus({ preventScroll: true });
             };
