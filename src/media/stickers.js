@@ -64,10 +64,7 @@ export function stickerDimensions(id, showTime = true) {
   const extra = EXTRA_STICKERS.find((sticker) => sticker.id === id);
   if (extra) return extra.dimensions(showTime);
   if (id === 'calendar') return { width: 948, height: showTime ? 300 : 240 };
-  if (id === 'square') {
-    const size = showTime ? 1080 : 1020;
-    return { width: size, height: size };
-  }
+  if (id === 'square') return { width: 1080, height: 1080 };
   return { width: SUMMARY_WIDTH, height: SUMMARY_HEIGHT };
 }
 

@@ -170,7 +170,7 @@ test('calendar time toggle hides daily times without removing square summary tot
   }
 });
 
-test('hidden daily times remove export space while square keeps equal sides', () => {
+test('hidden daily times compact calendars while square keeps its original size', () => {
   assert.deepEqual(stickerDimensions('calendar', false), { width: 948, height: 240 });
   assert.equal(
     stickerDimensions('calendar', true).height - stickerDimensions('calendar', false).height,
@@ -178,7 +178,8 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   );
   const square = stickerDimensions('square', false);
   assert.equal(square.width, square.height);
-  assert.equal(stickerDimensions('square', true).height - square.height, 60);
+  assert.deepEqual(square, { width: 1080, height: 1080 });
+  assert.deepEqual(square, stickerDimensions('square', true));
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
@@ -233,7 +234,11 @@ test('all designs export PNG with independent options and compact dimensions', a
         { width: sticker.width, height: sticker.height },
         stickerDimensions(sticker.id, false),
       );
-      if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false)
+      if (
+        sticker.category !== 'summary' &&
+        sticker.supportsDailyTime !== false &&
+        sticker.id !== 'square'
+      )
         assert.ok(sticker.height < stickerDimensions(sticker.id, true).height);
     }
   } finally {
@@ -363,4 +368,26 @@ test('weekly poster replaces decorative headline with live summary in weekly rec
     if (previous === undefined) delete globalThis.document;
     else globalThis.document = previous;
   }
+});
+
+test('square preserves background bounds and content positions when daily times are hidden', () => {
+  const square = STICKERS.find((item) => item.id === 'square');
+  const dates = weekDates(new Date(2026, 9, 1));
+  const render = (visible) => {
+    const calls = [];
+    const ctx = new Proxy(
+      {},
+      {
+        get(target, key) {
+          if (key === 'measureText') return () => ({ width: 40 });
+          if (['roundRect', 'fillText', 'translate', 'fillRect'].includes(key))
+            return (...args) => calls.push([key, ...args]);
+          return target[key] ?? (() => {});
+        },
+      },
+    );
+    square.draw(ctx, dates, {}, STICKER_BACKGROUNDS.white, STICKER_BACKGROUNDS.lime, visible);
+    return calls;
+  };
+  assert.deepEqual(render(false), render(true));
 });
