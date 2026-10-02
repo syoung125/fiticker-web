@@ -182,14 +182,14 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
-test('gallery has ten unique stickers with only the selected new combined design', () => {
-  assert.equal(STICKERS.length, 10);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 10);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 10);
+test('gallery has seven unique stickers with only the retained designs', () => {
+  assert.equal(STICKERS.length, 7);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 7);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 7);
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      category === 'combined' ? 2 : 4,
+      { summary: 1, calendar: 4, combined: 2 }[category],
     );
   }
 });
@@ -226,7 +226,7 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 10);
+    assert.equal(result.length, 7);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(

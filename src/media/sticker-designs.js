@@ -1,6 +1,5 @@
 import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
-import { summaryModel } from './summary.js';
 import { createIconRenderer } from './icon.js';
 
 const FONT = '"Manrope", "Noto Sans KR", sans-serif';
@@ -31,74 +30,6 @@ function line(ctx, x, y, width, theme, dashed = false) {
   ctx.lineTo(x + width, y);
   ctx.stroke();
   ctx.restore();
-}
-function sports(ctx, model, x, y, width, theme, step = 32) {
-  model.sports.forEach((sport, i) => {
-    text(ctx, sport.name, x, y + i * step, 24, theme.secondary, 500, 'left', width - 150);
-    text(ctx, sport.time, x + width, y + i * step, 24, theme.ink, 600, 'right', 140);
-  });
-}
-function summary(ctx, dates, records, theme, style) {
-  const model = summaryModel(dates, records);
-  if (style === 'minimal') {
-    panel(ctx, 960, 400, theme);
-    text(ctx, 'WEEKLY TOTAL', 40, 52, 20, theme.secondary, 700);
-    text(ctx, String(model.count).padStart(2, '0'), 40, 195, 124, theme.ink, 700);
-    text(ctx, 'MOVES', 44, 235, 22, theme.secondary);
-    text(ctx, model.total, 365, 186, 78, theme.ink, 600, 'left', 550);
-    text(ctx, 'TIME IN MOTION', 370, 232, 22, theme.secondary);
-    line(ctx, 40, 268, 880, theme);
-    const columns = Math.ceil(model.sports.length / 2) || 1;
-    model.sports.forEach((sport, i) => {
-      const column = Math.floor(i / 2),
-        row = i % 2;
-      text(
-        ctx,
-        `${sport.name} ${sport.time}`,
-        40 + column * (880 / columns),
-        316 + row * 40,
-        21,
-        theme.secondary,
-        500,
-        'left',
-        880 / columns - 18,
-      );
-    });
-  } else if (style === 'ticket') {
-    panel(ctx, 960, 460, theme, 8);
-    text(ctx, 'MOVE DIARY / WEEK PASS', 36, 49, 23, theme.ink, 700);
-    text(ctx, weekLabel(dates[0]), 924, 49, 20, theme.secondary, 500, 'right');
-    line(ctx, 36, 76, 888, theme, true);
-    text(ctx, String(model.count), 40, 267, 166, theme.ink, 700);
-    text(ctx, 'WORKOUTS', 44, 313, 23, theme.secondary);
-    text(ctx, model.total, 310, 188, 67, theme.ink, 600, 'left', 590);
-    text(ctx, 'TOTAL TIME', 314, 223, 20, theme.secondary);
-    model.sports.forEach((sport, i) => {
-      text(
-        ctx,
-        `${sport.name}  ${sport.time}`,
-        314 + (i % 2) * 300,
-        274 + Math.floor(i / 2) * 29,
-        21,
-        theme.secondary,
-        500,
-        'left',
-        285,
-      );
-    });
-    line(ctx, 36, 394, 888, theme, true);
-    text(ctx, 'EVERY MOVE COUNTS.', 36, 432, 18, theme.secondary);
-    text(ctx, 'ADMIT ONE / YOU', 924, 432, 18, theme.secondary, 600, 'right');
-  } else {
-    panel(ctx, 760, 760, theme, 0);
-    text(ctx, 'MY WEEK', 40, 70, 44, theme.ink, 800);
-    line(ctx, 40, 96, 680, theme);
-    text(ctx, String(model.count).padStart(2, '0'), 30, 333, 224, theme.ink, 800);
-    text(ctx, 'WORKOUTS', 710, 315, 27, theme.secondary, 600, 'right');
-    text(ctx, model.total, 40, 431, 76, theme.ink, 700, 'left', 680);
-    sports(ctx, model, 44, 493, 672, theme, 32);
-    text(ctx, 'KEEP SHOWING UP.', 40, 733, 18, theme.secondary, 700);
-  }
 }
 function calendar(ctx, dates, records, theme, style, showTime) {
   const icon = createIconRenderer(ctx);
@@ -162,7 +93,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
 }
 const styles = ['minimal', 'ticket', 'poster'];
 const names = { minimal: '미니멀', ticket: '티켓', poster: '포스터' };
-const categories = { summary: '요약', calendar: '캘린더' };
+const categories = { calendar: '캘린더' };
 export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, label]) =>
   styles.map((style) => ({
     id: `${category}-${style}`,
@@ -170,10 +101,6 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
     title: `${label} · ${names[style]}`,
     defaultBackground: style === 'poster' ? 'dark' : style === 'ticket' ? 'lavender' : 'white',
     dimensions(showTime = true) {
-      if (category === 'summary')
-        return style === 'poster'
-          ? { width: 760, height: 760 }
-          : { width: 960, height: style === 'ticket' ? 460 : 400 };
       if (category === 'calendar')
         return {
           width: style === 'ticket' ? 660 : 1000,
@@ -199,7 +126,6 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
       summaryTheme = { ...theme, background: null },
       showTime = true,
     ) {
-      if (category === 'summary') return summary(ctx, dates, records, theme, style);
       if (category === 'calendar') return calendar(ctx, dates, records, theme, style, showTime);
     },
   })),
