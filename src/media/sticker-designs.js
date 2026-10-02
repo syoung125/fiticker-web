@@ -36,17 +36,7 @@ function line(ctx, x, y, width, theme, dashed = false) {
 function calendar(ctx, dates, records, theme, style, showTime) {
   const icon = createIconRenderer(ctx);
   const height =
-    style === 'ticket'
-      ? showTime
-        ? 960
-        : 750
-      : style === 'poster'
-        ? showTime
-          ? 620
-          : 560
-        : showTime
-          ? 320
-          : 260;
+    style === 'ticket' ? 750 : style === 'poster' ? (showTime ? 620 : 560) : showTime ? 320 : 260;
   const width = style === 'ticket' ? 520 : 1000;
   panel(ctx, width, height, theme, style === 'poster' ? 0 : 24);
   text(ctx, weekLabel(dates[0]), 32, 46, 23, theme.secondary, 600);
@@ -54,14 +44,26 @@ function calendar(ctx, dates, records, theme, style, showTime) {
     text(ctx, 'WEEK / LOG', 32, 103, 39, theme.ink, 800);
     dates.forEach((date, i) => {
       const record = records[dateKey(date)],
-        y = 145 + i * (showTime ? 110 : 80);
+        y = 145 + i * 80;
       line(ctx, 32, y, 456, theme, true);
       text(ctx, DAYS[i], 34, y + 38, 18, theme.secondary, 700);
       text(ctx, String(date.getDate()).padStart(2, '0'), 108, y + 43, 35, theme.ink, 600);
       if (record) icon(TYPES[record.type].icon, 190, y + 36, 39, theme.ink);
-      text(ctx, record?.name ?? 'REST DAY', 230, y + 41, 26, theme.ink, 500, 'left', 258);
-      if (showTime && record?.minutes != null)
-        text(ctx, duration(record.minutes), 230, y + 80, 21, theme.secondary);
+      let nameWidth = 258;
+      if (showTime && record?.minutes != null) {
+        const time = duration(record.minutes);
+        text(ctx, time, 488, y + 41, 21, theme.secondary, 500, 'right', 110);
+        nameWidth -= ctx.measureText(time).width + 16;
+      }
+      let name = record?.name ?? 'REST DAY';
+      ctx.font = `500 26px ${FONT}`;
+      if (ctx.measureText(name).width > nameWidth) {
+        const letters = Array.from(name);
+        while (letters.length && ctx.measureText(letters.join('') + '…').width > nameWidth)
+          letters.pop();
+        name = letters.join('') + '…';
+      }
+      text(ctx, name, 230, y + 41, 26, theme.ink);
     });
   } else {
     const poster = style === 'poster';
@@ -105,7 +107,7 @@ export const EXTRA_STICKERS = styles.map((style) => ({
   dimensions(showTime = true) {
     return {
       width: style === 'ticket' ? 520 : 1000,
-      height: style === 'ticket' ? (showTime ? 960 : 750) : showTime ? 620 : 560,
+      height: style === 'ticket' ? 750 : showTime ? 620 : 560,
     };
   },
   draw(ctx, dates, records, theme, _summaryTheme, showTime = true) {

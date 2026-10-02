@@ -237,7 +237,8 @@ test('all designs export PNG with independent options and compact dimensions', a
       if (
         sticker.category !== 'summary' &&
         sticker.supportsDailyTime !== false &&
-        sticker.id !== 'square'
+        sticker.id !== 'square' &&
+        sticker.id !== 'calendar-ticket'
       )
         assert.ok(sticker.height < stickerDimensions(sticker.id, true).height);
     }
@@ -417,5 +418,58 @@ test('minimal summary shows only totals and labels on a transparent default back
     sticker.draw(ctx, dates, records, STICKER_BACKGROUNDS.transparent);
     assert.deepEqual(labels, [...expected, 'WORKOUTS', 'TOTAL TIME']);
     assert.deepEqual(fills, []);
+  }
+});
+
+test('ticket aligns duration beside the sport and keeps row heights when toggled', () => {
+  const sticker = STICKERS.find((item) => item.id === 'calendar-ticket');
+  assert.deepEqual(stickerDimensions(sticker.id, true), stickerDimensions(sticker.id, false));
+  const previous = globalThis.document;
+  globalThis.document = {
+    createElement: () => ({
+      getContext: () => ({
+        fillText() {},
+        getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      }),
+    }),
+  };
+  try {
+    for (const showTime of [true, false]) {
+      const labels = [];
+      const ctx = new Proxy(
+        {},
+        {
+          get(target, key) {
+            if (key === 'measureText') return (value) => ({ width: value.length * 13 });
+            if (key === 'fillText')
+              return (value, x, y) => labels.push({ value, x, y, align: target.textAlign });
+            return target[key] ?? (() => {});
+          },
+        },
+      );
+      sticker.draw(
+        ctx,
+        weekDates(new Date(2026, 9, 1)),
+        {
+          '2026-09-28': { type: 'crossfit', name: 'CrossFit', minutes: 75 },
+          '2026-09-29': { type: 'other', name: 'A very long custom workout name', minutes: 1439 },
+        },
+        STICKER_BACKGROUNDS.lavender,
+        undefined,
+        showTime,
+      );
+      const name = labels.find((label) => label.value === 'CrossFit');
+      const time = labels.find((label) => label.value === '1h 15m');
+      assert.equal(Boolean(time), showTime);
+      if (showTime) {
+        assert.equal(time.y, name.y);
+        assert.equal(time.align, 'right');
+        assert.ok(name.x + 8 * 13 + 16 <= time.x - 6 * 13);
+        assert.ok(labels.some((label) => label.value.endsWith('…')));
+      }
+    }
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
   }
 });
