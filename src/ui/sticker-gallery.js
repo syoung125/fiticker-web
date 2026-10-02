@@ -60,10 +60,6 @@ export function createStickerGallery({ notify }) {
   let revision = 0,
     signature = '',
     urls = [];
-  function clearURLs() {
-    urls.forEach((url) => URL.revokeObjectURL(url));
-    urls = [];
-  }
   const gallery = {
     async update(dates, records) {
       const snapshot = Object.fromEntries(
@@ -86,17 +82,18 @@ export function createStickerGallery({ notify }) {
       const current = ++revision;
       const list = $('#sticker-list'),
         status = $('#sticker-status');
-      list.replaceChildren();
-      clearURLs();
-      status.textContent = '스티커 만드는 중…';
+      // Keep the current gallery mounted while PNGs render to avoid collapsing page height.
+      if (!list.children.length) status.textContent = '스티커 만드는 중…';
+      const nextURLs = [];
       try {
         const stickers = await createStickers(dates, snapshot, backgrounds, timeVisibility);
         if (current !== revision) return;
         const nodes = stickers.map((sticker) => {
           const url = URL.createObjectURL(sticker.blob);
-          urls.push(url);
+          nextURLs.push(url);
           const card = el('article', 'sticker-card');
           card.dataset.stickerCategory = sticker.category;
+          card.hidden = !matchesStickerCategory(sticker, activeCategory);
           function backgroundControl(key, label) {
             const backgroundLabel = el('label', 'sticker-background', label + ' ');
             const select = el('select');
@@ -172,9 +169,11 @@ export function createStickerGallery({ notify }) {
           return card;
         });
         list.replaceChildren(...nodes);
-        filterCards();
+        urls.forEach((url) => URL.revokeObjectURL(url));
+        urls = nextURLs;
         status.textContent = '스티커마다 배경을 고를 수 있어요. 선택한 배경 그대로 복사·저장돼요.';
       } catch (error) {
+        nextURLs.forEach((url) => URL.revokeObjectURL(url));
         if (current !== revision) return;
         signature = '';
         status.textContent = error.message;
