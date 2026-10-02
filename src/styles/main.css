@@ -78,6 +78,7 @@ p {
   font-size: 21px;
   font-weight: 800;
   letter-spacing: -0.8px;
+  line-height: 1;
 }
 .brand-mark {
   background: var(--lime);
@@ -86,15 +87,10 @@ p {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 27px;
-  font-weight: 500;
+  flex-shrink: 0;
 }
-.version {
-  color: #8c8e83;
-  font-size: 11px;
-  align-self: flex-start;
-  margin: 3px 0 0 4px;
-  letter-spacing: 0;
+.brand-mark svg {
+  display: block;
 }
 .top-note,
 .eyebrow {
