@@ -183,14 +183,14 @@ test('hidden daily times compact calendars while square keeps its original size'
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
-test('gallery includes eight unique stickers in their matching categories', () => {
-  assert.equal(STICKERS.length, 8);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 8);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 8);
+test('gallery includes nine unique stickers in their matching categories', () => {
+  assert.equal(STICKERS.length, 9);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 9);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 9);
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      { summary: 2, calendar: 3, combined: 3 }[category],
+      { summary: 3, calendar: 3, combined: 3 }[category],
     );
   }
 });
@@ -227,7 +227,7 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 8);
+    assert.equal(result.length, 9);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(
@@ -390,4 +390,32 @@ test('square preserves background bounds and content positions when daily times 
     return calls;
   };
   assert.deepEqual(render(false), render(true));
+});
+
+test('minimal summary shows only totals and labels on a transparent default background', () => {
+  const sticker = STICKERS.find((item) => item.id === 'summary-minimal');
+  assert.equal(sticker.defaultBackground, 'transparent');
+  assert.equal(sticker.category, 'summary');
+  const dates = weekDates(new Date(2026, 9, 1));
+  for (const [records, expected] of [
+    [{}, ['0', '0m']],
+    [{ '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 75 } }, ['1', '1h 15m']],
+  ]) {
+    const labels = [],
+      fills = [];
+    const ctx = new Proxy(
+      {},
+      {
+        get(target, key) {
+          if (key === 'measureText') return () => ({ width: 40 });
+          if (key === 'fillText') return (value) => labels.push(value);
+          if (key === 'fill') return () => fills.push(target.fillStyle);
+          return target[key] ?? (() => {});
+        },
+      },
+    );
+    sticker.draw(ctx, dates, records, STICKER_BACKGROUNDS.transparent);
+    assert.deepEqual(labels, [...expected, 'WORKOUTS', 'TOTAL TIME']);
+    assert.deepEqual(fills, []);
+  }
 });

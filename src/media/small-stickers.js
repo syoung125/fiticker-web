@@ -22,6 +22,21 @@ function background(ctx, width, height, theme, radius) {
 
 export const SMALL_STICKERS = [
   {
+    id: 'summary-minimal',
+    category: 'summary',
+    title: '요약 · 미니멀',
+    defaultBackground: 'transparent',
+    dimensions: () => ({ width: 840, height: 220 }),
+    draw(ctx, dates, records, theme) {
+      const { count, total } = summaryModel(dates, records);
+      background(ctx, 840, 220, theme, 26);
+      text(ctx, String(count), 210, 124, 88, theme.ink, 700, 356);
+      text(ctx, total, 630, 124, 88, theme.ink, 700, 356);
+      text(ctx, 'WORKOUTS', 210, 177, 23, theme.secondary, 500);
+      text(ctx, 'TOTAL TIME', 630, 177, 23, theme.secondary, 500);
+    },
+  },
+  {
     id: 'summary-widget',
     category: 'summary',
     title: '요약 · 미니 위젯',
