@@ -55,13 +55,12 @@ export function createStickerGallery({ notify }) {
     const color = el('span', 'theme-swatch-color');
     color.setAttribute('aria-hidden', 'true');
     if (value === 'default') color.classList.add('theme-swatch-default');
-    else {
-      if (theme.background === null) color.classList.add('theme-swatch-transparent');
-      else color.style.background = theme.background;
+    else if (theme.background === null) {
+      color.classList.add('theme-swatch-transparent');
       const ink = el('span', 'theme-swatch-ink');
       ink.style.background = theme.ink;
       color.append(ink);
-    }
+    } else color.style.background = theme.background;
     button.append(color);
     button.onclick = async () => {
       for (const key of Object.keys(backgrounds)) {
