@@ -201,8 +201,8 @@ export function createStickerGallery({ notify }) {
           download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
           const heading = el('div', 'sticker-card-heading');
-          heading.append(el('h3', '', sticker.title), actions);
-          card.append(heading, ...controls, preview);
+          heading.append(el('h3', '', sticker.title));
+          card.append(heading, ...controls, preview, actions);
           return card;
         });
         list.replaceChildren(...nodes);

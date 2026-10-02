@@ -47,7 +47,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         : showTime
           ? 320
           : 260;
-  const width = style === 'ticket' ? 660 : 1000;
+  const width = style === 'ticket' ? 520 : 1000;
   panel(ctx, width, height, theme, style === 'poster' ? 0 : 24);
   text(ctx, weekLabel(dates[0]), 32, 46, 23, theme.secondary, 600);
   if (style === 'ticket') {
@@ -55,13 +55,13 @@ function calendar(ctx, dates, records, theme, style, showTime) {
     dates.forEach((date, i) => {
       const record = records[dateKey(date)],
         y = 145 + i * (showTime ? 110 : 80);
-      line(ctx, 32, y, 596, theme, true);
+      line(ctx, 32, y, 456, theme, true);
       text(ctx, DAYS[i], 34, y + 38, 18, theme.secondary, 700);
       text(ctx, String(date.getDate()).padStart(2, '0'), 108, y + 43, 35, theme.ink, 600);
-      if (record) icon(TYPES[record.type].icon, 214, y + 36, 39, theme.ink);
-      text(ctx, record?.name ?? 'REST DAY', 262, y + 41, 26, theme.ink, 500, 'left', 355);
+      if (record) icon(TYPES[record.type].icon, 190, y + 36, 39, theme.ink);
+      text(ctx, record?.name ?? 'REST DAY', 230, y + 41, 26, theme.ink, 500, 'left', 258);
       if (showTime && record?.minutes != null)
-        text(ctx, duration(record.minutes), 262, y + 80, 21, theme.secondary);
+        text(ctx, duration(record.minutes), 230, y + 80, 21, theme.secondary);
     });
   } else {
     const poster = style === 'poster';
@@ -104,7 +104,7 @@ export const EXTRA_STICKERS = styles.map((style) => ({
   defaultBackground: style === 'poster' ? 'dark' : 'lavender',
   dimensions(showTime = true) {
     return {
-      width: style === 'ticket' ? 660 : 1000,
+      width: style === 'ticket' ? 520 : 1000,
       height: style === 'ticket' ? (showTime ? 960 : 750) : showTime ? 620 : 560,
     };
   },

@@ -9,7 +9,7 @@ const HEIGHT = 660 + PADDING * 2;
 export const COMPACT_STICKER = {
   id: 'combined-compact',
   category: 'combined',
-  title: '주간 기록 · 컴팩트',
+  title: '주간 기록 · 심플',
   defaultBackground: 'transparentWhite',
   supportsDailyTime: false,
   dimensions: () => ({ width: WIDTH, height: HEIGHT }),
@@ -48,12 +48,12 @@ export const COMPACT_STICKER = {
       const active = Boolean(records[dateKey(date)]),
         x = 60 + index * 132;
       ctx.globalAlpha = active ? 1 : 0.4;
-      text(days[index], x, 557, 39, theme.ink, false, undefined, 'center');
+      text(days[index], x, 533, 39, theme.ink, false, undefined, 'center');
       ctx.globalAlpha = 1;
       if (active) {
         ctx.fillStyle = theme.ink;
         ctx.beginPath();
-        ctx.arc(x, 615, 10, 0, Math.PI * 2);
+        ctx.arc(x, 591, 10, 0, Math.PI * 2);
         ctx.fill();
       }
     });
