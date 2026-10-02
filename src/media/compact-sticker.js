@@ -1,6 +1,10 @@
 import { dateKey } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 
+const PADDING = 24;
+const WIDTH = 960 + PADDING * 2;
+const HEIGHT = 660 + PADDING * 2;
+
 // A single typographic composition, independent of the summary and calendar renderers.
 export const COMPACT_STICKER = {
   id: 'combined-compact',
@@ -8,7 +12,7 @@ export const COMPACT_STICKER = {
   title: '주간 기록 · 컴팩트',
   defaultBackground: 'transparentWhite',
   supportsDailyTime: false,
-  dimensions: () => ({ width: 960, height: 660 }),
+  dimensions: () => ({ width: WIDTH, height: HEIGHT }),
   draw(ctx, dates, records, theme) {
     const { count, total } = summaryModel(dates, records);
     function text(value, x, y, size, color, bold = false, maxWidth, align = 'left') {
@@ -28,9 +32,10 @@ export const COMPACT_STICKER = {
     if (theme.background) {
       ctx.fillStyle = theme.background;
       ctx.beginPath();
-      ctx.roundRect(0, 0, 960, 660, 24);
+      ctx.roundRect(0, 0, WIDTH, HEIGHT, 24);
       ctx.fill();
     }
+    ctx.translate(PADDING, PADDING);
     const formatDate = (date) =>
       date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
     text(`${formatDate(dates[0])} – ${formatDate(dates[6])}`, 30, 52, 39, theme.ink);
