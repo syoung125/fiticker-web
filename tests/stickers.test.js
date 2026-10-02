@@ -442,7 +442,14 @@ test('ticket aligns duration beside the sport and keeps row heights when toggled
           get(target, key) {
             if (key === 'measureText') return (value) => ({ width: value.length * 13 });
             if (key === 'fillText')
-              return (value, x, y) => labels.push({ value, x, y, align: target.textAlign });
+              return (value, x, y) =>
+                labels.push({
+                  value,
+                  x,
+                  y,
+                  align: target.textAlign,
+                  baseline: target.textBaseline,
+                });
             return target[key] ?? (() => {});
           },
         },
@@ -461,6 +468,11 @@ test('ticket aligns duration beside the sport and keeps row heights when toggled
       const name = labels.find((label) => label.value === 'CrossFit');
       const time = labels.find((label) => label.value === '1h 15m');
       assert.equal(Boolean(time), showTime);
+      for (const value of ['MON', '28', 'CrossFit']) {
+        const label = labels.find((entry) => entry.value === value);
+        assert.equal(label.y, 185);
+        assert.equal(label.baseline, 'middle');
+      }
       if (showTime) {
         assert.equal(time.y, name.y);
         assert.equal(time.align, 'right');

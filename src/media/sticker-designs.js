@@ -5,11 +5,22 @@ import { createIconRenderer } from './icon.js';
 import { summaryModel } from './summary.js';
 
 const FONT = '"Manrope", "Noto Sans KR", sans-serif';
-function text(ctx, value, x, y, size, color, weight = 500, align = 'left', maxWidth) {
+function text(
+  ctx,
+  value,
+  x,
+  y,
+  size,
+  color,
+  weight = 500,
+  align = 'left',
+  maxWidth,
+  baseline = 'alphabetic',
+) {
   ctx.font = `${weight} ${size}px ${FONT}`;
   ctx.fillStyle = color;
   ctx.textAlign = align;
-  ctx.textBaseline = 'alphabetic';
+  ctx.textBaseline = baseline;
   while (maxWidth && ctx.measureText(value).width > maxWidth && size > 14) {
     ctx.font = `${weight} ${--size}px ${FONT}`;
   }
@@ -46,13 +57,15 @@ function calendar(ctx, dates, records, theme, style, showTime) {
       const record = records[dateKey(date)],
         y = 145 + i * 80;
       line(ctx, 32, y, 456, theme, true);
-      text(ctx, DAYS[i], 34, y + 38, 18, theme.secondary, 700);
-      text(ctx, String(date.getDate()).padStart(2, '0'), 108, y + 43, 35, theme.ink, 600);
-      if (record) icon(TYPES[record.type].icon, 190, y + 36, 39, theme.ink);
-      let nameWidth = 258;
+      const rowText = (value, x, size, color, weight = 500, align = 'left', maxWidth) =>
+        text(ctx, value, x, y + 40, size, color, weight, align, maxWidth, 'middle');
+      rowText(DAYS[i], 34, 18, theme.secondary, 700);
+      rowText(String(date.getDate()).padStart(2, '0'), 108, 35, theme.ink, 600);
+      if (record) icon(TYPES[record.type].icon, 205, y + 40, 39, theme.ink);
+      let nameWidth = 234;
       if (showTime && record?.minutes != null) {
         const time = duration(record.minutes);
-        text(ctx, time, 488, y + 41, 21, theme.secondary, 500, 'right', 110);
+        rowText(time, 488, 21, theme.secondary, 500, 'right', 110);
         nameWidth -= ctx.measureText(time).width + 16;
       }
       let name = record?.name ?? 'REST DAY';
@@ -63,7 +76,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
           letters.pop();
         name = letters.join('') + '…';
       }
-      text(ctx, name, 230, y + 41, 26, theme.ink);
+      rowText(name, 254, 26, theme.ink);
     });
   } else {
     const poster = style === 'poster';
