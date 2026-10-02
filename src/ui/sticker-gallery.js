@@ -63,7 +63,7 @@ export function createStickerGallery({ notify }) {
     } else color.style.background = theme.background;
     button.append(color);
     button.onclick = async () => {
-      for (const key of Object.keys(backgrounds)) {
+      for (const { id: key } of STICKERS) {
         backgrounds[key] = value === 'default' ? DEFAULT_STICKER_BACKGROUNDS[key] : value;
       }
       markTheme(value);
@@ -150,7 +150,6 @@ export function createStickerGallery({ notify }) {
             select.value = backgrounds[key];
             select.onchange = async () => {
               backgrounds[key] = select.value;
-              markTheme('custom');
               await gallery.update(dates, snapshot);
               $(`[data-sticker-background="${key}"]`)?.focus({ preventScroll: true });
             };
