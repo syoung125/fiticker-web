@@ -111,7 +111,7 @@ main {
   padding: 0 0 76px;
 }
 .intro {
-  padding: 54px 0 48px;
+  padding: 26px 0 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -138,9 +138,12 @@ h1 span {
   color: #858a78;
 }
 .subtitle {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.8;
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.6;
+  letter-spacing: -0.5px;
 }
 .intro-badge {
   font-family: Manrope, sans-serif;
@@ -893,7 +896,7 @@ input:not([type='radio']):not([type='file']) {
     padding: 0 28px 55px;
   }
   .intro {
-    padding: 38px 0;
+    padding: 24px 0;
   }
   .workspace {
     gap: 25px;
@@ -937,7 +940,7 @@ input:not([type='radio']):not([type='file']) {
     padding: 0 20px 40px;
   }
   .intro {
-    padding: 34px 0 32px;
+    padding: 20px 0 24px;
   }
   .intro .eyebrow {
     font-size: 8px;
@@ -949,7 +952,7 @@ input:not([type='radio']):not([type='file']) {
     margin: 15px 0;
   }
   .subtitle {
-    font-size: 12px;
+    font-size: 17px;
   }
   .intro-badge {
     font-size: 19px;
