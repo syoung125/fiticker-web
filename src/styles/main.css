@@ -1338,3 +1338,14 @@ input:not([type='radio']):not([type='file']) {
   gap: 6px;
   flex-shrink: 0;
 }
+
+.sticker-global-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.sticker-global-options .sticker-time-toggle {
+  margin-bottom: 0;
+}

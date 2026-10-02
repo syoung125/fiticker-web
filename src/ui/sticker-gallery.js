@@ -72,6 +72,16 @@ export function createStickerGallery({ notify }) {
     palette.append(button);
   }
   markTheme('default');
+  const timeToggle = $('#sticker-time');
+  timeToggle.onclick = async () => {
+    const visible = timeToggle.getAttribute('aria-checked') !== 'true';
+    timeToggle.setAttribute('aria-checked', String(visible));
+    for (const sticker of STICKERS) {
+      if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false)
+        timeVisibility[sticker.id] = visible;
+    }
+    if (latestDates) await gallery.update(latestDates, latestRecords);
+  };
   function filterCards() {
     document.querySelectorAll('[data-sticker-category]').forEach((card) => {
       card.hidden = !matchesStickerCategory(
@@ -159,23 +169,6 @@ export function createStickerGallery({ notify }) {
           const controls = [];
           if (sticker.summaryBackgroundKey)
             controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
-          if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false) {
-            const label = el('div', 'sticker-time-toggle');
-            const toggle = el('button', 'sticker-time-switch');
-            toggle.type = 'button';
-            toggle.setAttribute('role', 'switch');
-            toggle.setAttribute('aria-checked', String(timeVisibility[sticker.id]));
-            toggle.dataset.stickerTime = sticker.id;
-            toggle.setAttribute('aria-label', `${sticker.title} 시간 표시`);
-            toggle.onclick = async () => {
-              timeVisibility[sticker.id] = !timeVisibility[sticker.id];
-              await gallery.update(dates, snapshot);
-              $(`[data-sticker-time="${sticker.id}"]`)?.focus({ preventScroll: true });
-            };
-            toggle.append(el('span', 'switch-thumb'));
-            label.append(el('span', '', '시간 표시'), toggle);
-            controls.push(label);
-          }
           const preview = el('div', 'sticker-preview');
           if (backgrounds[sticker.id] === 'transparentWhite')
             preview.classList.add('sticker-preview-dark');

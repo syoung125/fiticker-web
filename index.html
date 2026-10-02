@@ -78,12 +78,27 @@
                   role="group"
                   aria-label="스티커 카테고리"
                 ></div>
-                <div
-                  id="sticker-theme"
-                  class="theme-palette"
-                  role="group"
-                  aria-label="모든 스티커 테마"
-                ></div>
+                <div class="sticker-global-options">
+                  <div
+                    id="sticker-theme"
+                    class="theme-palette"
+                    role="group"
+                    aria-label="모든 스티커 테마"
+                  ></div>
+                  <div class="sticker-time-toggle">
+                    <span id="sticker-time-label">캘린더 시간 표시</span>
+                    <button
+                      id="sticker-time"
+                      class="sticker-time-switch"
+                      type="button"
+                      role="switch"
+                      aria-checked="true"
+                      aria-labelledby="sticker-time-label"
+                    >
+                      <span class="switch-thumb"></span>
+                    </button>
+                  </div>
+                </div>
               </div>
               <div id="sticker-list" class="sticker-list"></div>
               <p class="sticker-help">
