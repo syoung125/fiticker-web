@@ -34,7 +34,7 @@ function actionIcon(pathData) {
 
 export function createStickerGallery({ notify }) {
   const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
-  const timeVisibility = Object.fromEntries(STICKERS.map((sticker) => [sticker.id, true]));
+  const timeVisibility = Object.fromEntries(STICKERS.map((sticker) => [sticker.id, false]));
   let activeCategory = 'all';
   let latestDates, latestRecords;
   const palette = $('#sticker-theme');
