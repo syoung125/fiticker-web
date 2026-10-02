@@ -36,6 +36,25 @@ export function createStickerGallery({ notify }) {
   const backgrounds = { ...DEFAULT_STICKER_BACKGROUNDS };
   const timeVisibility = Object.fromEntries(STICKERS.map((sticker) => [sticker.id, true]));
   let activeCategory = 'all';
+  let latestDates, latestRecords;
+  const themeSelect = $('#sticker-theme');
+  for (const [value, label] of [
+    ['default', '기본 테마'],
+    ...Object.entries(STICKER_BACKGROUNDS).map(([key, theme]) => [key, theme.label]),
+    ['custom', '개별 설정'],
+  ]) {
+    const option = el('option', '', label);
+    option.value = value;
+    option.disabled = value === 'custom';
+    themeSelect.append(option);
+  }
+  themeSelect.onchange = async () => {
+    for (const key of Object.keys(backgrounds)) {
+      backgrounds[key] =
+        themeSelect.value === 'default' ? DEFAULT_STICKER_BACKGROUNDS[key] : themeSelect.value;
+    }
+    if (latestDates) await gallery.update(latestDates, latestRecords);
+  };
   function filterCards() {
     document.querySelectorAll('[data-sticker-category]').forEach((card) => {
       card.hidden = !matchesStickerCategory(
@@ -62,6 +81,8 @@ export function createStickerGallery({ notify }) {
     urls = [];
   const gallery = {
     async update(dates, records) {
+      latestDates = dates;
+      latestRecords = records;
       const snapshot = Object.fromEntries(
         dates
           .filter((date) => records[dateKey(date)])
@@ -86,7 +107,12 @@ export function createStickerGallery({ notify }) {
       if (!list.children.length) status.textContent = '스티커 만드는 중…';
       const nextURLs = [];
       try {
-        const stickers = await createStickers(dates, snapshot, backgrounds, timeVisibility);
+        const stickers = await createStickers(
+          dates,
+          snapshot,
+          { ...backgrounds },
+          { ...timeVisibility },
+        );
         if (current !== revision) return;
         const nodes = stickers.map((sticker) => {
           const url = URL.createObjectURL(sticker.blob);
@@ -107,6 +133,7 @@ export function createStickerGallery({ notify }) {
             select.value = backgrounds[key];
             select.onchange = async () => {
               backgrounds[key] = select.value;
+              themeSelect.value = 'custom';
               await gallery.update(dates, snapshot);
               $(`[data-sticker-background="${key}"]`)?.focus({ preventScroll: true });
             };
@@ -165,13 +192,15 @@ export function createStickerGallery({ notify }) {
           download.href = url;
           download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
-          card.append(el('h3', '', sticker.title), ...controls, preview, actions);
+          const heading = el('div', 'sticker-card-heading');
+          heading.append(el('h3', '', sticker.title), actions);
+          card.append(heading, ...controls, preview);
           return card;
         });
         list.replaceChildren(...nodes);
         urls.forEach((url) => URL.revokeObjectURL(url));
         urls = nextURLs;
-        status.textContent = '스티커마다 배경을 고를 수 있어요. 선택한 배경 그대로 복사·저장돼요.';
+        status.textContent = '전체 테마를 한 번에 바꾸거나, 스티커별로 조정할 수 있어요.';
       } catch (error) {
         nextURLs.forEach((url) => URL.revokeObjectURL(url));
         if (current !== revision) return;

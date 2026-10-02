@@ -1263,3 +1263,50 @@ input:not([type='radio']):not([type='file']) {
   background: #24271f;
   color: white;
 }
+
+.sticker-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 12px 0;
+  background: #f7f8f2;
+  border-bottom: 1px solid var(--line);
+}
+.sticker-toolbar .sticker-filters {
+  margin: 0 0 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.sticker-global-theme {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sticker-global-theme select {
+  font: inherit;
+  color: inherit;
+  min-height: 40px;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  padding: 8px 12px;
+}
+.sticker-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.sticker-card-heading h3 {
+  margin: 0;
+  min-width: 0;
+}
+.sticker-card-heading .sticker-actions {
+  margin: 0;
+  gap: 6px;
+  flex-shrink: 0;
+}

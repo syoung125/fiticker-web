@@ -71,12 +71,18 @@
               <h2 id="sticker-title">내 운동 스티커</h2>
               <p class="sticker-help">이미지를 꾹 눌러 복사하거나 복사 버튼을 눌러보세요.</p>
               <p id="sticker-status" role="status">스티커 만드는 중…</p>
-              <div
-                id="sticker-filters"
-                class="sticker-filters"
-                role="group"
-                aria-label="스티커 카테고리"
-              ></div>
+              <div class="sticker-toolbar">
+                <div
+                  id="sticker-filters"
+                  class="sticker-filters"
+                  role="group"
+                  aria-label="스티커 카테고리"
+                ></div>
+                <label class="sticker-global-theme" for="sticker-theme"
+                  >전체 테마
+                  <select id="sticker-theme" aria-label="모든 스티커 테마"></select>
+                </label>
+              </div>
               <div id="sticker-list" class="sticker-list"></div>
               <p class="sticker-help">
                 복사 후 스토리 편집 화면에 붙여넣으세요. 앱에서 붙여넣기를 지원하지 않으면 PNG를
