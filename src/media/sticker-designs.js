@@ -1,3 +1,4 @@
+import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import { createIconRenderer } from './icon.js';
@@ -131,4 +132,4 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
   })),
 );
 
-EXTRA_STICKERS.push(COMPACT_STICKER);
+EXTRA_STICKERS.push(COMPACT_STICKER, ...SMALL_STICKERS);

@@ -170,6 +170,7 @@ export function createStickerGallery({ notify }) {
           if (sticker.summaryBackgroundKey)
             controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
           const preview = el('div', 'sticker-preview');
+          if (sticker.id === 'summary-widget') preview.classList.add('sticker-preview-mini');
           if (backgrounds[sticker.id] === 'transparentWhite')
             preview.classList.add('sticker-preview-dark');
           const image = el('img');

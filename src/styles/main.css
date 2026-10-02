@@ -1126,6 +1126,10 @@ input:not([type='radio']):not([type='file']) {
   height: auto;
   -webkit-touch-callout: default;
 }
+.sticker-preview-mini {
+  max-width: 240px;
+  margin-inline: auto;
+}
 .sticker-actions {
   display: flex;
   justify-content: flex-end;

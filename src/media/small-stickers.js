@@ -1,0 +1,60 @@
+import { DAYS, TYPES, dateKey, duration } from '../domain/workouts.js';
+import { summaryModel } from './summary.js';
+import { createIconRenderer } from './icon.js';
+
+const FONT = '"Manrope", "Noto Sans KR", sans-serif';
+function text(ctx, value, x, y, size, color, weight = 600, maxWidth) {
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  while (maxWidth && ctx.measureText(value).width > maxWidth && size > 14)
+    ctx.font = `${weight} ${--size}px ${FONT}`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(value, x, y);
+}
+function background(ctx, width, height, theme, radius) {
+  if (!theme.background) return;
+  ctx.fillStyle = theme.background;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, width, height, radius);
+  ctx.fill();
+}
+
+export const SMALL_STICKERS = [
+  {
+    id: 'summary-widget',
+    category: 'summary',
+    title: '요약 · 미니 위젯',
+    defaultBackground: 'lime',
+    dimensions: () => ({ width: 480, height: 480 }),
+    draw(ctx, dates, records, theme) {
+      const model = summaryModel(dates, records);
+      background(ctx, 480, 480, theme, 44);
+      text(ctx, 'THIS WEEK', 240, 58, 22, theme.secondary, 700);
+      text(ctx, String(model.count), 240, 221, 154, theme.ink, 800);
+      text(ctx, 'workouts', 240, 260, 26, theme.secondary, 500);
+      text(ctx, model.total, 240, 375, 66, theme.ink, 700, 400);
+      text(ctx, 'total time', 240, 416, 26, theme.secondary, 500);
+    },
+  },
+  {
+    id: 'calendar-compact',
+    category: 'calendar',
+    title: '캘린더 · 요일만',
+    defaultBackground: 'transparent',
+    dimensions: (showTime = true) => ({ width: 840, height: showTime ? 180 : 136 }),
+    draw(ctx, dates, records, theme, _heading, showTime = true) {
+      background(ctx, 840, showTime ? 180 : 136, theme, 26);
+      const icon = createIconRenderer(ctx);
+      dates.forEach((date, index) => {
+        const x = 120 * (index + 0.5);
+        const record = records[dateKey(date)];
+        text(ctx, DAYS[index], x, 38, 19, theme.secondary);
+        if (record) {
+          icon(TYPES[record.type].icon, x, 88, 44, theme.ink);
+          if (showTime) text(ctx, duration(record.minutes ?? 0), x, 156, 21, theme.ink, 600, 106);
+        } else text(ctx, '—', x, 99, 28, theme.ink, 500);
+      });
+    },
+  },
+];

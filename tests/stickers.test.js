@@ -182,14 +182,14 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
-test('gallery has seven unique stickers with only the retained designs', () => {
-  assert.equal(STICKERS.length, 7);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 7);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 7);
+test('gallery includes nine unique stickers in their matching categories', () => {
+  assert.equal(STICKERS.length, 9);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 9);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 9);
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      { summary: 1, calendar: 4, combined: 2 }[category],
+      { summary: 2, calendar: 5, combined: 2 }[category],
     );
   }
 });
@@ -226,7 +226,7 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 7);
+    assert.equal(result.length, 9);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(
@@ -270,4 +270,53 @@ test('compact type design shows weekly metrics and dots only on recorded days', 
   assert.equal(dots.length, 2);
   assert.equal(compact.summaryBackgroundKey, undefined);
   assert.equal(compact.defaultBackground, 'transparentWhite');
+});
+
+test('mini summary is square and shows zero and recorded totals', () => {
+  const widget = STICKERS.find((item) => item.id === 'summary-widget');
+  assert.deepEqual(stickerDimensions(widget.id), { width: 480, height: 480 });
+  const dates = weekDates(new Date(2026, 9, 1));
+  for (const [records, count, total] of [
+    [{}, '0', '0m'],
+    [{ '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 75 } }, '1', '1h 15m'],
+  ]) {
+    const labels = [];
+    const ctx = new Proxy(
+      {},
+      {
+        get(target, key) {
+          if (key === 'measureText') return () => ({ width: 40 });
+          if (key === 'fillText') return (value) => labels.push(value);
+          return target[key] ?? (() => {});
+        },
+      },
+    );
+    widget.draw(ctx, dates, records, STICKER_BACKGROUNDS.lime);
+    assert.ok(labels.includes(count) && labels.includes(total));
+    assert.ok(labels.includes('workouts') && labels.includes('total time'));
+  }
+});
+
+test('compact calendar has weekdays but no date numbers or week heading', () => {
+  const sticker = STICKERS.find((item) => item.id === 'calendar-compact');
+  const labels = [];
+  const ctx = new Proxy(
+    {},
+    {
+      get(target, key) {
+        if (key === 'measureText') return () => ({ width: 40 });
+        if (key === 'fillText') return (value) => labels.push(value);
+        return target[key] ?? (() => {});
+      },
+    },
+  );
+  sticker.draw(ctx, weekDates(new Date(2026, 9, 1)), {}, STICKER_BACKGROUNDS.transparent);
+  assert.deepEqual(
+    labels.filter((value) => value !== '—'),
+    ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+  );
+  assert.equal(
+    stickerDimensions(sticker.id, true).height - stickerDimensions(sticker.id, false).height,
+    44,
+  );
 });
