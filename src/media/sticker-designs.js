@@ -1,5 +1,6 @@
+import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
-import { summaryModel, drawSummary } from './summary.js';
+import { summaryModel } from './summary.js';
 import { createIconRenderer } from './icon.js';
 
 const FONT = '"Manrope", "Noto Sans KR", sans-serif';
@@ -161,14 +162,13 @@ function calendar(ctx, dates, records, theme, style, showTime) {
 }
 const styles = ['minimal', 'ticket', 'poster'];
 const names = { minimal: '미니멀', ticket: '티켓', poster: '포스터' };
-const categories = { summary: '요약', calendar: '캘린더', combined: '요약+캘린더' };
+const categories = { summary: '요약', calendar: '캘린더' };
 export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, label]) =>
   styles.map((style) => ({
     id: `${category}-${style}`,
     category,
     title: `${label} · ${names[style]}`,
     defaultBackground: style === 'poster' ? 'dark' : style === 'ticket' ? 'lavender' : 'white',
-    summaryBackgroundKey: category === 'combined' ? `combined-${style}Summary` : undefined,
     dimensions(showTime = true) {
       if (category === 'summary')
         return style === 'poster'
@@ -190,8 +190,6 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
                   ? 320
                   : 260,
         };
-      const size = showTime ? 1080 : 1020;
-      return { width: size, height: size };
     },
     draw(
       ctx,
@@ -203,40 +201,8 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
     ) {
       if (category === 'summary') return summary(ctx, dates, records, theme, style);
       if (category === 'calendar') return calendar(ctx, dates, records, theme, style, showTime);
-      const { width: size } = this.dimensions(showTime),
-        inset = (size - 948) / 2;
-      panel(ctx, size, size, theme, style === 'poster' ? 0 : style === 'ticket' ? 8 : 40);
-      text(ctx, weekLabel(dates[0]), inset, 65, 24, theme.secondary, 600);
-      text(
-        ctx,
-        style === 'poster' ? 'MY MOVES.' : style === 'ticket' ? 'WEEKLY PASS' : 'This week.',
-        inset,
-        170,
-        style === 'poster' ? 108 : 78,
-        theme.ink,
-        800,
-      );
-      if (style === 'ticket') line(ctx, inset, 204, 948, theme, true);
-      ctx.save();
-      ctx.translate(inset, 238);
-      if (style === 'minimal') {
-        ctx.scale(948 / 960, 0.95);
-        summary(ctx, dates, records, summaryTheme, 'minimal');
-      } else if (style === 'ticket') {
-        ctx.scale(948 / 960, 0.85);
-        summary(ctx, dates, records, summaryTheme, 'ticket');
-      } else
-        drawSummary(ctx, summaryModel(dates, records), 0, 0, {
-          ...summaryTheme,
-          transparent: summaryTheme.background === null,
-        });
-      ctx.restore();
-      ctx.save();
-      ctx.translate(inset, 658);
-      ctx.scale(948 / 1000, 1);
-      calendar(ctx, dates, records, { ...theme, background: null }, 'minimal', showTime);
-      ctx.restore();
-      text(ctx, 'MOVE DIARY', inset, size - 30, 17, theme.secondary, 700);
     },
   })),
 );
+
+EXTRA_STICKERS.push(COMPACT_STICKER);

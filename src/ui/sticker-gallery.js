@@ -121,11 +121,11 @@ export function createStickerGallery({ notify }) {
             return backgroundLabel;
           }
           const controls = [
-            backgroundControl(sticker.id, sticker.category === 'combined' ? '전체 배경' : '배경'),
+            backgroundControl(sticker.id, sticker.summaryBackgroundKey ? '전체 배경' : '배경'),
           ];
           if (sticker.summaryBackgroundKey)
             controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
-          if (sticker.category !== 'summary') {
+          if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false) {
             const label = el('div', 'sticker-time-toggle');
             const toggle = el('button', 'sticker-time-switch');
             toggle.type = 'button';

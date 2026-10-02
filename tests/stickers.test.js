@@ -182,12 +182,15 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
-test('gallery has twelve unique stickers and four in each category', () => {
-  assert.equal(STICKERS.length, 12);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 12);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 12);
+test('gallery has ten unique stickers with only the selected new combined design', () => {
+  assert.equal(STICKERS.length, 10);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 10);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 10);
   for (const category of ['summary', 'calendar', 'combined']) {
-    assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, category)).length, 4);
+    assert.equal(
+      STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
+      category === 'combined' ? 2 : 4,
+    );
   }
 });
 
@@ -223,18 +226,48 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 12);
+    assert.equal(result.length, 10);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(
         { width: sticker.width, height: sticker.height },
         stickerDimensions(sticker.id, false),
       );
-      if (sticker.category !== 'summary')
+      if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false)
         assert.ok(sticker.height < stickerDimensions(sticker.id, true).height);
     }
   } finally {
     if (previous === undefined) delete globalThis.document;
     else globalThis.document = previous;
   }
+});
+
+test('compact type design shows weekly metrics and dots only on recorded days', () => {
+  const compact = STICKERS.find((item) => item.id === 'combined-compact');
+  const labels = [],
+    dots = [];
+  const ctx = new Proxy(
+    {},
+    {
+      get(target, key) {
+        if (key === 'measureText') return () => ({ width: 40 });
+        if (key === 'fillText') return (value) => labels.push(value);
+        if (key === 'arc') return (...args) => dots.push(args);
+        return target[key] ?? (() => {});
+      },
+    },
+  );
+  compact.draw(
+    ctx,
+    weekDates(new Date(2026, 9, 1)),
+    {
+      '2026-09-28': { type: 'yoga', minutes: 60 },
+      '2026-09-30': { type: 'running', minutes: 30 },
+    },
+    STICKER_BACKGROUNDS.transparentWhite,
+  );
+  assert.ok(labels.includes('2') && labels.includes('1h 30m'));
+  assert.equal(dots.length, 2);
+  assert.equal(compact.summaryBackgroundKey, undefined);
+  assert.equal(compact.defaultBackground, 'transparentWhite');
 });
