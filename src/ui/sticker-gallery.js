@@ -88,10 +88,6 @@ export function createStickerGallery({ notify }) {
         status = $('#sticker-status');
       list.replaceChildren();
       clearURLs();
-      if (!Object.keys(snapshot).length) {
-        status.textContent = '운동을 기록하면 스티커가 만들어져요.';
-        return;
-      }
       status.textContent = '스티커 만드는 중…';
       try {
         const stickers = await createStickers(dates, snapshot, backgrounds, timeVisibility);
