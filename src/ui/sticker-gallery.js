@@ -140,9 +140,7 @@ export function createStickerGallery({ notify }) {
             backgroundLabel.append(select);
             return backgroundLabel;
           }
-          const controls = [
-            backgroundControl(sticker.id, sticker.summaryBackgroundKey ? '전체 배경' : '배경'),
-          ];
+          const controls = [];
           if (sticker.summaryBackgroundKey)
             controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
           if (sticker.category !== 'summary' && sticker.supportsDailyTime !== false) {
@@ -200,7 +198,7 @@ export function createStickerGallery({ notify }) {
         list.replaceChildren(...nodes);
         urls.forEach((url) => URL.revokeObjectURL(url));
         urls = nextURLs;
-        status.textContent = '전체 테마를 한 번에 바꾸거나, 스티커별로 조정할 수 있어요.';
+        status.textContent = '상단에서 전체 테마를 고르면 모든 스티커에 적용돼요.';
       } catch (error) {
         nextURLs.forEach((url) => URL.revokeObjectURL(url));
         if (current !== revision) return;
