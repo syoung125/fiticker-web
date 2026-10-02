@@ -182,14 +182,14 @@ test('hidden daily times remove export space while square keeps equal sides', ()
   assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
 });
 
-test('gallery includes nine unique stickers in their matching categories', () => {
-  assert.equal(STICKERS.length, 9);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 9);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 9);
+test('gallery includes eight unique stickers in their matching categories', () => {
+  assert.equal(STICKERS.length, 8);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 8);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 8);
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      { summary: 2, calendar: 5, combined: 2 }[category],
+      { summary: 2, calendar: 4, combined: 2 }[category],
     );
   }
 });
@@ -226,7 +226,7 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 9);
+    assert.equal(result.length, 8);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(
@@ -298,7 +298,7 @@ test('mini summary is square and shows zero and recorded totals', () => {
 });
 
 test('compact calendar has weekdays but no date numbers or week heading', () => {
-  const sticker = STICKERS.find((item) => item.id === 'calendar-compact');
+  const sticker = STICKERS.find((item) => item.id === 'calendar-minimal');
   const labels = [];
   const ctx = new Proxy(
     {},

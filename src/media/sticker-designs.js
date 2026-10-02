@@ -92,7 +92,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
     if (poster) text(ctx, 'MOVE. REST. REPEAT.', 32, height - 22, 17, theme.secondary, 700);
   }
 }
-const styles = ['minimal', 'ticket', 'poster'];
+const styles = ['ticket', 'poster'];
 const names = { minimal: '미니멀', ticket: '티켓', poster: '포스터' };
 const categories = { calendar: '캘린더' };
 export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, label]) =>
@@ -132,4 +132,8 @@ export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, lab
   })),
 );
 
-EXTRA_STICKERS.push(COMPACT_STICKER, ...SMALL_STICKERS);
+EXTRA_STICKERS.unshift(SMALL_STICKERS.find((sticker) => sticker.category === 'calendar'));
+EXTRA_STICKERS.push(
+  COMPACT_STICKER,
+  ...SMALL_STICKERS.filter((sticker) => sticker.category === 'summary'),
+);

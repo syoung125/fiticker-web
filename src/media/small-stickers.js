@@ -38,10 +38,10 @@ export const SMALL_STICKERS = [
     },
   },
   {
-    id: 'calendar-compact',
+    id: 'calendar-minimal',
     category: 'calendar',
-    title: '캘린더 · 요일만',
-    defaultBackground: 'transparent',
+    title: '캘린더 · 미니멀',
+    defaultBackground: 'white',
     dimensions: (showTime = true) => ({ width: 840, height: showTime ? 180 : 136 }),
     draw(ctx, dates, records, theme, _heading, showTime = true) {
       background(ctx, 840, showTime ? 180 : 136, theme, 26);
