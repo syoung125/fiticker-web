@@ -63,7 +63,7 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
 export function stickerDimensions(id, showTime = true) {
   const extra = EXTRA_STICKERS.find((sticker) => sticker.id === id);
   if (extra) return extra.dimensions(showTime);
-  if (id === 'calendar') return { width: 948, height: showTime ? 300 : 240 };
+  if (id === 'calendar') return { width: 996, height: showTime ? 348 : 288 };
   if (id === 'square') return { width: 1080, height: 1080 };
   return { width: SUMMARY_WIDTH, height: SUMMARY_HEIGHT };
 }
@@ -87,8 +87,8 @@ export const STICKERS = [
     id: 'calendar',
     category: 'calendar',
     title: '주간 캘린더',
-    width: 948,
-    height: 300,
+    width: 996,
+    height: 348,
     draw(
       ctx,
       dates,
@@ -96,13 +96,20 @@ export const STICKERS = [
       theme = STICKER_BACKGROUNDS.transparent,
       showHeading = true,
       showTime = true,
+      inSquare = false,
     ) {
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
-        ctx.roundRect(0, 0, 948, stickerDimensions('calendar', showTime).height, 30);
+        const { width, height } = stickerDimensions('calendar', showTime);
+        ctx.roundRect(0, 0, width, height, 30);
         ctx.fill();
       }
+      ctx.save();
+      if (!inSquare) ctx.translate(24, 24);
+      const rows = inSquare
+        ? { weekday: 88, date: 168, icon: 256, time: 336 }
+        : { weekday: 91, date: 143, icon: 199, time: 270 };
       const icon = createIconRenderer(ctx);
       ctx.fillStyle = theme.ink;
       ctx.textAlign = 'left';
@@ -113,23 +120,24 @@ export const STICKERS = [
         ctx.textAlign = 'center';
         ctx.fillStyle = theme.secondary;
         ctx.font = '500 22px "Manrope", sans-serif';
-        ctx.fillText(DAYS[index], center, 91);
+        ctx.fillText(DAYS[index], center, rows.weekday);
         ctx.fillStyle = theme.ink;
         ctx.font = '600 38px "Manrope", sans-serif';
-        ctx.fillText(String(date.getDate()), center, 143);
+        ctx.fillText(String(date.getDate()), center, rows.date);
         const record = records[dateKey(date)];
         if (record) {
-          icon(TYPES[record.type].icon, center, 199, 51, theme.ink);
+          icon(TYPES[record.type].icon, center, rows.icon, 51, theme.ink);
           if (showTime && record.minutes !== null) {
             ctx.fillStyle = theme.secondary;
             ctx.font = '500 23px "Manrope", sans-serif';
-            ctx.fillText(duration(record.minutes), center, 270);
+            ctx.fillText(duration(record.minutes), center, rows.time);
           }
         } else {
           ctx.fillStyle = theme.secondary;
-          ctx.fillText('—', center, 211);
+          ctx.fillText('—', center, rows.icon + 12);
         }
       });
+      ctx.restore();
     },
   },
   {
@@ -166,12 +174,12 @@ export const STICKERS = [
         inset,
         176,
       );
-      drawSummary(ctx, summaryModel(dates, records), inset, 244, {
+      drawSummary(ctx, summaryModel(dates, records), inset, 268, {
         ...summaryTheme,
         transparent: summaryTheme.background === null,
       });
       ctx.save();
-      ctx.translate(inset, 674);
+      ctx.translate(inset, 650);
       STICKERS.find((sticker) => sticker.id === 'calendar').draw(
         ctx,
         dates,
@@ -179,6 +187,7 @@ export const STICKERS = [
         { ...theme, background: null },
         false,
         showTime,
+        true,
       );
       ctx.restore();
     },

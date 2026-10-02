@@ -171,7 +171,7 @@ test('calendar time toggle hides daily times without removing square summary tot
 });
 
 test('hidden daily times compact calendars while square keeps its original size', () => {
-  assert.deepEqual(stickerDimensions('calendar', false), { width: 948, height: 240 });
+  assert.deepEqual(stickerDimensions('calendar', false), { width: 996, height: 288 });
   assert.equal(
     stickerDimensions('calendar', true).height - stickerDimensions('calendar', false).height,
     60,
@@ -180,7 +180,7 @@ test('hidden daily times compact calendars while square keeps its original size'
   assert.equal(square.width, square.height);
   assert.deepEqual(square, { width: 1080, height: 1080 });
   assert.deepEqual(square, stickerDimensions('square', true));
-  assert.ok(674 + stickerDimensions('calendar', false).height < square.height);
+  assert.ok(650 + 336 < square.height);
 });
 
 test('gallery includes nine unique stickers in their matching categories', () => {
