@@ -189,7 +189,7 @@ test('gallery includes eight unique stickers in their matching categories', () =
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      { summary: 2, calendar: 4, combined: 2 }[category],
+      { summary: 2, calendar: 3, combined: 3 }[category],
     );
   }
 });
@@ -319,4 +319,48 @@ test('compact calendar has weekdays but no date numbers or week heading', () => 
     stickerDimensions(sticker.id, true).height - stickerDimensions(sticker.id, false).height,
     44,
   );
+});
+
+test('weekly poster replaces decorative headline with live summary in weekly records', () => {
+  const poster = STICKERS.find((item) => item.id === 'combined-poster');
+  assert.equal(poster.category, 'combined');
+  assert.equal(poster.title, '주간 기록 · 포스터');
+  assert.ok(!STICKERS.some((item) => item.id === 'calendar-poster'));
+  const dates = weekDates(new Date(2026, 9, 1));
+  // Totals remain visible even when daily time labels are disabled.
+  const previous = globalThis.document;
+  globalThis.document = {
+    createElement: () => ({
+      getContext: () => ({
+        fillText() {},
+        getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+      }),
+    }),
+  };
+  try {
+    for (const [records, expected] of [
+      [{}, ['0', '0m']],
+      [{ '2026-09-28': { type: 'yoga', name: 'Yoga', minutes: 90 } }, ['1', '1h 30m']],
+    ]) {
+      const labels = [];
+      const ctx = new Proxy(
+        {},
+        {
+          get(target, key) {
+            if (key === 'measureText') return () => ({ width: 40 });
+            if (key === 'fillText') return (value) => labels.push(value);
+            return target[key] ?? (() => {});
+          },
+        },
+      );
+      poster.draw(ctx, dates, records, STICKER_BACKGROUNDS.dark, undefined, false);
+      assert.ok(expected.every((value) => labels.includes(value)));
+      assert.ok(labels.includes('WORKOUTS') && labels.includes('TOTAL TIME'));
+      assert.ok(labels.includes('MON') && labels.includes('28'));
+      assert.ok(!labels.includes('7 DAYS.') && !labels.includes('ONE WEEK OF MOVEMENT'));
+    }
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
+  }
 });

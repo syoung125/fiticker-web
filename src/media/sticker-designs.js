@@ -2,6 +2,7 @@ import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import { createIconRenderer } from './icon.js';
+import { summaryModel } from './summary.js';
 
 const FONT = '"Manrope", "Noto Sans KR", sans-serif';
 function text(ctx, value, x, y, size, color, weight = 500, align = 'left', maxWidth) {
@@ -65,8 +66,11 @@ function calendar(ctx, dates, records, theme, style, showTime) {
   } else {
     const poster = style === 'poster';
     if (poster) {
-      text(ctx, '7 DAYS.', 32, 187, 140, theme.ink, 800);
-      text(ctx, 'ONE WEEK OF MOVEMENT', 38, 240, 23, theme.secondary, 600);
+      const { count, total } = summaryModel(dates, records);
+      text(ctx, String(count), 266, 186, 112, theme.ink, 800, 'center', 420);
+      text(ctx, total, 734, 186, 96, theme.ink, 800, 'center', 420);
+      text(ctx, 'WORKOUTS', 266, 236, 23, theme.secondary, 600, 'center');
+      text(ctx, 'TOTAL TIME', 734, 236, 23, theme.secondary, 600, 'center');
       line(ctx, 32, 280, 936, theme);
     }
     const offset = poster ? 240 : 0;
@@ -93,44 +97,21 @@ function calendar(ctx, dates, records, theme, style, showTime) {
   }
 }
 const styles = ['ticket', 'poster'];
-const names = { minimal: '미니멀', ticket: '티켓', poster: '포스터' };
-const categories = { calendar: '캘린더' };
-export const EXTRA_STICKERS = Object.entries(categories).flatMap(([category, label]) =>
-  styles.map((style) => ({
-    id: `${category}-${style}`,
-    category,
-    title: `${label} · ${names[style]}`,
-    defaultBackground: style === 'poster' ? 'dark' : style === 'ticket' ? 'lavender' : 'white',
-    dimensions(showTime = true) {
-      if (category === 'calendar')
-        return {
-          width: style === 'ticket' ? 660 : 1000,
-          height:
-            style === 'ticket'
-              ? showTime
-                ? 960
-                : 750
-              : style === 'poster'
-                ? showTime
-                  ? 620
-                  : 560
-                : showTime
-                  ? 320
-                  : 260,
-        };
-    },
-    draw(
-      ctx,
-      dates,
-      records,
-      theme,
-      summaryTheme = { ...theme, background: null },
-      showTime = true,
-    ) {
-      if (category === 'calendar') return calendar(ctx, dates, records, theme, style, showTime);
-    },
-  })),
-);
+export const EXTRA_STICKERS = styles.map((style) => ({
+  id: style === 'poster' ? 'combined-poster' : 'calendar-ticket',
+  category: style === 'poster' ? 'combined' : 'calendar',
+  title: style === 'poster' ? '주간 기록 · 포스터' : '캘린더 · 티켓',
+  defaultBackground: style === 'poster' ? 'dark' : 'lavender',
+  dimensions(showTime = true) {
+    return {
+      width: style === 'ticket' ? 660 : 1000,
+      height: style === 'ticket' ? (showTime ? 960 : 750) : showTime ? 620 : 560,
+    };
+  },
+  draw(ctx, dates, records, theme, _summaryTheme, showTime = true) {
+    return calendar(ctx, dates, records, theme, style, showTime);
+  },
+}));
 
 EXTRA_STICKERS.unshift(SMALL_STICKERS.find((sticker) => sticker.category === 'calendar'));
 EXTRA_STICKERS.push(

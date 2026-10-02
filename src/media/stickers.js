@@ -197,7 +197,7 @@ export const STICKER_CATEGORIES = [
   { id: 'all', label: '전체' },
   { id: 'summary', label: '요약' },
   { id: 'calendar', label: '캘린더' },
-  { id: 'combined', label: '요약+캘린더' },
+  { id: 'combined', label: '주간 기록' },
 ];
 export function matchesStickerCategory(sticker, category) {
   return category === 'all' || sticker.category === category;
