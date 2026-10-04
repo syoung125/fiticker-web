@@ -1085,6 +1085,14 @@ textarea {
   max-width: 980px;
   margin-inline: auto;
 }
+.record-storage-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+  word-break: keep-all;
+}
 .sticker-section {
   margin-top: 44px;
   border-top: 1px solid var(--line);
