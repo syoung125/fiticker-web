@@ -11,7 +11,7 @@ let dates = weekDates(new Date()),
 const stickerGallery = createStickerGallery({ notify: toast });
 const recordSheet = createRecordSheet({
   records,
-  onSave(key, action, cleared) {
+  onSave(key, action, cleared, customSaved = true) {
     const cached = saveSessionRecords(records);
     render();
     const target = ['time', 'memo'].includes(action)
@@ -21,13 +21,15 @@ const recordSheet = createRecordSheet({
     toast(
       !cached
         ? '이 환경에서는 새로고침 후 기록이 유지되지 않을 수 있어요.'
-        : cleared
-          ? action === 'time'
-            ? '시간을 지웠어요.'
-            : '메모를 지웠어요.'
-          : action === 'delete'
-            ? '기록을 삭제했어요.'
-            : '기록을 저장했어요.',
+        : !customSaved
+          ? '기록을 저장했어요. 이 환경에서는 추가한 종목이 다음 방문까지 유지되지 않을 수 있어요.'
+          : cleared
+            ? action === 'time'
+              ? '시간을 지웠어요.'
+              : '메모를 지웠어요.'
+            : action === 'delete'
+              ? '기록을 삭제했어요.'
+              : '기록을 저장했어요.',
     );
   },
 });

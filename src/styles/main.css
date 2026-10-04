@@ -601,6 +601,43 @@ legend {
   margin-left: 5px;
   font-weight: 400;
 }
+.custom-sport-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.custom-sport-row input {
+  flex: 1;
+  min-width: 0;
+}
+.custom-icon-button {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  font-size: 26px;
+}
+.emoji-picker {
+  margin-top: 12px;
+}
+.emoji-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.emoji-option {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 25px;
+}
+.emoji-option:hover {
+  background: var(--line);
+}
 .types {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1084,14 +1121,6 @@ textarea {
   display: block;
   max-width: 980px;
   margin-inline: auto;
-}
-.record-storage-note {
-  margin: 14px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.7;
-  text-align: center;
-  word-break: keep-all;
 }
 .sticker-section {
   margin-top: 44px;

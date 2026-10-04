@@ -1,4 +1,5 @@
-import { TYPES, dateKey } from '../domain/workouts.js';
+import { loadCustomSports, rememberCustomSport } from '../domain/custom-sports.js';
+import { TYPES, dateKey, validEmoji } from '../domain/workouts.js';
 import { updateRecord } from '../domain/record-actions.js';
 import { createDurationPicker } from './duration-picker.js';
 import { $, el } from './dom.js';
@@ -9,6 +10,8 @@ export function createRecordSheet({ records, onSave }) {
   const save = $('#save-record');
   const error = $('#form-error');
   const picker = createDurationPicker($('#duration-picker'));
+  const customSports = loadCustomSports();
+  let selectedIcon = '✳️';
   let key, action;
   const titles = {
     type: '어떤 운동을 했나요?',
@@ -21,26 +24,101 @@ export function createRecordSheet({ records, onSave }) {
     try {
       if (action === 'delete') delete records[key];
       else records[key] = updateRecord(records[key], action, data);
+      const customSaved =
+        action === 'type' && records[key]?.type === 'other'
+          ? rememberCustomSport(customSports, records[key])
+          : true;
       dialog.close();
-      onSave(key, action, cleared);
+      if (customSaved) onSave(key, action, cleared);
+      else onSave(key, action, cleared, false);
     } catch (e) {
       error.textContent = e.message;
     }
   }
-  for (const [type, info] of Object.entries(TYPES)) {
-    const button = el('button', 'type-label');
-    button.type = 'button';
-    button.dataset.type = type;
-    button.append(el('span', '', info.icon), document.createTextNode(info.ko));
-    button.onclick = () => {
-      if (type !== 'other') return commit({ type });
-      $('#custom-label').hidden = false;
-      $('#custom-name').required = true;
-      save.hidden = false;
-      $('#custom-name').focus();
-    };
-    $('#types').append(button);
+  function setIcon(icon) {
+    selectedIcon = icon;
+    $('#custom-icon').textContent = icon;
+    $('#custom-emoji').value = icon;
   }
+  function closeEmojiPicker() {
+    $('#emoji-picker').hidden = true;
+    $('#custom-icon').setAttribute('aria-expanded', 'false');
+  }
+  function renderTypes(record) {
+    $('#types').replaceChildren();
+    const options = [
+      ...Object.entries(TYPES)
+        .filter(([type]) => type !== 'other')
+        .map(([type, info]) => ({ type, ...info })),
+      ...customSports.map((sport) => ({ type: 'other', ko: sport.name, ...sport })),
+      { type: 'other', ...TYPES.other },
+    ];
+    for (const info of options) {
+      const button = el('button', 'type-label');
+      button.type = 'button';
+      button.dataset.type = info.type;
+      if (info.name) button.dataset.customName = info.name;
+      button.setAttribute(
+        'aria-pressed',
+        String(info.type === record?.type && (info.type !== 'other' || info.name === record.name)),
+      );
+      button.append(el('span', '', info.icon), document.createTextNode(info.ko));
+      button.onclick = () => {
+        if (info.type !== 'other') return commit({ type: info.type });
+        if (info.name) return commit({ type: 'other', name: info.name, icon: info.icon });
+        $('#custom-label').hidden = false;
+        $('#custom-name').required = true;
+        save.hidden = false;
+        $('#custom-name').focus();
+      };
+      $('#types').append(button);
+    }
+  }
+  $('#custom-icon').onclick = () => {
+    const expanded = $('#emoji-picker').hidden;
+    $('#emoji-picker').hidden = !expanded;
+    $('#custom-icon').setAttribute('aria-expanded', String(expanded));
+  };
+  for (const emoji of [
+    '✳️',
+    '🏸',
+    '🥊',
+    '🏀',
+    '🏐',
+    '⚾',
+    '🏓',
+    '⛳',
+    '🥋',
+    '🤺',
+    '⛸️',
+    '🎿',
+    '🏂',
+    '🏄',
+    '🚣',
+    '🥾',
+    '🪢',
+    '💃',
+    '🕺',
+    '🐎',
+  ]) {
+    const button = el('button', 'emoji-option', emoji);
+    button.type = 'button';
+    button.setAttribute('aria-label', emoji);
+    button.onclick = () => {
+      setIcon(emoji);
+      closeEmojiPicker();
+      $('#custom-icon').focus();
+    };
+    $('#emoji-options').append(button);
+  }
+  $('#custom-emoji').addEventListener('input', () => {
+    const value = $('#custom-emoji').value.trim();
+    if (validEmoji(value)) {
+      selectedIcon = value;
+      $('#custom-icon').textContent = value;
+      error.textContent = '';
+    }
+  });
   $('#close-dialog').onclick = () => dialog.close();
   $('#open-delete').onclick = () => {
     if (action === 'time') return commit({ hours: '', mins: '' }, true);
@@ -66,7 +144,12 @@ export function createRecordSheet({ records, onSave }) {
   form.onsubmit = (event) => {
     event.preventDefault();
     if (save.disabled) return;
-    if (action === 'type') commit({ type: 'other', name: $('#custom-name').value });
+    if (action === 'type')
+      commit({
+        type: 'other',
+        name: $('#custom-name').value,
+        icon: $('#custom-emoji').value.trim() || selectedIcon,
+      });
     else if (action === 'time') commit(picker.read());
     else if (action === 'memo') commit({ memo: $('#memo').value });
     else if (action === 'delete') commit();
@@ -94,9 +177,9 @@ export function createRecordSheet({ records, onSave }) {
     $('#custom-label').hidden = action !== 'type' || record?.type !== 'other';
     $('#custom-name').required = action === 'type' && record?.type === 'other';
     $('#custom-name').value = record?.type === 'other' ? record.name : '';
-    document.querySelectorAll('[data-type]').forEach((button) => {
-      button.setAttribute('aria-pressed', String(button.dataset.type === record?.type));
-    });
+    setIcon(record?.type === 'other' ? (record.icon ?? '✳️') : '✳️');
+    closeEmojiPicker();
+    renderTypes(record);
     $('#memo').value = record?.memo ?? '';
     $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
     error.textContent = '';

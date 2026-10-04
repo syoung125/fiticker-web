@@ -1,6 +1,6 @@
 import { calendarMemoHeight, drawMemo } from './memo.js';
 import { EXTRA_STICKERS } from './sticker-designs.js';
-import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
+import { DAYS, recordIcon, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import {
   drawSummary,
   summaryModel,
@@ -131,7 +131,7 @@ export const STICKERS = [
         ctx.fillText(String(date.getDate()), center, rows.date);
         const record = records[dateKey(date)];
         if (record) {
-          icon(TYPES[record.type].icon, center, rows.icon, 51, theme.ink);
+          icon(recordIcon(record), center, rows.icon, 51, theme.ink);
           if (showTime && record.minutes !== null) {
             ctx.fillStyle = theme.secondary;
             ctx.font = '500 23px "Manrope", "Noto Sans KR", sans-serif';

@@ -140,3 +140,50 @@ test('separate sheets add sport in one step, preserve unrelated fields, and clea
     else globalThis.document = previous;
   }
 });
+
+test('custom sport sheet selects an emoji and reuses saved sports after reopening and reload', () => {
+  const previous = globalThis.document,
+    previousStorage = globalThis.localStorage;
+  const data = new Map();
+  globalThis.localStorage = {
+    getItem: (key) => data.get(key) ?? null,
+    setItem: (key, value) => data.set(key, value),
+  };
+  try {
+    const { doc, get } = fixture();
+    globalThis.document = doc;
+    const records = {};
+    const sheet = createRecordSheet({ records, onSave() {} });
+    sheet.open(new Date(2026, 9, 1));
+    get('#types')
+      .children.find((button) => button.dataset.type === 'other')
+      .onclick();
+    assert.equal(get('#custom-label').hidden, false);
+    get('#custom-name').value = '배드민턴';
+    get('#custom-icon').onclick();
+    assert.equal(get('#emoji-picker').hidden, false);
+    get('#emoji-options')
+      .children.find((button) => button.textContent === '🏸')
+      .onclick();
+    assert.equal(get('#emoji-picker').hidden, true);
+    get('#workout-form').onsubmit({ preventDefault() {} });
+    assert.equal(records['2026-10-01'].icon, '🏸');
+    assert.equal(records['2026-10-01'].name, '배드민턴');
+    assert.equal(get('#workout-dialog').open, false);
+    const reloaded = fixture();
+    globalThis.document = reloaded.doc;
+    const nextSheet = createRecordSheet({ records, onSave() {} });
+    nextSheet.open(new Date(2026, 9, 2));
+    reloaded
+      .get('#types')
+      .children.find((button) => button.dataset.customName === '배드민턴')
+      .onclick();
+    assert.equal(records['2026-10-02'].icon, '🏸');
+    assert.equal(records['2026-10-02'].name, '배드민턴');
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
+    if (previousStorage === undefined) delete globalThis.localStorage;
+    else globalThis.localStorage = previousStorage;
+  }
+});

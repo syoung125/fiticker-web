@@ -3,13 +3,16 @@ import { validateRecord } from './workouts.js';
 // Each sheet updates only its own field; all other saved details survive.
 export function updateRecord(record, action, data = {}) {
   if (action === 'type') {
-    const selected = validateRecord({ type: data.type, name: data.name });
-    return { ...selected, photo: null, ...record, type: selected.type, name: selected.name };
+    const selected = validateRecord({ type: data.type, name: data.name, icon: data.icon });
+    const next = { ...selected, photo: null, ...record, type: selected.type, name: selected.name };
+    delete next.icon;
+    if (selected.icon) next.icon = selected.icon;
+    return next;
   }
   if (!record) throw new Error('먼저 운동을 선택해 주세요.');
   if (action === 'edit') {
     const checked = validateRecord(data);
-    return { ...record, type: checked.type, name: checked.name, minutes: checked.minutes };
+    return { ...updateRecord(record, 'type', checked), minutes: checked.minutes };
   }
   if (action === 'photo') return { ...record, photo: data.photo ?? null };
   if (action === 'time') {

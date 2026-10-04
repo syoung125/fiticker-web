@@ -1,7 +1,7 @@
 import { memoLines, drawMemo, calendarMemoHeight } from './memo.js';
 import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
-import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
+import { DAYS, recordIcon, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import { createIconRenderer } from './icon.js';
 import { summaryModel } from './summary.js';
 
@@ -77,7 +77,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         text(ctx, value, x, y + 40, size, color, weight, align, maxWidth, 'middle');
       rowText(DAYS[i], 34, 18, theme.secondary, 700);
       rowText(String(date.getDate()).padStart(2, '0'), 108, 35, theme.ink, 600);
-      if (record) icon(TYPES[record.type].icon, 205, y + 40, 39, theme.ink);
+      if (record) icon(recordIcon(record), 205, y + 40, 39, theme.ink);
       let nameWidth = 234;
       if (showTime && record?.minutes != null) {
         const time = duration(record.minutes);
@@ -121,7 +121,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         700,
         'center',
       );
-      if (record) icon(TYPES[record.type].icon, x, offset + 202, 47, theme.ink);
+      if (record) icon(recordIcon(record), x, offset + 202, 47, theme.ink);
       else text(ctx, '—', x, offset + 211, 26, theme.secondary, 500, 'center');
       if (showTime && record?.minutes != null)
         text(ctx, duration(record.minutes), x, offset + 278, 21, theme.secondary, 500, 'center');

@@ -1,5 +1,5 @@
 import { calendarMemoHeight, drawMemo } from './memo.js';
-import { DAYS, TYPES, dateKey, duration } from '../domain/workouts.js';
+import { DAYS, recordIcon, dateKey, duration } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 import { createIconRenderer } from './icon.js';
 
@@ -76,7 +76,7 @@ export const SMALL_STICKERS = [
         const record = records[dateKey(date)];
         text(ctx, DAYS[index], x, 38, 19, theme.secondary);
         if (record) {
-          icon(TYPES[record.type].icon, x, 88, 44, theme.ink);
+          icon(recordIcon(record), x, 88, 44, theme.ink);
           if (showTime) text(ctx, duration(record.minutes ?? 0), x, 156, 21, theme.ink, 500, 106);
           drawMemo(
             ctx,

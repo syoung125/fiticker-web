@@ -12,6 +12,16 @@ export const TYPES = {
   soccer: { label: 'Soccer', ko: '축구', icon: '⚽', color: '#e1ebdc' },
   other: { label: 'Other', ko: '기타', icon: '✳', color: '#e9e8df' },
 };
+export function validEmoji(value) {
+  if (typeof value !== 'string' || value.length > 32) return false;
+  const parts = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(value)];
+  return (
+    parts.length === 1 && /[\p{Extended_Pictographic}\p{Regional_Indicator}\u20e3]/u.test(value)
+  );
+}
+export function recordIcon(record) {
+  return record.type === 'other' && validEmoji(record.icon) ? record.icon : TYPES[record.type].icon;
+}
 export const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 export function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -71,7 +81,7 @@ export function summarizeBySport(dates, records) {
 export function duration(m) {
   return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? ` ${m % 60}m` : ''}` : `${m}m`;
 }
-export function validateRecord({ type, name = '', hours = '', mins = '', memo = '' }) {
+export function validateRecord({ type, name = '', hours = '', mins = '', memo = '', icon }) {
   if (!TYPES[type]) throw new Error('운동 종류를 선택해 주세요.');
   if (type === 'other' && !name.trim()) throw new Error('운동 이름을 입력해 주세요.');
   const h = Number(hours),
@@ -80,7 +90,10 @@ export function validateRecord({ type, name = '', hours = '', mins = '', memo = 
     throw new Error('시간은 0~23, 분은 0~59로 입력해 주세요.');
   if (Array.from(memo).length > 30) throw new Error('메모는 30자까지 입력할 수 있어요.');
   if (Array.from(name.trim()).length > 20) throw new Error('운동 이름은 20자까지 입력해 주세요.');
+  if (type === 'other' && icon !== undefined && !validEmoji(icon))
+    throw new Error('이모지 하나를 선택해 주세요.');
   return {
+    ...(type === 'other' && icon !== undefined ? { icon } : {}),
     type,
     name: type === 'other' ? name.trim() : TYPES[type].label,
     minutes: hours === '' && mins === '' ? null : h * 60 + m,

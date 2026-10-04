@@ -1,5 +1,6 @@
 import {
   TYPES,
+  recordIcon,
   DAYS,
   dateKey,
   summarize,
@@ -87,7 +88,7 @@ export async function createPoster(dates, records) {
     const r = records[dateKey(d)];
     text(DAYS[i], centerX, 681, 17, 600, muted, 'center');
     text(String(d.getDate()), centerX, 725, 30, 600, ink, 'center');
-    if (r) icon(TYPES[r.type].icon, centerX, 763, 35, ink);
+    if (r) icon(recordIcon(r), centerX, 763, 35, ink);
     else text('—', centerX, 774, 26, 500, '#b4b8a7', 'center');
   });
   line(832);
@@ -118,7 +119,7 @@ export async function createPoster(dates, records) {
         dh = img.height * scale;
       g.drawImage(img, x + (w - dw) / 2, y + (photoH - dh) / 2, dw, dh);
       g.restore();
-    } else icon(type.icon, x + w / 2, y + photoH / 2, rows === 3 ? 53 : 75, ink);
+    } else icon(recordIcon(r), x + w / 2, y + photoH / 2, rows === 3 ? 53 : 75, ink);
     rect(x + 12, y + 12, 102, 29, 8, '#ffffffeb');
     text(`${DAYS[i]} ${d.getDate()}`, x + 63, y + 33, 15, 700, ink, 'center');
     const inset = 20,

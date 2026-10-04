@@ -64,9 +64,6 @@
               <div id="calendar" class="calendar"></div>
               <p class="calendar-hint">＋를 눌러 운동을 추가해 보세요.</p>
             </section>
-            <p class="record-storage-note">
-              새로고침해도 기록은 그대로예요. 탭을 닫으면 기록이 사라질 수 있어요.
-            </p>
             <section class="sticker-section" aria-labelledby="sticker-title">
               <p class="eyebrow">YOUR WEEK, YOUR STICKERS</p>
               <h2 id="sticker-title">내 운동 스티커</h2>
@@ -129,13 +126,43 @@
             <legend>운동 종류 <span class="required">*</span></legend>
             <div id="types" class="types"></div>
           </fieldset>
-          <label id="custom-label" hidden
-            >운동 이름<input
-              id="custom-name"
-              maxlength="20"
-              placeholder="예: 테니스"
-              autocomplete="off"
-          /></label>
+          <div id="custom-label" hidden>
+            <label for="custom-name">운동 이름</label>
+            <div class="custom-sport-row">
+              <button
+                id="custom-icon"
+                class="custom-icon-button"
+                type="button"
+                aria-label="이모지 변경"
+                aria-expanded="false"
+                aria-controls="emoji-picker"
+              >
+                ✳️
+              </button>
+              <input
+                id="custom-name"
+                maxlength="20"
+                placeholder="예: 배드민턴"
+                autocomplete="off"
+              />
+            </div>
+            <div id="emoji-picker" class="emoji-picker" hidden>
+              <div
+                id="emoji-options"
+                class="emoji-options"
+                role="group"
+                aria-label="운동 이모지"
+              ></div>
+              <label for="custom-emoji">직접 입력</label>
+              <input
+                id="custom-emoji"
+                type="text"
+                autocomplete="off"
+                placeholder="이모지 키보드에서 골라보세요"
+                aria-label="직접 고른 이모지"
+              />
+            </div>
+          </div>
         </section>
         <section data-sheet="time" hidden>
           <fieldset>

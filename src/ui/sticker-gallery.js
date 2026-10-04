@@ -115,8 +115,8 @@ export function createStickerGallery({ notify }) {
           .filter((date) => records[dateKey(date)])
           .map((date) => {
             const key = dateKey(date),
-              { type, name, minutes, memo } = records[key];
-            return [key, { type, name, minutes, memo }];
+              { type, name, minutes, memo, icon } = records[key];
+            return [key, { type, name, minutes, memo, icon }];
           }),
       );
       const nextSignature = JSON.stringify([

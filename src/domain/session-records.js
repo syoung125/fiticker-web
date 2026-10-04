@@ -17,6 +17,7 @@ export function loadSessionRecords(storage) {
           ...validateRecord({
             type: record.type,
             name: record.name,
+            icon: record.icon,
             hours: minutes === null ? '' : String(Math.floor(minutes / 60)),
             mins: minutes === null ? '' : String(minutes % 60),
             memo: record.memo,

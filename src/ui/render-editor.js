@@ -1,4 +1,4 @@
-import { TYPES, DAYS, dateKey, weekLabel, weekDates, duration } from '../domain/workouts.js';
+import { recordIcon, DAYS, dateKey, weekLabel, weekDates, duration } from '../domain/workouts.js';
 import { $, el } from './dom.js';
 import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
@@ -54,7 +54,7 @@ export function renderEditor({ dates, records, onEdit }) {
     button.append(
       el('span', 'weekday', DAYS[index]),
       el('span', 'date', date.getDate()),
-      el('span', record ? 'day-icon' : 'day-icon plus', record ? TYPES[record.type].icon : '＋'),
+      el('span', record ? 'day-icon' : 'day-icon plus', record ? recordIcon(record) : '＋'),
     );
     button.onclick = () => onEdit(date, 'type');
     cell.append(button);
