@@ -6,6 +6,10 @@ export const TYPES = {
   swimming: { label: 'Swimming', ko: '수영', icon: '🏊', color: '#dfeaf2' },
   weight: { label: 'Weight', ko: '웨이트', icon: '💪', color: '#ece6dd' },
   pilates: { label: 'Pilates', ko: '필라테스', icon: '🤸', color: '#f0e0e4' },
+  ballet: { label: 'Ballet', ko: '발레', icon: '🩰', color: '#f0e0e4' },
+  climbing: { label: 'Climbing', ko: '클라이밍', icon: '🧗', color: '#ece6dd' },
+  tennis: { label: 'Tennis', ko: '테니스', icon: '🎾', color: '#dfff7a' },
+  soccer: { label: 'Soccer', ko: '축구', icon: '⚽', color: '#e1ebdc' },
   other: { label: 'Other', ko: '기타', icon: '✳', color: '#e9e8df' },
 };
 export const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
