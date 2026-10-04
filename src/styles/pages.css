@@ -474,6 +474,9 @@
 .home-page .site-cta {
   justify-content: center;
   gap: 10px;
+  box-shadow:
+    0 8px 20px #687e2824,
+    0 2px 5px #20221d0a;
 }
 .home-page .cta-star {
   display: block;
@@ -515,6 +518,9 @@
   border-radius: 24px;
   background: #20221d;
   color: #f7f7f0;
+  box-shadow:
+    0 12px 30px #20221d1a,
+    0 3px 8px #20221d0a;
 }
 .app-launch-label {
   margin-bottom: 12px;
@@ -566,5 +572,29 @@
   }
   .app-launch-copy h2 {
     font-size: 20px;
+  }
+}
+
+@keyframes cta-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-page .site-cta {
+    animation: cta-float 3.6s ease-in-out 1.8s infinite;
+  }
+  .home-page .site-cta:focus-visible,
+  .home-page .site-cta:active {
+    animation-play-state: paused;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .home-page .site-cta:hover {
+      animation-play-state: paused;
+    }
   }
 }
