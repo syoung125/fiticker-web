@@ -4,9 +4,10 @@ import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
 
 function detailButton(className, value, placeholder) {
-  const button = el('button', `day-detail ${className}`);
+  const empty = value == null || value === '';
+  const button = el('button', `day-detail ${className}${empty ? ' is-empty' : ''}`);
   const content = el('span', 'day-detail-content');
-  if (value == null || value === '') {
+  if (empty) {
     const ns = 'http://www.w3.org/2000/svg';
     const icon = document.createElementNS(ns, 'svg');
     for (const [key, value] of Object.entries({
@@ -15,7 +16,7 @@ function detailButton(className, value, placeholder) {
       height: '10',
       fill: 'none',
       stroke: 'currentColor',
-      'stroke-width': '1.5',
+      'stroke-width': '1.2',
       'stroke-linecap': 'round',
       'aria-hidden': 'true',
       focusable: 'false',
@@ -26,9 +27,7 @@ function detailButton(className, value, placeholder) {
     icon.append(path);
     content.append(icon);
   }
-  content.append(
-    el('span', 'day-detail-label', value == null || value === '' ? placeholder : value),
-  );
+  content.append(el('span', 'day-detail-label', empty ? placeholder : value));
   button.append(content);
   return button;
 }

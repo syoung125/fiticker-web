@@ -1230,9 +1230,9 @@ textarea {
   min-width: 0;
 }
 .day-memo .day-detail-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .sticker-time-toggle {
@@ -1376,8 +1376,15 @@ textarea {
   gap: 2px;
   min-width: 0;
   max-width: 100%;
-  padding-bottom: 2px;
-  border-bottom: 1px solid currentColor;
+}
+.day-detail.is-empty {
+  font-weight: 400;
+  color: #858a7a;
+}
+.day-detail.is-empty .day-detail-content {
+  gap: 1px;
+  padding-bottom: 0;
+  border-bottom: 1px solid #b7bcad;
 }
 #memo {
   resize: vertical;
