@@ -1,65 +1,61 @@
-// Content stays visible when motion is disabled or observers are unavailable.
+// Keep the page readable without JavaScript or when reduced motion is enabled.
 const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const page = document.querySelector('.home-page');
-if (page && !motion.matches && 'IntersectionObserver' in window) {
-  const running = new Set();
-  const animate = (element, frames, options) => {
-    const animation = element.animate(frames, options);
-    running.add(animation);
-    animation.finished.catch(() => {}).finally(() => running.delete(animation));
-  };
+if (page && !motion.matches && 'IntersectionObserver' in window && page.animate) {
+  const elements = [
+    ...page.querySelectorAll(
+      '.home-intro > *, .home-art, .section-heading, .weekly-service-card, .home-how h2, .home-how li, .home-feedback',
+    ),
+  ];
+  const animations = new Map();
   const observer = new IntersectionObserver(
     (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        observer.unobserve(entry.target);
-        if (motion.matches || entry.target.contains(document.activeElement)) continue;
-        animate(
-          entry.target,
-          [
-            { opacity: 0, transform: 'translateY(18px)' },
-            { opacity: 1, transform: 'translateY(0)' },
-          ],
-          { duration: 700, easing: 'cubic-bezier(.2,.7,.2,1)' },
-        );
-        if (entry.target.classList.contains('home-art')) {
-          animate(
-            page.querySelector('.sample-track span'),
-            [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
-            { duration: 1100, easing: 'cubic-bezier(.2,.7,.2,1)' },
-          );
-          for (const [selector, angle, offset] of [
-            ['.sample-progress', -3, -7],
-            ['.sample-calendar', 2, 6],
-          ]) {
-            animate(
-              page.querySelector(selector),
-              [
-                { transform: `translateY(0) rotate(${angle}deg)` },
-                { transform: `translateY(${offset}px) rotate(${angle - 1}deg)` },
-                { transform: `translateY(0) rotate(${angle}deg)` },
-              ],
-              { duration: 4200, easing: 'ease-in-out' },
-            );
-          }
+      const entering = new Set(
+        entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target),
+      );
+      let order = 0;
+      for (const element of elements) {
+        if (!entering.has(element)) continue;
+        observer.unobserve(element);
+        const animation = animations.get(element);
+        if (!animation) continue;
+        if (motion.matches || element.contains(document.activeElement)) {
+          animation.cancel();
+          continue;
         }
+        animation.effect.updateTiming({ delay: Math.min(order * 110, 550) });
+        animation.play();
+        order += 1;
       }
     },
-    { threshold: 0.12 },
+    { threshold: 0.08 },
   );
-  page
-    .querySelectorAll(
-      '.home-intro, .home-art, .section-heading, .weekly-service-card, .home-how h2, .home-how li, .home-feedback',
-    )
-    .forEach((element) => observer.observe(element));
+  for (const element of elements) {
+    const animation = element.animate(
+      [
+        { opacity: 0, transform: 'translateY(22px)' },
+        { opacity: 1, transform: 'translateY(0)' },
+      ],
+      { duration: 650, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' },
+    );
+    animation.pause();
+    animations.set(element, animation);
+    animation.finished
+      .then(() => animation.cancel())
+      .catch(() => {})
+      .finally(() => animations.delete(element));
+    observer.observe(element);
+  }
   motion.addEventListener('change', () => {
     if (!motion.matches) return;
     observer.disconnect();
-    running.forEach((animation) => animation.cancel());
+    animations.forEach((animation) => animation.cancel());
   });
   page.addEventListener('focusin', () => {
-    running.forEach((animation) => {
-      if (animation.effect.target.contains(document.activeElement)) animation.cancel();
+    animations.forEach((animation, element) => {
+      if (!element.contains(document.activeElement)) return;
+      observer.unobserve(element);
+      animation.cancel();
     });
   });
 }
