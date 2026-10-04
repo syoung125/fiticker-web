@@ -167,6 +167,8 @@ export function createStickerGallery({ notify }) {
               button.append(color);
               button.onclick = async () => {
                 backgrounds[key] = value;
+                for (const swatch of palette.children)
+                  swatch.setAttribute('aria-pressed', String(swatch === button));
                 await gallery.update(latestDates, latestRecords);
                 $(`[data-sticker-background="${key}"][data-background-value="${value}"]`)?.focus({
                   preventScroll: true,
