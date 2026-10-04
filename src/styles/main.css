@@ -1181,8 +1181,16 @@ textarea {
 .sticker-preview-mini {
   border-radius: 9.166667%;
   overflow: hidden;
-  max-width: 240px;
+  max-width: 180px;
   margin-inline: auto;
+}
+.sticker-card[data-sticker-category='calendar'] .sticker-preview {
+  width: 80%;
+  max-width: 640px;
+  margin-inline: auto;
+}
+.sticker-card[data-sticker-category='calendar'] .sticker-preview-ticket {
+  max-width: 320px;
 }
 .sticker-actions {
   display: flex;

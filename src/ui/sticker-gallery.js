@@ -184,6 +184,7 @@ export function createStickerGallery({ notify }) {
             controls.push(backgroundControl(sticker.summaryBackgroundKey, '요약 배경'));
           const preview = el('div', 'sticker-preview');
           if (sticker.id === 'summary-widget') preview.classList.add('sticker-preview-mini');
+          if (sticker.id === 'calendar-ticket') preview.classList.add('sticker-preview-ticket');
           if (backgrounds[sticker.id] === 'transparentWhite')
             preview.classList.add('sticker-preview-dark');
           const image = el('img');
