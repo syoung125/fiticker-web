@@ -74,27 +74,27 @@ p {
 }
 .brand {
   display: flex;
-  gap: 5.4px;
+  gap: 5px;
   align-items: center;
-  font-size: 27px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -0.72px;
+  letter-spacing: -0.64px;
   line-height: 1;
 }
 .brand-mark {
   background: #20221d;
-  border-radius: 7.2px;
+  border-radius: 6px;
   overflow: hidden;
-  height: 29.7px;
-  width: 29.7px;
+  height: 24px;
+  width: 24px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 .brand-mark img {
   display: block;
-  width: 29.7px;
-  height: 29.7px;
+  width: 24px;
+  height: 24px;
   max-width: none;
 }
 .top-note,
