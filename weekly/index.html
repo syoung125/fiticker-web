@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f0" />
+    <meta
+      name="description"
+      content="건강한 일상을, 나만의 스티커로. Fiticker에서 운동을 기록하고 나만의 스티커를 만들어보세요."
+    />
+    <title>위클리 스티커 · Fiticker</title>
+    <meta property="og:title" content="Fiticker — 건강한 일상을, 나만의 스티커로." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fiticker" />
+    <meta property="og:url" content="https://syoung125.github.io/move-diary/weekly/" />
+    <meta property="og:image" content="https://syoung125.github.io/move-diary/fiticker-share.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1733" />
+    <meta property="og:image:height" content="907" />
+    <meta
+      property="og:image:alt"
+      content="Fiticker 로고와 건강한 일상을, 나만의 스티커로. 슬로건"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fiticker — 건강한 일상을, 나만의 스티커로." />
+    <meta
+      name="twitter:image"
+      content="https://syoung125.github.io/move-diary/fiticker-share.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Fiticker 로고와 건강한 일상을, 나만의 스티커로. 슬로건"
+    />
+    <meta
+      property="og:description"
+      content="건강한 일상을, 나만의 스티커로. Fiticker에서 운동을 기록하고 나만의 스티커를 만들어보세요."
+    />
+    <link rel="icon" href="/fiticker-mark.png" type="image/png" />
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body data-page="weekly">
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Fiticker 홈"
+        ><span class="brand-mark" aria-hidden="true"
+          ><img src="/fiticker-mark.png" alt="" width="24" height="24" /></span
+        ><span>Fiticker</span></a
+      >
+      <details class="site-menu">
+        <summary aria-label="메뉴 열기">
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </summary>
+        <nav aria-label="주요 메뉴">
+          <a href="../">홈</a><a href="../weekly/" aria-current="page">위클리 스티커</a
+          ><a href="../feedback/">의견 보내기</a>
+        </nav>
+      </details>
+    </header>
+    <main>
+      <section id="editor">
+        <div class="intro">
+          <div>
+            <p class="eyebrow"><span class="dot"></span> WEEKLY MOVEMENT JOURNAL</p>
+            <p class="subtitle">한 주의 운동을 기록하고,<br />나만의 스티커를 만들어보세요.</p>
+          </div>
+        </div>
+        <div class="workspace">
+          <div class="main-column">
+            <div class="week-heading">
+              <div>
+                <h2 id="week-title"></h2>
+                <p id="date-range" class="muted"></p>
+              </div>
+              <div class="week-nav">
+                <button id="previous" class="icon-button" aria-label="이전 주">←</button>
+                <button id="next" class="icon-button" aria-label="다음 주" disabled>→</button>
+              </div>
+            </div>
+            <section class="summary" aria-label="주간 운동 합계">
+              <canvas
+                id="summary-canvas"
+                class="summary-canvas"
+                width="948"
+                height="354"
+                role="img"
+                aria-label="주간 운동 합계"
+              ></canvas>
+            </section>
+            <section class="calendar-panel" aria-label="주간 캘린더">
+              <div id="calendar" class="calendar"></div>
+              <p class="calendar-hint">＋를 눌러 운동을 추가해 보세요.</p>
+            </section>
+            <section class="sticker-section" aria-labelledby="sticker-title">
+              <p class="eyebrow">YOUR WEEK, YOUR STICKERS</p>
+              <h2 id="sticker-title">내 운동 스티커</h2>
+              <p class="sticker-help">이미지를 꾹 눌러 복사하거나 복사 버튼을 눌러보세요.</p>
+              <p id="sticker-status" role="status">스티커 만드는 중…</p>
+              <div class="sticker-toolbar">
+                <div
+                  id="sticker-filters"
+                  class="sticker-filters"
+                  role="group"
+                  aria-label="스티커 카테고리"
+                ></div>
+                <div class="sticker-global-options">
+                  <div
+                    id="sticker-theme"
+                    class="theme-palette"
+                    role="group"
+                    aria-label="모든 스티커 테마"
+                  ></div>
+                  <div class="sticker-time-toggle">
+                    <span id="sticker-time-label">캘린더 시간 표시</span>
+                    <button
+                      id="sticker-time"
+                      class="sticker-time-switch"
+                      type="button"
+                      role="switch"
+                      aria-checked="false"
+                      aria-labelledby="sticker-time-label"
+                    >
+                      <span class="switch-thumb"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="sticker-list" class="sticker-list"></div>
+              <p class="sticker-help">
+                복사 후 스토리 편집 화면에 붙여넣으세요. 앱에서 붙여넣기를 지원하지 않으면 PNG를
+                저장해 사진 스티커로 추가할 수 있어요.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer><span>Fiticker</span><a href="../feedback/">의견 보내기 ↗</a></footer>
+    <dialog id="workout-dialog" aria-labelledby="dialog-title">
+      <form id="workout-form">
+        <div class="dialog-heading">
+          <div>
+            <p id="sheet-date" class="eyebrow"></p>
+            <h2 id="dialog-title"></h2>
+          </div>
+          <button type="button" id="close-dialog" class="icon-button" aria-label="닫기">✕</button>
+        </div>
+        <section data-sheet="type">
+          <fieldset>
+            <legend>운동 종류 <span class="required">*</span></legend>
+            <div id="types" class="types"></div>
+            <button
+              id="more-types-toggle"
+              class="more-types-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="more-types"
+            >
+              더보기
+            </button>
+            <div id="more-types" class="types" hidden></div>
+          </fieldset>
+          <div id="custom-label" hidden>
+            <label for="custom-name">운동 이름</label>
+            <div class="custom-sport-row">
+              <button
+                id="custom-icon"
+                class="custom-icon-button"
+                type="button"
+                aria-label="이모지 변경"
+                aria-expanded="false"
+                aria-controls="emoji-picker"
+              >
+                ✳️
+              </button>
+              <input
+                id="custom-name"
+                maxlength="20"
+                placeholder="예: 배드민턴"
+                autocomplete="off"
+              />
+            </div>
+            <div id="emoji-picker" class="emoji-picker" hidden>
+              <div
+                id="emoji-options"
+                class="emoji-options"
+                role="group"
+                aria-label="운동 이모지"
+              ></div>
+              <label for="custom-emoji">직접 입력</label>
+              <input
+                id="custom-emoji"
+                type="text"
+                autocomplete="off"
+                placeholder="이모지 키보드에서 골라보세요"
+                aria-label="직접 고른 이모지"
+              />
+            </div>
+          </div>
+        </section>
+        <section data-sheet="time" hidden>
+          <fieldset>
+            <legend>운동 시간 <span class="optional">선택</span></legend>
+            <div id="duration-picker" class="duration-picker">
+              <div class="duration-picker-heading">
+                <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
+                <button type="button" class="text-button" data-duration-clear disabled hidden>
+                  선택 해제
+                </button>
+              </div>
+              <div class="duration-wheels">
+                <div class="wheel-highlight" aria-hidden="true"></div>
+                <div
+                  id="hours-wheel"
+                  class="duration-wheel"
+                  role="listbox"
+                  tabindex="0"
+                  aria-label="운동 시간"
+                  aria-describedby="duration-help"
+                ></div>
+                <div
+                  id="minutes-wheel"
+                  class="duration-wheel"
+                  role="listbox"
+                  tabindex="0"
+                  aria-label="운동 분"
+                  aria-describedby="duration-help"
+                ></div>
+              </div>
+              <p id="duration-help" class="duration-help">
+                위아래로 밀거나 숫자를 눌러 선택 · 분은 5분 단위
+              </p>
+            </div>
+          </fieldset>
+        </section>
+        <section data-sheet="memo" hidden>
+          <label class="memo-label" for="memo"
+            >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
+          ><textarea
+            id="memo"
+            rows="3"
+            placeholder="오늘의 운동은 어땠나요?"
+            autocomplete="off"
+          ></textarea>
+        </section>
+        <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
+        <p id="form-error" class="error" role="alert"></p>
+        <div class="form-actions">
+          <button
+            type="button"
+            id="open-delete"
+            class="delete-button"
+            aria-label="기록 삭제"
+            title="기록 삭제"
+            hidden
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+            </svg>
+          </button>
+          <button type="submit" class="primary" id="save-record">저장</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

@@ -1,2 +1,8 @@
 import './styles/main.css';
-import './app.js';
+import './styles/pages.css';
+import { setupNavigation } from './ui/navigation.js';
+
+setupNavigation();
+if (document.body.dataset.page === 'weekly') void import('./app.js');
+
+if (document.body.dataset.page === 'feedback') void import('./ui/feedback.js');

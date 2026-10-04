@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f0" />
+    <meta
+      name="description"
+      content="건강한 일상을, 나만의 스티커로. Fiticker에서 운동을 기록하고 나만의 스티커를 만들어보세요."
+    />
+    <title>의견 보내기 · Fiticker</title>
+    <meta property="og:title" content="Fiticker — 건강한 일상을, 나만의 스티커로." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fiticker" />
+    <meta property="og:url" content="https://syoung125.github.io/move-diary/feedback/" />
+    <meta property="og:image" content="https://syoung125.github.io/move-diary/fiticker-share.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1733" />
+    <meta property="og:image:height" content="907" />
+    <meta
+      property="og:image:alt"
+      content="Fiticker 로고와 건강한 일상을, 나만의 스티커로. 슬로건"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fiticker — 건강한 일상을, 나만의 스티커로." />
+    <meta
+      name="twitter:image"
+      content="https://syoung125.github.io/move-diary/fiticker-share.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Fiticker 로고와 건강한 일상을, 나만의 스티커로. 슬로건"
+    />
+    <meta
+      property="og:description"
+      content="건강한 일상을, 나만의 스티커로. Fiticker에서 운동을 기록하고 나만의 스티커를 만들어보세요."
+    />
+    <link rel="icon" href="/fiticker-mark.png" type="image/png" />
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body data-page="feedback">
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Fiticker 홈"
+        ><span class="brand-mark" aria-hidden="true"
+          ><img src="/fiticker-mark.png" alt="" width="24" height="24" /></span
+        ><span>Fiticker</span></a
+      >
+      <details class="site-menu">
+        <summary aria-label="메뉴 열기">
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </summary>
+        <nav aria-label="주요 메뉴">
+          <a href="../">홈</a><a href="../weekly/">위클리 스티커</a
+          ><a href="../feedback/" aria-current="page">의견 보내기</a>
+        </nav>
+      </details>
+    </header>
+    <main class="feedback-page">
+      <p class="eyebrow">BETTER TOGETHER</p>
+      <h1>어떤 점이 더 좋아지면 좋을까요?</h1>
+      <p class="feedback-lead">
+        불편했던 점부터 새로 보고 싶은 스티커까지.<br />여러분의 의견으로 Fiticker를 함께
+        만들어가요.
+      </p>
+      <section class="feedback-card" aria-label="의견 작성">
+        <form id="feedback-form">
+          <label for="feedback-topic">어떤 의견인가요?</label
+          ><select id="feedback-topic" name="topic">
+            <option value="아이디어 제안">아이디어 제안</option>
+            <option value="불편한 점">불편한 점</option>
+            <option value="기타 의견">기타 의견</option></select
+          ><label for="feedback-message">들려주실 이야기</label
+          ><textarea
+            id="feedback-message"
+            name="message"
+            rows="7"
+            maxlength="1000"
+            required
+            placeholder="자유롭게 적어주세요."
+          ></textarea>
+          <p class="feedback-note">
+            버튼을 누르면 메일 앱이 열려요. 작성한 내용을 확인하고 전송해 주세요.
+          </p>
+          <button class="site-cta" type="submit">
+            메일 앱에서 보내기 <span aria-hidden="true">↗</span>
+          </button>
+          <p id="feedback-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <div class="feedback-contact">
+        <p>직접 메일을 보내셔도 좋아요.</p>
+        <div>
+          <a href="mailto:gogumang.dev@gmail.com">gogumang.dev@gmail.com</a
+          ><button id="copy-feedback-email" type="button">주소 복사</button>
+        </div>
+      </div>
+    </main>
+    <footer><span>Fiticker</span><a href="../feedback/">의견 보내기 ↗</a></footer>
+  </body>
+</html>

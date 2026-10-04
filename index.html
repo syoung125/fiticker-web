@@ -38,233 +38,115 @@
     <link rel="icon" href="/fiticker-mark.png" type="image/png" />
     <script type="module" src="/src/main.js"></script>
   </head>
-  <body>
+  <body data-page="home">
     <header class="topbar">
-      <a class="brand" href="./" aria-label="Fiticker 처음으로"
+      <a class="brand" href="./" aria-label="Fiticker 홈"
         ><span class="brand-mark" aria-hidden="true"
-          ><img src="/fiticker-mark.png" alt="" width="33" height="33" /></span
+          ><img src="/fiticker-mark.png" alt="" width="24" height="24" /></span
         ><span>Fiticker</span></a
-      ><span class="top-note">YOUR WEEK. YOUR MOVES.</span>
+      >
+      <details class="site-menu">
+        <summary aria-label="메뉴 열기">
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </summary>
+        <nav aria-label="주요 메뉴">
+          <a href="./" aria-current="page">홈</a><a href="./weekly/">위클리 스티커</a
+          ><a href="./feedback/">의견 보내기</a>
+        </nav>
+      </details>
     </header>
-    <main>
-      <section id="editor">
-        <div class="intro">
-          <div>
-            <p class="eyebrow"><span class="dot"></span> WEEKLY MOVEMENT JOURNAL</p>
-            <p class="subtitle">한 주의 운동을 기록하고,<br />나만의 스티커를 만들어보세요.</p>
-          </div>
+    <main class="home-page">
+      <section class="home-hero" aria-labelledby="home-title">
+        <div class="home-intro">
+          <p class="eyebrow">YOUR LIFE, YOUR STICKERS</p>
+          <h1 id="home-title">건강한 일상을,<br />나만의 스티커로.</h1>
+          <p class="home-description">
+            차곡차곡 쌓은 운동 기록을 나다운 스티커로.<br />내 사진 위에 붙여 이번 주의 나를
+            남겨보세요.
+          </p>
+          <a class="site-cta" href="./weekly/"
+            >위클리 스티커 만들기 <span aria-hidden="true">↗</span></a
+          >
+          <p class="home-caption">가입 없이, 가볍게 시작해요.</p>
         </div>
-        <div class="workspace">
-          <div class="main-column">
-            <div class="week-heading">
-              <div>
-                <h2 id="week-title"></h2>
-                <p id="date-range" class="muted"></p>
-              </div>
-              <div class="week-nav">
-                <button id="previous" class="icon-button" aria-label="이전 주">←</button>
-                <button id="next" class="icon-button" aria-label="다음 주" disabled>→</button>
-              </div>
-            </div>
-            <section class="summary" aria-label="주간 운동 합계">
-              <canvas
-                id="summary-canvas"
-                class="summary-canvas"
-                width="948"
-                height="354"
-                role="img"
-                aria-label="주간 운동 합계"
-              ></canvas>
-            </section>
-            <section class="calendar-panel" aria-label="주간 캘린더">
-              <div id="calendar" class="calendar"></div>
-              <p class="calendar-hint">＋를 눌러 운동을 추가해 보세요.</p>
-            </section>
-            <section class="sticker-section" aria-labelledby="sticker-title">
-              <p class="eyebrow">YOUR WEEK, YOUR STICKERS</p>
-              <h2 id="sticker-title">내 운동 스티커</h2>
-              <p class="sticker-help">이미지를 꾹 눌러 복사하거나 복사 버튼을 눌러보세요.</p>
-              <p id="sticker-status" role="status">스티커 만드는 중…</p>
-              <div class="sticker-toolbar">
-                <div
-                  id="sticker-filters"
-                  class="sticker-filters"
-                  role="group"
-                  aria-label="스티커 카테고리"
-                ></div>
-                <div class="sticker-global-options">
-                  <div
-                    id="sticker-theme"
-                    class="theme-palette"
-                    role="group"
-                    aria-label="모든 스티커 테마"
-                  ></div>
-                  <div class="sticker-time-toggle">
-                    <span id="sticker-time-label">캘린더 시간 표시</span>
-                    <button
-                      id="sticker-time"
-                      class="sticker-time-switch"
-                      type="button"
-                      role="switch"
-                      aria-checked="false"
-                      aria-labelledby="sticker-time-label"
-                    >
-                      <span class="switch-thumb"></span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div id="sticker-list" class="sticker-list"></div>
-              <p class="sticker-help">
-                복사 후 스토리 편집 화면에 붙여넣으세요. 앱에서 붙여넣기를 지원하지 않으면 PNG를
-                저장해 사진 스티커로 추가할 수 있어요.
-              </p>
-            </section>
+        <div class="home-art" aria-label="위클리 스티커 예시: 일주일 중 4일 운동">
+          <span class="example-label">STICKER PREVIEW · 예시</span>
+          <div class="sample-progress">
+            <div><span>This week</span><strong>4 / 7 days</strong></div>
+            <div class="sample-track"><span></span></div>
           </div>
+          <div class="sample-calendar">
+            <span>MON<b>🏋️</b></span
+            ><span>TUE<b>🧘</b></span
+            ><span>WED<b>—</b></span
+            ><span>THU<b>🏃</b></span
+            ><span>FRI<b>—</b></span
+            ><span>SAT<b>🏊</b></span
+            ><span>SUN<b>—</b></span>
+          </div>
+          <span class="art-caption">이번 주의 움직임을 한눈에.</span>
         </div>
       </section>
+      <section class="home-services" aria-labelledby="service-title">
+        <div class="section-heading">
+          <p class="eyebrow">MAKE IT YOURS</p>
+          <h2 id="service-title">기록이 스티커가 되는 순간</h2>
+        </div>
+        <a class="weekly-service-card" href="./weekly/"
+          ><div>
+            <span class="service-tag">WEEKLY</span>
+            <h3>위클리 스티커</h3>
+            <p>
+              요일마다 운동을 기록하고, 마음에 드는 디자인을 골라보세요.<br />시간과 메모도 함께
+              담을 수 있어요.
+            </p>
+            <span class="service-link">스티커 만들기 <span aria-hidden="true">↗</span></span>
+          </div>
+          <div class="service-mini" aria-hidden="true">
+            <span>MY WEEK</span><strong>4<span> days</span></strong>
+            <div>🏋️　🧘　🏃　🏊</div>
+          </div></a
+        >
+      </section>
+      <section class="home-how" aria-labelledby="how-title">
+        <h2 id="how-title">기록하고, 고르고, 붙이면 끝.</h2>
+        <ol>
+          <li>
+            <span>01</span>
+            <h3>오늘의 운동을 기록해요</h3>
+            <p>운동을 고르고, 원하면 시간과 메모를 더해요.</p>
+          </li>
+          <li>
+            <span>02</span>
+            <h3>내 취향으로 골라요</h3>
+            <p>요약부터 캘린더까지, 디자인과 색상을 선택해요.</p>
+          </li>
+          <li>
+            <span>03</span>
+            <h3>나의 일상에 붙여요</h3>
+            <p>스티커를 복사하거나 저장해서 사진과 스토리에 더해요.</p>
+          </li>
+        </ol>
+      </section>
+      <section class="home-feedback">
+        <div>
+          <h2>Fiticker가 더 좋아지려면?</h2>
+          <p>써보면서 떠오른 아이디어를 들려주세요.</p>
+        </div>
+        <a href="./feedback/">의견 보내기 ↗</a>
+      </section>
     </main>
-    <footer>
-      <span>Fiticker</span>
-      <span>JUST KEEP MOVING. ↗</span>
-    </footer>
-    <dialog id="workout-dialog" aria-labelledby="dialog-title">
-      <form id="workout-form">
-        <div class="dialog-heading">
-          <div>
-            <p id="sheet-date" class="eyebrow"></p>
-            <h2 id="dialog-title"></h2>
-          </div>
-          <button type="button" id="close-dialog" class="icon-button" aria-label="닫기">✕</button>
-        </div>
-        <section data-sheet="type">
-          <fieldset>
-            <legend>운동 종류 <span class="required">*</span></legend>
-            <div id="types" class="types"></div>
-            <button
-              id="more-types-toggle"
-              class="more-types-toggle"
-              type="button"
-              aria-expanded="false"
-              aria-controls="more-types"
-            >
-              더보기
-            </button>
-            <div id="more-types" class="types" hidden></div>
-          </fieldset>
-          <div id="custom-label" hidden>
-            <label for="custom-name">운동 이름</label>
-            <div class="custom-sport-row">
-              <button
-                id="custom-icon"
-                class="custom-icon-button"
-                type="button"
-                aria-label="이모지 변경"
-                aria-expanded="false"
-                aria-controls="emoji-picker"
-              >
-                ✳️
-              </button>
-              <input
-                id="custom-name"
-                maxlength="20"
-                placeholder="예: 배드민턴"
-                autocomplete="off"
-              />
-            </div>
-            <div id="emoji-picker" class="emoji-picker" hidden>
-              <div
-                id="emoji-options"
-                class="emoji-options"
-                role="group"
-                aria-label="운동 이모지"
-              ></div>
-              <label for="custom-emoji">직접 입력</label>
-              <input
-                id="custom-emoji"
-                type="text"
-                autocomplete="off"
-                placeholder="이모지 키보드에서 골라보세요"
-                aria-label="직접 고른 이모지"
-              />
-            </div>
-          </div>
-        </section>
-        <section data-sheet="time" hidden>
-          <fieldset>
-            <legend>운동 시간 <span class="optional">선택</span></legend>
-            <div id="duration-picker" class="duration-picker">
-              <div class="duration-picker-heading">
-                <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
-                <button type="button" class="text-button" data-duration-clear disabled hidden>
-                  선택 해제
-                </button>
-              </div>
-              <div class="duration-wheels">
-                <div class="wheel-highlight" aria-hidden="true"></div>
-                <div
-                  id="hours-wheel"
-                  class="duration-wheel"
-                  role="listbox"
-                  tabindex="0"
-                  aria-label="운동 시간"
-                  aria-describedby="duration-help"
-                ></div>
-                <div
-                  id="minutes-wheel"
-                  class="duration-wheel"
-                  role="listbox"
-                  tabindex="0"
-                  aria-label="운동 분"
-                  aria-describedby="duration-help"
-                ></div>
-              </div>
-              <p id="duration-help" class="duration-help">
-                위아래로 밀거나 숫자를 눌러 선택 · 분은 5분 단위
-              </p>
-            </div>
-          </fieldset>
-        </section>
-        <section data-sheet="memo" hidden>
-          <label class="memo-label" for="memo"
-            >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
-          ><textarea
-            id="memo"
-            rows="3"
-            placeholder="오늘의 운동은 어땠나요?"
-            autocomplete="off"
-          ></textarea>
-        </section>
-        <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
-        <p id="form-error" class="error" role="alert"></p>
-        <div class="form-actions">
-          <button
-            type="button"
-            id="open-delete"
-            class="delete-button"
-            aria-label="기록 삭제"
-            title="기록 삭제"
-            hidden
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
-            </svg>
-          </button>
-          <button type="submit" class="primary" id="save-record">저장</button>
-        </div>
-      </form>
-    </dialog>
-    <div id="toast" role="status" aria-live="polite"></div>
+    <footer><span>Fiticker</span><a href="./feedback/">의견 보내기 ↗</a></footer>
   </body>
 </html>
