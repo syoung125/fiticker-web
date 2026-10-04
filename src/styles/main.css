@@ -82,6 +82,9 @@ p {
   line-height: 1;
 }
 .brand-mark {
+  background: #20221d;
+  border-radius: 8px;
+  overflow: hidden;
   height: 33px;
   width: 33px;
   display: grid;
@@ -90,11 +93,9 @@ p {
 }
 .brand-mark img {
   display: block;
-  filter: brightness(0);
-  width: 42px;
-  height: 42px;
+  width: 33px;
+  height: 33px;
   max-width: none;
-  margin: -4.5px;
 }
 .top-note,
 .eyebrow {
