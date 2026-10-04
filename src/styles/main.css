@@ -1220,7 +1220,7 @@ textarea {
 .day-detail-label {
   min-width: 0;
 }
-.day-memo .day-detail-label {
+.day-memo:not(.is-empty) .day-detail-label {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.5;
@@ -1377,6 +1377,11 @@ textarea {
   color: #858a7a;
 }
 .day-detail.is-empty .day-detail-content {
+  justify-content: center;
+  width: max-content;
+  margin-inline: auto;
+  white-space: nowrap;
+  line-height: 1;
   gap: 1px;
   padding-bottom: 0;
   border-bottom: 1px solid #b7bcad;
