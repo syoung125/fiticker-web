@@ -26,22 +26,14 @@ export const SMALL_STICKERS = [
     id: 'summary-progress',
     category: 'summary',
     title: '요약 · 프로그레스',
-    defaultBackground: 'white',
+    defaultBackground: 'lime',
     dimensions: () => ({ width: 840, height: 188 }),
     draw(ctx, dates, records, theme) {
       const count = Math.min(
         7,
         new Set(dates.filter((date) => records[dateKey(date)]).map(dateKey)).size,
       );
-      const accent =
-        theme.background === '#ffffff'
-          ? '#ed60da'
-          : theme.background === '#e7e1f6'
-            ? '#8b62ba'
-            : theme.background === '#20221d'
-              ? '#dfff7a'
-              : theme.ink;
-      background(ctx, 840, 188, theme, 28);
+      background(ctx, 840, 188, theme, 26);
       ctx.font = `500 27px ${FONT}`;
       ctx.fillStyle = theme.secondary;
       ctx.textBaseline = 'alphabetic';
@@ -51,7 +43,7 @@ export const SMALL_STICKERS = [
       ctx.fillStyle = theme.ink;
       ctx.fillText(`${count} / 7 days`, 792, 76);
       ctx.save();
-      ctx.fillStyle = accent;
+      ctx.fillStyle = theme.ink;
       ctx.globalAlpha = 0.12;
       ctx.beginPath();
       ctx.roundRect(48, 114, 744, 20, 10);

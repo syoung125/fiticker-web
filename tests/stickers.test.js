@@ -490,6 +490,7 @@ test('ticket aligns duration beside the sport and keeps row heights when toggled
 
 test('progress summary counts workout days regardless of duration and fills only their weekly share', () => {
   const sticker = STICKERS.find((item) => item.id === 'summary-progress');
+  assert.equal(sticker.defaultBackground, 'lime');
   const dates = weekDates(new Date(2026, 9, 1));
   for (const theme of Object.values(STICKER_BACKGROUNDS)) {
     for (const count of [0, 1, 4, 7]) {
@@ -523,6 +524,7 @@ test('progress summary counts workout days regardless of duration and fills only
       ]);
       assert.equal(bars[0].width, 744);
       assert.equal(bars[0].alpha, 0.12);
+      assert.equal(bars[0].color, theme.ink);
       assert.equal(bars.length, count ? 2 : 1);
       if (count) {
         assert.equal(bars[1].width, (744 * count) / 7);
