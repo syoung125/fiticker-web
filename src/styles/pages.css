@@ -471,8 +471,12 @@
   }
 }
 
+.home-page .site-cta {
+  justify-content: center;
+  gap: 10px;
+}
 .home-page .cta-star {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }
