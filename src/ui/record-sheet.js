@@ -46,6 +46,7 @@ export function createRecordSheet({ records, onSave }) {
   }
   function renderTypes(record) {
     $('#types').replaceChildren();
+    $('#more-types').replaceChildren();
     const options = [
       ...Object.entries(TYPES)
         .filter(([type]) => type !== 'other')
@@ -71,9 +72,15 @@ export function createRecordSheet({ records, onSave }) {
         save.hidden = false;
         $('#custom-name').focus();
       };
-      $('#types').append(button);
+      $(info.extra ? '#more-types' : '#types').append(button);
     }
   }
+  function setMoreExpanded(expanded) {
+    $('#more-types').hidden = !expanded;
+    $('#more-types-toggle').setAttribute('aria-expanded', String(expanded));
+    $('#more-types-toggle').textContent = expanded ? '접기' : '더보기';
+  }
+  $('#more-types-toggle').onclick = () => setMoreExpanded($('#more-types').hidden);
   $('#custom-icon').onclick = () => {
     const expanded = $('#emoji-picker').hidden;
     $('#emoji-picker').hidden = !expanded;
@@ -81,25 +88,9 @@ export function createRecordSheet({ records, onSave }) {
   };
   for (const emoji of [
     '✳️',
-    '🏸',
-    '🥊',
-    '🏀',
-    '🏐',
-    '⚾',
-    '🏓',
-    '⛳',
-    '🥋',
-    '🤺',
-    '⛸️',
-    '🎿',
-    '🏂',
-    '🏄',
-    '🚣',
-    '🥾',
-    '🪢',
-    '💃',
-    '🕺',
-    '🐎',
+    ...Object.values(TYPES)
+      .filter((info) => info.extra)
+      .map((info) => info.icon),
   ]) {
     const button = el('button', 'emoji-option', emoji);
     button.type = 'button';
@@ -180,6 +171,7 @@ export function createRecordSheet({ records, onSave }) {
     setIcon(record?.type === 'other' ? (record.icon ?? '✳️') : '✳️');
     closeEmojiPicker();
     renderTypes(record);
+    setMoreExpanded(Boolean(TYPES[record?.type]?.extra));
     $('#memo').value = record?.memo ?? '';
     $('#memo-count').textContent = `${Array.from($('#memo').value).length} / 30`;
     error.textContent = '';

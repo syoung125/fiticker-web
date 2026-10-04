@@ -187,3 +187,45 @@ test('custom sport sheet selects an emoji and reuses saved sports after reopenin
     else globalThis.localStorage = previousStorage;
   }
 });
+
+test('more sports starts collapsed, expands without saving and selects a sport in one click', () => {
+  const previous = globalThis.document;
+  const { doc, get } = fixture();
+  globalThis.document = doc;
+  try {
+    const records = {},
+      saved = [];
+    const sheet = createRecordSheet({ records, onSave: (...args) => saved.push(args) });
+    const date = new Date(2026, 9, 1);
+    sheet.open(date);
+    assert.equal(get('#more-types').hidden, true);
+    assert.equal(get('#more-types-toggle').attributes['aria-expanded'], 'false');
+    assert.ok(!get('#types').children.some((button) => button.dataset.type === 'badminton'));
+    get('#more-types-toggle').onclick();
+    assert.equal(get('#more-types').hidden, false);
+    assert.equal(saved.length, 0);
+    assert.equal(get('#workout-dialog').open, true);
+    assert.ok(!get('#emoji-options').children.some((button) => button.textContent === '🪢'));
+    get('#more-types')
+      .children.find((button) => button.dataset.type === 'badminton')
+      .onclick();
+    assert.equal(records['2026-10-01'].type, 'badminton');
+    assert.equal(records['2026-10-01'].name, 'Badminton');
+    assert.equal(get('#workout-dialog').open, false);
+    sheet.open(date);
+    assert.equal(get('#more-types').hidden, false);
+    assert.equal(
+      get('#more-types').children.find((button) => button.dataset.type === 'badminton').attributes[
+        'aria-pressed'
+      ],
+      'true',
+    );
+    get('#more-types-toggle').onclick();
+    assert.equal(get('#more-types').hidden, true);
+    sheet.open(new Date(2026, 9, 2));
+    assert.equal(get('#more-types').hidden, true);
+  } finally {
+    if (previous === undefined) delete globalThis.document;
+    else globalThis.document = previous;
+  }
+});

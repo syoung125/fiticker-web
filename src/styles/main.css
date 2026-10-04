@@ -638,6 +638,19 @@ legend {
 .emoji-option:hover {
   background: var(--line);
 }
+.more-types-toggle {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  margin: 8px 0;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .types {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

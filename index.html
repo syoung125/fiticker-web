@@ -125,6 +125,16 @@
           <fieldset>
             <legend>운동 종류 <span class="required">*</span></legend>
             <div id="types" class="types"></div>
+            <button
+              id="more-types-toggle"
+              class="more-types-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="more-types"
+            >
+              더보기
+            </button>
+            <div id="more-types" class="types" hidden></div>
           </fieldset>
           <div id="custom-label" hidden>
             <label for="custom-name">운동 이름</label>
