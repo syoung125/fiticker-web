@@ -478,7 +478,7 @@
     0 8px 20px #687e2824,
     0 2px 5px #20221d0a;
 }
-.home-page .cta-star {
+.cta-star {
   display: block;
   width: 18px;
   height: 18px;
@@ -494,14 +494,16 @@
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .home-page .cta-star {
+  .cta-star {
     animation: cta-star-turn 4.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
-  .home-page .site-cta:focus-visible .cta-star {
+  .home-page .site-cta:focus-visible .cta-star,
+  .app-launch-cta:focus-visible .cta-star {
     animation-play-state: paused;
   }
   @media (hover: hover) and (pointer: fine) {
-    .home-page .site-cta:hover .cta-star {
+    .home-page .site-cta:hover .cta-star,
+    .app-launch-cta:hover .cta-star {
       animation-play-state: paused;
     }
   }
@@ -544,6 +546,7 @@
 }
 .app-launch-cta {
   display: inline-flex;
+  gap: 10px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
