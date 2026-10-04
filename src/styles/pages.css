@@ -480,3 +480,26 @@
   width: 18px;
   height: 18px;
 }
+
+@keyframes cta-star-turn {
+  0%,
+  65% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-page .cta-star {
+    animation: cta-star-turn 4.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .home-page .site-cta:focus-visible .cta-star {
+    animation-play-state: paused;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .home-page .site-cta:hover .cta-star {
+      animation-play-state: paused;
+    }
+  }
+}
