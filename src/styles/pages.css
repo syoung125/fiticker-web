@@ -470,3 +470,9 @@
     transform: scale(0.98);
   }
 }
+
+.home-page .cta-star {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
