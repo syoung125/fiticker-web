@@ -63,7 +63,7 @@
             <section class="calendar-panel" aria-label="주간 캘린더">
               <div id="calendar" class="calendar"></div>
               <p class="calendar-hint">
-                <span>＋</span> 날짜를 눌러 운동 추가 · 이모지를 눌러 기록 편집
+                <span>＋</span> 날짜를 눌러 운동 추가 · 이모지를 눌러 운동 변경
               </p>
             </section>
             <section class="sticker-section" aria-labelledby="sticker-title">
@@ -143,7 +143,7 @@
             <div id="duration-picker" class="duration-picker">
               <div class="duration-picker-heading">
                 <span data-duration-status role="status" aria-live="polite">시간 미입력</span>
-                <button type="button" class="text-button" data-duration-clear disabled>
+                <button type="button" class="text-button" data-duration-clear disabled hidden>
                   선택 해제
                 </button>
               </div>
@@ -180,7 +180,6 @@
         <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
         <p id="form-error" class="error" role="alert"></p>
         <div class="form-actions">
-          <button type="button" id="skip-time" class="text-button" hidden>skip</button>
           <button
             type="button"
             id="open-delete"

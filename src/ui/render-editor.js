@@ -27,12 +27,30 @@ export function renderEditor({ dates, records, onEdit }) {
       el('span', 'date', date.getDate()),
       el('span', record ? 'day-icon' : 'day-icon plus', record ? TYPES[record.type].icon : '＋'),
     );
-    button.onclick = () => onEdit(date, record ? 'edit' : 'type');
+    button.onclick = () => onEdit(date, 'type');
     cell.append(button);
     if (record) {
-      button.append(
-        el('span', 'day-time', record.minutes === null ? '0m' : duration(record.minutes)),
+      const time = el(
+        'button',
+        'day-detail day-time',
+        record.minutes == null ? '시간 설정' : duration(record.minutes),
       );
+      time.type = 'button';
+      time.dataset.recordAction = 'time';
+      time.dataset.recordDate = key;
+      time.setAttribute('aria-label', `${date.getMonth() + 1}월 ${date.getDate()}일 시간 설정`);
+      time.onclick = () => onEdit(date, 'time');
+      const memo = el('button', 'day-detail day-memo', record.memo || '메모 추가');
+      memo.type = 'button';
+      memo.dataset.recordAction = 'memo';
+      memo.dataset.recordDate = key;
+      memo.title = record.memo || '메모 추가';
+      memo.setAttribute(
+        'aria-label',
+        `${date.getMonth() + 1}월 ${date.getDate()}일 메모 ${record.memo ? '편집: ' + record.memo : '추가'}`,
+      );
+      memo.onclick = () => onEdit(date, 'memo');
+      cell.append(time, memo);
     }
     $('#calendar').append(cell);
   });

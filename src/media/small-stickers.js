@@ -1,3 +1,4 @@
+import { calendarMemoHeight, drawMemo } from './memo.js';
 import { DAYS, TYPES, dateKey, duration } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 import { createIconRenderer } from './icon.js';
@@ -57,9 +58,18 @@ export const SMALL_STICKERS = [
     category: 'calendar',
     title: '캘린더 · 미니멀',
     defaultBackground: 'white',
-    dimensions: (showTime = true) => ({ width: 840, height: showTime ? 180 : 136 }),
+    dimensions: (showTime = true, records = {}, dates = []) => ({
+      width: 840,
+      height: (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 21, 28),
+    }),
     draw(ctx, dates, records, theme, _heading, showTime = true) {
-      background(ctx, 840, showTime ? 180 : 136, theme, 26);
+      background(
+        ctx,
+        840,
+        (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 21, 28),
+        theme,
+        26,
+      );
       const icon = createIconRenderer(ctx);
       dates.forEach((date, index) => {
         const x = 120 * (index + 0.5);
@@ -67,7 +77,8 @@ export const SMALL_STICKERS = [
         text(ctx, DAYS[index], x, 38, 19, theme.secondary);
         if (record) {
           icon(TYPES[record.type].icon, x, 88, 44, theme.ink);
-          if (showTime) text(ctx, duration(record.minutes ?? 0), x, 156, 21, theme.ink, 600, 106);
+          if (showTime) text(ctx, duration(record.minutes ?? 0), x, 156, 21, theme.ink, 500, 106);
+          drawMemo(ctx, record.memo, x, showTime ? 184 : 140, 106, 21, 28, theme.ink);
         } else text(ctx, '—', x, 99, 28, theme.ink, 500);
       });
     },

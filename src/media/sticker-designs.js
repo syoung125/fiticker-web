@@ -1,3 +1,4 @@
+import { memoLines, drawMemo } from './memo.js';
 import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
@@ -44,18 +45,32 @@ function line(ctx, x, y, width, theme, dashed = false) {
   ctx.stroke();
   ctx.restore();
 }
+function ticketMemoHeight(dates, records) {
+  return dates.reduce(
+    (sum, date) => sum + memoLines(records[dateKey(date)]?.memo, 234, 21).length * 28,
+    0,
+  );
+}
 function calendar(ctx, dates, records, theme, style, showTime) {
   const icon = createIconRenderer(ctx);
   const height =
-    style === 'ticket' ? 750 : style === 'poster' ? (showTime ? 620 : 560) : showTime ? 320 : 260;
+    style === 'ticket'
+      ? 750 + ticketMemoHeight(dates, records)
+      : style === 'poster'
+        ? showTime
+          ? 620
+          : 560
+        : showTime
+          ? 320
+          : 260;
   const width = style === 'ticket' ? 520 : 1000;
   panel(ctx, width, height, theme, style === 'poster' ? 0 : 24);
   text(ctx, weekLabel(dates[0]), 32, 46, 23, theme.secondary, 600);
   if (style === 'ticket') {
     text(ctx, 'WEEK / LOG', 32, 103, 39, theme.ink, 800);
+    let y = 145;
     dates.forEach((date, i) => {
-      const record = records[dateKey(date)],
-        y = 145 + i * 80;
+      const record = records[dateKey(date)];
       line(ctx, 32, y, 456, theme, true);
       const rowText = (value, x, size, color, weight = 500, align = 'left', maxWidth) =>
         text(ctx, value, x, y + 40, size, color, weight, align, maxWidth, 'middle');
@@ -77,6 +92,8 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         name = letters.join('') + '…';
       }
       rowText(name, 254, 26, theme.ink);
+      drawMemo(ctx, record?.memo, 254, y + 76, 234, 21, 28, theme.secondary, 'left');
+      y += 80 + memoLines(record?.memo, 234, 21).length * 28;
     });
   } else {
     const poster = style === 'poster';
@@ -117,10 +134,10 @@ export const EXTRA_STICKERS = styles.map((style) => ({
   category: style === 'poster' ? 'combined' : 'calendar',
   title: style === 'poster' ? '주간 기록 · 포스터' : '캘린더 · 티켓',
   defaultBackground: style === 'poster' ? 'dark' : 'lavender',
-  dimensions(showTime = true) {
+  dimensions(showTime = true, records = {}, dates = []) {
     return {
       width: style === 'ticket' ? 520 : 1000,
-      height: style === 'ticket' ? 750 : showTime ? 620 : 560,
+      height: style === 'ticket' ? 750 + ticketMemoHeight(dates, records) : showTime ? 620 : 560,
     };
   },
   draw(ctx, dates, records, theme, _summaryTheme, showTime = true) {

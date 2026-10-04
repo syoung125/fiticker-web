@@ -1,3 +1,4 @@
+import { calendarMemoHeight, drawMemo } from './memo.js';
 import { EXTRA_STICKERS } from './sticker-designs.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
 import {
@@ -60,10 +61,14 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
   squareSummary: 'lime',
 };
 
-export function stickerDimensions(id, showTime = true) {
+export function stickerDimensions(id, showTime = true, records = {}, dates = []) {
   const extra = EXTRA_STICKERS.find((sticker) => sticker.id === id);
-  if (extra) return extra.dimensions(showTime);
-  if (id === 'calendar') return { width: 996, height: showTime ? 348 : 288 };
+  if (extra) return extra.dimensions(showTime, records, dates);
+  if (id === 'calendar')
+    return {
+      width: 996,
+      height: (showTime ? 348 : 288) + calendarMemoHeight(dates, records, 116, 23, 30),
+    };
   if (id === 'square') return { width: 1080, height: 1080 };
   return { width: SUMMARY_WIDTH, height: SUMMARY_HEIGHT };
 }
@@ -101,7 +106,7 @@ export const STICKERS = [
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
-        const { width, height } = stickerDimensions('calendar', showTime);
+        const { width, height } = stickerDimensions('calendar', showTime, records, dates);
         ctx.roundRect(0, 0, width, height, 30);
         ctx.fill();
       }
@@ -129,9 +134,20 @@ export const STICKERS = [
           icon(TYPES[record.type].icon, center, rows.icon, 51, theme.ink);
           if (showTime && record.minutes !== null) {
             ctx.fillStyle = theme.secondary;
-            ctx.font = '500 23px "Manrope", sans-serif';
+            ctx.font = '500 23px "Manrope", "Noto Sans KR", sans-serif';
             ctx.fillText(duration(record.minutes), center, rows.time);
           }
+          if (!inSquare)
+            drawMemo(
+              ctx,
+              record.memo,
+              center,
+              rows.time + (showTime ? 30 : -30),
+              116,
+              23,
+              30,
+              theme.secondary,
+            );
         } else {
           ctx.fillStyle = theme.secondary;
           ctx.fillText('—', center, rows.icon + 12);
@@ -220,7 +236,12 @@ export async function createStickers(
   return Promise.all(
     STICKERS.map(async (sticker) => {
       const canvas = document.createElement('canvas');
-      const dimensions = stickerDimensions(sticker.id, timeVisibility[sticker.id] !== false);
+      const dimensions = stickerDimensions(
+        sticker.id,
+        timeVisibility[sticker.id] !== false,
+        records,
+        dates,
+      );
       canvas.width = dimensions.width;
       canvas.height = dimensions.height;
       const theme =

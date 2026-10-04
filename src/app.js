@@ -10,10 +10,21 @@ let dates = weekDates(new Date()),
 const stickerGallery = createStickerGallery({ notify: toast });
 const recordSheet = createRecordSheet({
   records,
-  onSave(key, action) {
+  onSave(key, action, cleared) {
     render();
-    $(`[data-date="${key}"]`)?.focus({ preventScroll: true });
-    toast(action === 'delete' ? '기록을 삭제했어요.' : '기록을 저장했어요.');
+    const target = ['time', 'memo'].includes(action)
+      ? $(`[data-record-date="${key}"][data-record-action="${action}"]`)
+      : $(`[data-date="${key}"]`);
+    target?.focus({ preventScroll: true });
+    toast(
+      cleared
+        ? action === 'time'
+          ? '시간을 지웠어요.'
+          : '메모를 지웠어요.'
+        : action === 'delete'
+          ? '기록을 삭제했어요.'
+          : '기록을 저장했어요.',
+    );
   },
 });
 function toast(message) {

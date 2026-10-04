@@ -1165,10 +1165,6 @@ input:not([type='radio']):not([type='file']) {
   max-width: 420px;
   margin: 0 auto;
 }
-#skip-time {
-  flex-shrink: 0;
-  padding: 12px;
-}
 
 .sticker-background {
   display: flex;
@@ -1200,18 +1196,30 @@ input:not([type='radio']):not([type='file']) {
 .calendar-day .day {
   width: 100%;
 }
-.day-time {
+.day-detail {
+  display: block;
   width: 100%;
-  padding: 2px 1px;
+  min-height: 36px;
+  padding: 6px 1px;
+  border: 0;
   border-radius: 8px;
   background: transparent;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
   color: #525b36;
+}
+.day-detail:hover,
+.day-detail:focus-visible {
+  background: #eeefe5;
+}
+.day-time,
+.day-memo {
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
-[data-sheet='type'] + [data-sheet='time']:not([hidden]) {
-  margin-top: 20px;
+.day-memo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sticker-time-toggle {
