@@ -58,8 +58,8 @@ function calendar(ctx, dates, records, theme, style, showTime) {
       ? 750 + ticketMemoHeight(dates, records)
       : style === 'poster'
         ? showTime
-          ? 620
-          : 560
+          ? 596
+          : 536
         : showTime
           ? 320
           : 260;
@@ -142,7 +142,7 @@ export const EXTRA_STICKERS = styles.map((style) => ({
       height:
         style === 'ticket'
           ? 750 + ticketMemoHeight(dates, records)
-          : (showTime ? 620 : 560) + calendarMemoHeight(dates, records, 116, 21, 28),
+          : (showTime ? 596 : 536) + calendarMemoHeight(dates, records, 116, 21, 28),
     };
   },
   draw(ctx, dates, records, theme, _summaryTheme, showTime = true) {
