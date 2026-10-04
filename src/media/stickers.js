@@ -137,17 +137,16 @@ export const STICKERS = [
             ctx.font = '500 23px "Manrope", "Noto Sans KR", sans-serif';
             ctx.fillText(duration(record.minutes), center, rows.time);
           }
-          if (!inSquare)
-            drawMemo(
-              ctx,
-              record.memo,
-              center,
-              rows.time + (showTime ? 38 : -10),
-              116,
-              23,
-              30,
-              theme.secondary,
-            );
+          drawMemo(
+            ctx,
+            record.memo,
+            center,
+            rows.time + (showTime ? 38 : -10),
+            116,
+            23,
+            30,
+            theme.secondary,
+          );
         } else {
           ctx.fillStyle = theme.secondary;
           ctx.fillText('—', center, rows.icon + 12);
@@ -195,7 +194,10 @@ export const STICKERS = [
         transparent: summaryTheme.background === null,
       });
       ctx.save();
-      ctx.translate(inset, 650);
+      const memoHeight = calendarMemoHeight(dates, records, 116, 23, 30);
+      const calendarScale = memoHeight ? Math.min(1, 390 / (352 + memoHeight)) : 1;
+      ctx.translate(inset + (SUMMARY_WIDTH * (1 - calendarScale)) / 2, 650);
+      ctx.scale(calendarScale, calendarScale);
       STICKERS.find((sticker) => sticker.id === 'calendar').draw(
         ctx,
         dates,

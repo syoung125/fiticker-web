@@ -46,7 +46,7 @@ test('calendar and ticket memos wrap within exports and remain visible with time
     const records = Object.fromEntries(
       dates.map((date) => [dateKey(date), { type: 'yoga', name: 'Yoga', minutes: 60, memo }]),
     );
-    for (const id of ['calendar', 'calendar-minimal', 'calendar-ticket']) {
+    for (const id of ['calendar', 'calendar-minimal', 'calendar-ticket', 'combined-poster']) {
       const sticker = STICKERS.find((item) => item.id === id);
       for (const showTime of [true, false]) {
         const labels = [];
@@ -82,8 +82,41 @@ test('calendar and ticket memos wrap within exports and remain visible with time
         }
       }
     }
+    const square = STICKERS.find((item) => item.id === 'square');
+    for (const note of [memo, '가\n'.repeat(14) + '나']) {
+      const squareRecords = Object.fromEntries(
+        dates.map((date) => [
+          dateKey(date),
+          { type: 'yoga', name: 'Yoga', minutes: 60, memo: note },
+        ]),
+      );
+      const scales = [];
+      for (const showTime of [true, false]) {
+        const labels = [];
+        const ctx = context(labels);
+        let scale = 1;
+        ctx.scale = (x) => {
+          scale = x;
+        };
+        square.draw(ctx, dates, squareRecords, STICKER_BACKGROUNDS.white, undefined, showTime);
+        const notes = labels.filter(
+          (label) => /[가-힣]/.test(label.value) && !label.value.includes('2026'),
+        );
+        assert.equal(
+          notes.map((label) => label.value).join(''),
+          note.replaceAll('\n', '').repeat(7),
+        );
+        assert.ok(notes.every((label) => 650 + (label.y + 8) * scale <= 1040));
+        assert.deepEqual(stickerDimensions('square', showTime, squareRecords, dates), {
+          width: 1080,
+          height: 1080,
+        });
+        scales.push(scale);
+      }
+      assert.equal(scales[0], scales[1]);
+    }
     const exported = await createStickers(dates, records);
-    for (const id of ['calendar', 'calendar-minimal', 'calendar-ticket']) {
+    for (const id of ['calendar', 'calendar-minimal', 'calendar-ticket', 'combined-poster']) {
       const sticker = exported.find((item) => item.id === id);
       assert.equal(sticker.height, stickerDimensions(id, true, records, dates).height);
     }

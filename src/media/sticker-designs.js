@@ -1,4 +1,4 @@
-import { memoLines, drawMemo } from './memo.js';
+import { memoLines, drawMemo, calendarMemoHeight } from './memo.js';
 import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
 import { DAYS, TYPES, dateKey, weekLabel, duration } from '../domain/workouts.js';
@@ -63,8 +63,9 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         : showTime
           ? 320
           : 260;
+  const memoHeight = style === 'poster' ? calendarMemoHeight(dates, records, 116, 21, 28) : 0;
   const width = style === 'ticket' ? 520 : 1000;
-  panel(ctx, width, height, theme, style === 'poster' ? 0 : 24);
+  panel(ctx, width, height + memoHeight, theme, style === 'poster' ? 0 : 24);
   text(ctx, weekLabel(dates[0]), 32, 46, 23, theme.secondary, 600);
   if (style === 'ticket') {
     text(ctx, 'WEEK / LOG', 32, 103, 39, theme.ink, 800);
@@ -124,6 +125,8 @@ function calendar(ctx, dates, records, theme, style, showTime) {
       else text(ctx, '—', x, offset + 211, 26, theme.secondary, 500, 'center');
       if (showTime && record?.minutes != null)
         text(ctx, duration(record.minutes), x, offset + 278, 21, theme.secondary, 500, 'center');
+      if (poster)
+        drawMemo(ctx, record?.memo, x, showTime ? 556 : 496, 116, 21, 28, theme.secondary);
     });
   }
 }
@@ -136,7 +139,10 @@ export const EXTRA_STICKERS = styles.map((style) => ({
   dimensions(showTime = true, records = {}, dates = []) {
     return {
       width: style === 'ticket' ? 520 : 1000,
-      height: style === 'ticket' ? 750 + ticketMemoHeight(dates, records) : showTime ? 620 : 560,
+      height:
+        style === 'ticket'
+          ? 750 + ticketMemoHeight(dates, records)
+          : (showTime ? 620 : 560) + calendarMemoHeight(dates, records, 116, 21, 28),
     };
   },
   draw(ctx, dates, records, theme, _summaryTheme, showTime = true) {
