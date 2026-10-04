@@ -574,27 +574,3 @@
     font-size: 20px;
   }
 }
-
-@keyframes cta-float {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -5px;
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .home-page .site-cta {
-    animation: cta-float 3.6s ease-in-out 1.8s infinite;
-  }
-  .home-page .site-cta:focus-visible,
-  .home-page .site-cta:active {
-    animation-play-state: paused;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .home-page .site-cta:hover {
-      animation-play-state: paused;
-    }
-  }
-}
