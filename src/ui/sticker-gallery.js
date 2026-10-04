@@ -148,23 +148,34 @@ export function createStickerGallery({ notify }) {
           card.dataset.stickerCategory = sticker.category;
           card.hidden = !matchesStickerCategory(sticker, activeCategory);
           function backgroundControl(key, label) {
-            const backgroundLabel = el('label', 'sticker-background', label + ' ');
-            const select = el('select');
-            select.dataset.stickerBackground = key;
-            select.setAttribute('aria-label', `${sticker.title} ${label}`);
-            for (const [value, theme] of Object.entries(STICKER_BACKGROUNDS)) {
-              const option = el('option', '', theme.label);
-              option.value = value;
-              select.append(option);
+            const control = el('div', 'sticker-background');
+            const palette = el('div', 'theme-palette');
+            palette.setAttribute('role', 'group');
+            palette.setAttribute('aria-label', `${sticker.title} ${label}`);
+            for (const value of ['white', 'lavender', 'lime']) {
+              const theme = STICKER_BACKGROUNDS[value];
+              const button = el('button', 'theme-swatch');
+              button.type = 'button';
+              button.dataset.stickerBackground = key;
+              button.dataset.backgroundValue = value;
+              button.title = theme.label;
+              button.setAttribute('aria-label', theme.label);
+              button.setAttribute('aria-pressed', String(backgrounds[key] === value));
+              const color = el('span', 'theme-swatch-color');
+              color.style.background = theme.background;
+              color.setAttribute('aria-hidden', 'true');
+              button.append(color);
+              button.onclick = async () => {
+                backgrounds[key] = value;
+                await gallery.update(latestDates, latestRecords);
+                $(`[data-sticker-background="${key}"][data-background-value="${value}"]`)?.focus({
+                  preventScroll: true,
+                });
+              };
+              palette.append(button);
             }
-            select.value = backgrounds[key];
-            select.onchange = async () => {
-              backgrounds[key] = select.value;
-              await gallery.update(dates, snapshot);
-              $(`[data-sticker-background="${key}"]`)?.focus({ preventScroll: true });
-            };
-            backgroundLabel.append(select);
-            return backgroundLabel;
+            control.append(el('span', '', label), palette);
+            return control;
           }
           const controls = [];
           if (sticker.summaryBackgroundKey)

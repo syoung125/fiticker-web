@@ -1177,15 +1177,6 @@ textarea {
   margin-bottom: 16px;
   color: var(--muted);
 }
-.sticker-background select {
-  font: inherit;
-  color: #20221d;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 10px 14px;
-  min-height: 44px;
-}
 
 /* Preview only: the copied PNG remains transparent. */
 .sticker-preview-dark {
