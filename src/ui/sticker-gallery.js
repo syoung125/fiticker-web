@@ -152,7 +152,7 @@ export function createStickerGallery({ notify }) {
             const palette = el('div', 'theme-palette');
             palette.setAttribute('role', 'group');
             palette.setAttribute('aria-label', `${sticker.title} ${label}`);
-            for (const value of ['white', 'lavender', 'lime']) {
+            for (const value of ['white', 'lavender', 'lime', 'dark']) {
               const theme = STICKER_BACKGROUNDS[value];
               const button = el('button', 'theme-swatch');
               button.type = 'button';
