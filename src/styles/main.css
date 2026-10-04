@@ -1197,7 +1197,10 @@ input:not([type='radio']):not([type='file']) {
   width: 100%;
 }
 .day-detail {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   width: 100%;
   min-height: 36px;
   padding: 6px 1px;
@@ -1216,7 +1219,16 @@ input:not([type='radio']):not([type='file']) {
   font-weight: 600;
   overflow-wrap: anywhere;
 }
-.day-memo {
+.day-detail svg {
+  flex-shrink: 0;
+}
+.day-detail-label {
+  min-width: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.day-memo .day-detail-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

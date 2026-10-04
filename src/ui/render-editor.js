@@ -3,6 +3,34 @@ import { $, el } from './dom.js';
 import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
 
+function detailButton(className, value, placeholder) {
+  const button = el('button', `day-detail ${className}`);
+  if (value == null || value === '') {
+    const ns = 'http://www.w3.org/2000/svg';
+    const icon = document.createElementNS(ns, 'svg');
+    for (const [key, value] of Object.entries({
+      viewBox: '0 0 12 12',
+      width: '10',
+      height: '10',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '1.5',
+      'stroke-linecap': 'round',
+      'aria-hidden': 'true',
+      focusable: 'false',
+    }))
+      icon.setAttribute(key, value);
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', 'M6 2v8M2 6h8');
+    icon.append(path);
+    button.append(icon);
+  }
+  button.append(
+    el('span', 'day-detail-label', value == null || value === '' ? placeholder : value),
+  );
+  return button;
+}
+
 export function renderEditor({ dates, records, onEdit }) {
   $('#next').disabled = dates[0] >= weekDates(new Date())[0];
   $('#week-title').textContent = weekLabel(dates[0]);
@@ -30,17 +58,17 @@ export function renderEditor({ dates, records, onEdit }) {
     button.onclick = () => onEdit(date, 'type');
     cell.append(button);
     if (record) {
-      const time = el(
-        'button',
-        'day-detail day-time',
-        record.minutes == null ? '시간 설정' : duration(record.minutes),
+      const time = detailButton(
+        'day-time',
+        record.minutes == null ? null : duration(record.minutes),
+        '시간',
       );
       time.type = 'button';
       time.dataset.recordAction = 'time';
       time.dataset.recordDate = key;
       time.setAttribute('aria-label', `${date.getMonth() + 1}월 ${date.getDate()}일 시간 설정`);
       time.onclick = () => onEdit(date, 'time');
-      const memo = el('button', 'day-detail day-memo', record.memo || '메모 추가');
+      const memo = detailButton('day-memo', record.memo, '메모');
       memo.type = 'button';
       memo.dataset.recordAction = 'memo';
       memo.dataset.recordDate = key;
