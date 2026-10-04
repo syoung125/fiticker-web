@@ -125,7 +125,6 @@ function calendar(ctx, dates, records, theme, style, showTime) {
       if (showTime && record?.minutes != null)
         text(ctx, duration(record.minutes), x, offset + 278, 21, theme.secondary, 500, 'center');
     });
-    if (poster) text(ctx, 'MOVE. REST. REPEAT.', 32, height - 22, 17, theme.secondary, 700);
   }
 }
 const styles = ['ticket', 'poster'];
