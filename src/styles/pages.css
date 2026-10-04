@@ -431,3 +431,42 @@
   background: #eaece3;
   font-size: 12px;
 }
+
+.home-page .sample-track span {
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-page .site-cta,
+  .home-page .weekly-service-card,
+  .home-page .service-mini,
+  .home-page .site-cta > span,
+  .home-page .service-link > span {
+    transition:
+      transform 280ms ease,
+      background-color 280ms ease,
+      border-color 280ms ease,
+      box-shadow 280ms ease;
+  }
+  .home-page .service-link > span {
+    display: inline-block;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .home-page .site-cta:hover {
+      transform: translateY(-2px);
+    }
+    .home-page .weekly-service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px #20221d08;
+    }
+    .home-page .weekly-service-card:hover .service-mini {
+      transform: rotate(0deg);
+    }
+    .home-page .site-cta:hover > span,
+    .home-page .weekly-service-card:hover .service-link > span {
+      transform: translate(2px, -2px);
+    }
+  }
+  .home-page .site-cta:active {
+    transform: scale(0.98);
+  }
+}
