@@ -74,9 +74,9 @@ p {
 }
 .brand {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   align-items: center;
-  font-size: 21px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.8px;
   line-height: 1;
@@ -981,9 +981,6 @@ textarea {
   .topbar {
     height: 72px;
     padding: 0 22px;
-  }
-  .brand {
-    font-size: 19px;
   }
   .top-note {
     display: none;
