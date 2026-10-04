@@ -74,7 +74,9 @@ test('every background option reaches the PNG renderer with matching text contra
         },
       });
       sticker.draw(ctx, dates, {}, theme);
-      assert.deepEqual(fills, theme.background ? [theme.background] : []);
+      // The empty progress track is a separate fill after the background.
+      const backgrounds = sticker.id === 'summary-progress' ? fills.slice(0, -1) : fills;
+      assert.deepEqual(backgrounds, theme.background ? [theme.background] : []);
       assert.ok(textColors.includes(theme.ink));
       assert.ok(textColors.includes(theme.secondary));
     }
@@ -183,14 +185,14 @@ test('hidden daily times compact calendars while square keeps its original size'
   assert.ok(650 + 336 < square.height);
 });
 
-test('gallery includes nine unique stickers in their matching categories', () => {
-  assert.equal(STICKERS.length, 9);
-  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 9);
-  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 9);
+test('gallery includes ten unique stickers in their matching categories', () => {
+  assert.equal(STICKERS.length, 10);
+  assert.equal(new Set(STICKERS.map((item) => item.id)).size, 10);
+  assert.equal(STICKERS.filter((item) => matchesStickerCategory(item, 'all')).length, 10);
   for (const category of ['summary', 'calendar', 'combined']) {
     assert.equal(
       STICKERS.filter((item) => matchesStickerCategory(item, category)).length,
-      { summary: 3, calendar: 3, combined: 3 }[category],
+      { summary: 4, calendar: 3, combined: 3 }[category],
     );
   }
 });
@@ -227,7 +229,7 @@ test('all designs export PNG with independent options and compact dimensions', a
       DEFAULT_STICKER_BACKGROUNDS,
       times,
     );
-    assert.equal(result.length, 9);
+    assert.equal(result.length, 10);
     for (const sticker of result) {
       assert.equal(sticker.blob.type, 'image/png');
       assert.deepEqual(
@@ -483,5 +485,50 @@ test('ticket aligns duration beside the sport and keeps row heights when toggled
   } finally {
     if (previous === undefined) delete globalThis.document;
     else globalThis.document = previous;
+  }
+});
+
+test('progress summary counts workout days regardless of duration and fills only their weekly share', () => {
+  const sticker = STICKERS.find((item) => item.id === 'summary-progress');
+  const dates = weekDates(new Date(2026, 9, 1));
+  for (const theme of Object.values(STICKER_BACKGROUNDS)) {
+    for (const count of [0, 1, 4, 7]) {
+      const labels = [],
+        bars = [];
+      const ctx = new Proxy(
+        {},
+        {
+          get(target, key) {
+            if (key === 'fillText')
+              return (value, x) => labels.push({ value, x, align: target.textAlign });
+            if (key === 'roundRect')
+              return (x, y, width, height) => {
+                if (y === 114)
+                  bars.push({ width, height, alpha: target.globalAlpha, color: target.fillStyle });
+              };
+            return target[key] ?? (() => {});
+          },
+        },
+      );
+      const records = { '2025-01-01': { type: 'yoga', minutes: 60 } };
+      for (let i = 0; i < count; i++) {
+        const date = dates[i];
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        records[key] = { type: 'yoga', minutes: i % 2 ? 0 : null };
+      }
+      sticker.draw(ctx, dates, records, theme);
+      assert.deepEqual(labels, [
+        { value: 'This week', x: 48, align: 'left' },
+        { value: `${count} / 7 days`, x: 792, align: 'right' },
+      ]);
+      assert.equal(bars[0].width, 744);
+      assert.equal(bars[0].alpha, 0.12);
+      assert.equal(bars.length, count ? 2 : 1);
+      if (count) {
+        assert.equal(bars[1].width, (744 * count) / 7);
+        assert.equal(bars[1].alpha, 1);
+        assert.equal(bars[1].color, bars[0].color);
+      }
+    }
   }
 });

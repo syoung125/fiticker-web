@@ -23,6 +23,49 @@ function background(ctx, width, height, theme, radius) {
 
 export const SMALL_STICKERS = [
   {
+    id: 'summary-progress',
+    category: 'summary',
+    title: '요약 · 프로그레스',
+    defaultBackground: 'white',
+    dimensions: () => ({ width: 840, height: 188 }),
+    draw(ctx, dates, records, theme) {
+      const count = Math.min(
+        7,
+        new Set(dates.filter((date) => records[dateKey(date)]).map(dateKey)).size,
+      );
+      const accent =
+        theme.background === '#ffffff'
+          ? '#ed60da'
+          : theme.background === '#e7e1f6'
+            ? '#8b62ba'
+            : theme.background === '#20221d'
+              ? '#dfff7a'
+              : theme.ink;
+      background(ctx, 840, 188, theme, 28);
+      ctx.font = `500 27px ${FONT}`;
+      ctx.fillStyle = theme.secondary;
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.fillText('This week', 48, 76);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = theme.ink;
+      ctx.fillText(`${count} / 7 days`, 792, 76);
+      ctx.save();
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = 0.12;
+      ctx.beginPath();
+      ctx.roundRect(48, 114, 744, 20, 10);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      if (count > 0) {
+        ctx.beginPath();
+        ctx.roundRect(48, 114, (744 * count) / 7, 20, 10);
+        ctx.fill();
+      }
+      ctx.restore();
+    },
+  },
+  {
     id: 'summary-minimal',
     category: 'summary',
     title: '요약 · 미니멀',
