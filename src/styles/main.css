@@ -82,16 +82,18 @@ p {
   line-height: 1;
 }
 .brand-mark {
-  background: var(--lime);
   height: 33px;
   width: 33px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
   flex-shrink: 0;
 }
-.brand-mark svg {
+.brand-mark img {
   display: block;
+  width: 42px;
+  height: 42px;
+  max-width: none;
+  margin: -4.5px;
 }
 .top-note,
 .eyebrow {
