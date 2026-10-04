@@ -5,6 +5,7 @@ import { renderSummary } from './render-summary.js';
 
 function detailButton(className, value, placeholder) {
   const button = el('button', `day-detail ${className}`);
+  const content = el('span', 'day-detail-content');
   if (value == null || value === '') {
     const ns = 'http://www.w3.org/2000/svg';
     const icon = document.createElementNS(ns, 'svg');
@@ -23,11 +24,12 @@ function detailButton(className, value, placeholder) {
     const path = document.createElementNS(ns, 'path');
     path.setAttribute('d', 'M6 2v8M2 6h8');
     icon.append(path);
-    button.append(icon);
+    content.append(icon);
   }
-  button.append(
+  content.append(
     el('span', 'day-detail-label', value == null || value === '' ? placeholder : value),
   );
+  button.append(content);
   return button;
 }
 

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { memoLines } from '../src/media/memo.js';
 import assert from 'node:assert/strict';
 import {
   STICKERS,
@@ -24,7 +25,8 @@ test('calendar and ticket memos wrap within exports and remain visible with time
           if (key === 'getImageData')
             return () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 });
           if (key === 'fillText')
-            return (value, x, y) => labels.push({ value, x, y, font: target.font });
+            return (value, x, y) =>
+              labels.push({ value, x, y, font: target.font, color: target.fillStyle });
           return target[key] ?? (() => {});
         },
       },
@@ -38,6 +40,7 @@ test('calendar and ticket memos wrap within exports and remain visible with time
     }),
   };
   try {
+    assert.deepEqual(memoLines('첫 줄\n\n둘째 줄', 234, 21), ['첫 줄', '', '둘째 줄']);
     const dates = weekDates(new Date(2026, 9, 1));
     const memo = '오늘도운동완료무리하지않고꾸준하게천천히운동하기';
     const records = Object.fromEntries(
@@ -70,7 +73,10 @@ test('calendar and ticket memos wrap within exports and remain visible with time
           assert.ok(notes[0].y > sport.y);
         } else if (showTime) {
           const time = labels.find((label) => label.value === '1h');
-          assert.equal(notes[0].font, time.font);
+          const reference =
+            id === 'calendar-minimal' ? labels.find((label) => label.value === 'MON') : time;
+          assert.equal(notes[0].font, reference.font);
+          assert.equal(notes[0].color, reference.color);
           assert.equal(notes[0].x, time.x);
           assert.ok(notes[0].y > time.y);
         }

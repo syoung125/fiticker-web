@@ -142,7 +142,7 @@ export const STICKERS = [
               ctx,
               record.memo,
               center,
-              rows.time + (showTime ? 30 : -30),
+              rows.time + (showTime ? 38 : -10),
               116,
               23,
               30,

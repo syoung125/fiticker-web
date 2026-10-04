@@ -92,7 +92,7 @@ function calendar(ctx, dates, records, theme, style, showTime) {
         name = letters.join('') + '…';
       }
       rowText(name, 254, 26, theme.ink);
-      drawMemo(ctx, record?.memo, 254, y + 76, 234, 21, 28, theme.secondary, 'left');
+      drawMemo(ctx, record?.memo, 254, y + 84, 234, 21, 28, theme.secondary, 'left');
       y += 80 + memoLines(record?.memo, 234, 21).length * 28;
     });
   } else {

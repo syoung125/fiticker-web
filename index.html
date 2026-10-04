@@ -112,7 +112,7 @@
     </main>
     <footer>
       <span>MOVE DIARY</span>
-      <p>기록과 사진은 이 기기에서만 처리돼요. 새로고침하면 기록이 사라집니다.</p>
+      <p>기록은 이 탭의 세션에 저장돼요. 새로고침해도 유지됩니다.</p>
       <span>JUST KEEP MOVING. ↗</span>
     </footer>
     <dialog id="workout-dialog" aria-labelledby="dialog-title">
@@ -175,7 +175,12 @@
         <section data-sheet="memo" hidden>
           <label class="memo-label" for="memo"
             >메모 <span class="optional">선택</span><span id="memo-count">0 / 30</span></label
-          ><input id="memo" placeholder="오늘의 운동은 어땠나요?" autocomplete="off" />
+          ><textarea
+            id="memo"
+            rows="3"
+            placeholder="오늘의 운동은 어땠나요?"
+            autocomplete="off"
+          ></textarea>
         </section>
         <section data-sheet="delete" hidden><p>이 날짜의 운동 기록을 삭제할까요?</p></section>
         <p id="form-error" class="error" role="alert"></p>

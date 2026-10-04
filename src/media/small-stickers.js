@@ -60,13 +60,13 @@ export const SMALL_STICKERS = [
     defaultBackground: 'white',
     dimensions: (showTime = true, records = {}, dates = []) => ({
       width: 840,
-      height: (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 21, 28),
+      height: (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 19, 28, 600),
     }),
     draw(ctx, dates, records, theme, _heading, showTime = true) {
       background(
         ctx,
         840,
-        (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 21, 28),
+        (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 19, 28, 600),
         theme,
         26,
       );
@@ -78,7 +78,18 @@ export const SMALL_STICKERS = [
         if (record) {
           icon(TYPES[record.type].icon, x, 88, 44, theme.ink);
           if (showTime) text(ctx, duration(record.minutes ?? 0), x, 156, 21, theme.ink, 500, 106);
-          drawMemo(ctx, record.memo, x, showTime ? 184 : 140, 106, 21, 28, theme.ink);
+          drawMemo(
+            ctx,
+            record.memo,
+            x,
+            showTime ? 190 : 148,
+            106,
+            19,
+            28,
+            theme.secondary,
+            'center',
+            600,
+          );
         } else text(ctx, '—', x, 99, 28, theme.ink, 500);
       });
     },

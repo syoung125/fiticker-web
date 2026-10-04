@@ -1,29 +1,33 @@
+import { loadSessionRecords, saveSessionRecords } from './domain/session-records.js';
 import { weekDates, navigateWeek } from './domain/workouts.js';
 import { createStickerGallery } from './ui/sticker-gallery.js';
 import { createRecordSheet } from './ui/record-sheet.js';
 import { $ } from './ui/dom.js';
 import { renderEditor } from './ui/render-editor.js';
 import { loadSummaryFonts } from './media/summary.js';
-const records = Object.create(null);
+const records = loadSessionRecords();
 let dates = weekDates(new Date()),
   toastTimer;
 const stickerGallery = createStickerGallery({ notify: toast });
 const recordSheet = createRecordSheet({
   records,
   onSave(key, action, cleared) {
+    const cached = saveSessionRecords(records);
     render();
     const target = ['time', 'memo'].includes(action)
       ? $(`[data-record-date="${key}"][data-record-action="${action}"]`)
       : $(`[data-date="${key}"]`);
     target?.focus({ preventScroll: true });
     toast(
-      cleared
-        ? action === 'time'
-          ? '시간을 지웠어요.'
-          : '메모를 지웠어요.'
-        : action === 'delete'
-          ? '기록을 삭제했어요.'
-          : '기록을 저장했어요.',
+      !cached
+        ? '이 환경에서는 새로고침 후 기록이 유지되지 않을 수 있어요.'
+        : cleared
+          ? action === 'time'
+            ? '시간을 지웠어요.'
+            : '메모를 지웠어요.'
+          : action === 'delete'
+            ? '기록을 삭제했어요.'
+            : '기록을 저장했어요.',
     );
   },
 });

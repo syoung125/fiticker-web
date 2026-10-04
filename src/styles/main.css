@@ -21,7 +21,8 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 button,
@@ -632,7 +633,8 @@ legend {
   outline: 2px solid #5f7142;
   outline-offset: 2px;
 }
-input:not([type='radio']):not([type='file']) {
+input:not([type='radio']):not([type='file']),
+textarea {
   width: 100%;
   background: #fff;
   border: 1px solid var(--line);
@@ -1127,6 +1129,8 @@ input:not([type='radio']):not([type='file']) {
   -webkit-touch-callout: default;
 }
 .sticker-preview-mini {
+  border-radius: 9.166667%;
+  overflow: hidden;
   max-width: 240px;
   margin-inline: auto;
 }
@@ -1202,8 +1206,8 @@ input:not([type='radio']):not([type='file']) {
   justify-content: center;
   gap: 2px;
   width: 100%;
-  min-height: 36px;
-  padding: 6px 1px;
+  min-height: 26px;
+  padding: 3px 1px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -1224,9 +1228,6 @@ input:not([type='radio']):not([type='file']) {
 }
 .day-detail-label {
   min-width: 0;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
 }
 .day-memo .day-detail-label {
   overflow: hidden;
@@ -1367,4 +1368,19 @@ input:not([type='radio']):not([type='file']) {
 }
 .sticker-global-options .sticker-time-toggle {
   margin-bottom: 0;
+}
+
+.day-detail-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+}
+#memo {
+  resize: vertical;
+  line-height: 1.6;
+  min-height: 96px;
 }
