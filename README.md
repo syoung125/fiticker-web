@@ -1,3 +1,5 @@
+[![Fiticker — 건강한 일상을, 나만의 스티커로.](docs/assets/fiticker-banner.png)](https://fiticker.com/)
+
 # Fiticker
 
 **건강한 일상을, 나만의 스티커로.**
