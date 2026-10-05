@@ -86,23 +86,98 @@
           ></a>
           <p class="home-caption">가입 없이, 가볍게 시작해요.</p>
         </div>
-        <div class="home-art" aria-label="위클리 스티커 예시: 일주일 중 4일 운동">
-          <span class="example-label">STICKER PREVIEW · 예시</span>
-          <div class="sample-progress">
-            <div><span>This week</span><strong>4 / 7 days</strong></div>
-            <div class="sample-track"><span></span></div>
+        <section class="home-art story-gallery" aria-label="운동 스티커 활용 예시">
+          <div class="story-viewport" tabindex="0" aria-label="스토리 예시 · 좌우로 넘겨보세요">
+            <div class="story-track">
+              <figure class="story-slide">
+                <img
+                  src="/stories/running.webp"
+                  width="720"
+                  height="1280"
+                  alt="러닝 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>러닝</figcaption>
+              </figure>
+              <figure class="story-slide">
+                <img
+                  src="/stories/pilates.webp"
+                  width="720"
+                  height="1280"
+                  alt="필라테스 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>필라테스</figcaption>
+              </figure>
+              <figure class="story-slide">
+                <img
+                  src="/stories/climbing.webp"
+                  width="720"
+                  height="1280"
+                  alt="클라이밍 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>클라이밍</figcaption>
+              </figure>
+              <figure class="story-slide">
+                <img
+                  src="/stories/swimming.webp"
+                  width="720"
+                  height="1280"
+                  alt="수영 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>수영</figcaption>
+              </figure>
+              <figure class="story-slide">
+                <img
+                  src="/stories/home-workout.webp"
+                  width="720"
+                  height="1280"
+                  alt="홈트 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>홈트</figcaption>
+              </figure>
+              <figure class="story-slide">
+                <img
+                  src="/stories/gym.webp"
+                  width="720"
+                  height="1280"
+                  alt="웨이트 사진에 Fiticker 운동 기록 스티커를 붙인 스토리 예시"
+                  decoding="async"
+                  draggable="false"
+                />
+                <figcaption>웨이트</figcaption>
+              </figure>
+            </div>
           </div>
-          <div class="sample-calendar">
-            <span>MON<b>🏋️</b></span
-            ><span>TUE<b>🧘</b></span
-            ><span>WED<b>—</b></span
-            ><span>THU<b>🏃</b></span
-            ><span>FRI<b>—</b></span
-            ><span>SAT<b>🏊</b></span
-            ><span>SUN<b>—</b></span>
+          <div class="story-gallery-footer">
+            <p>나의 운동, 나의 스토리.</p>
+            <button
+              class="story-motion-toggle"
+              type="button"
+              aria-label="스토리 자동 넘김 일시정지"
+              hidden
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path class="story-pause-symbol" d="M7 5h3v14H7zM14 5h3v14h-3z" />
+                <path class="story-play-symbol" d="M8 5l11 7-11 7z" />
+              </svg>
+            </button>
           </div>
-          <span class="art-caption">이번 주의 움직임을 한눈에.</span>
-        </div>
+        </section>
       </section>
       <section class="home-services" aria-labelledby="service-title">
         <div class="section-heading">
