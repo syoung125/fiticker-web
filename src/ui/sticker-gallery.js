@@ -212,7 +212,7 @@ export function createStickerGallery({ notify }) {
           download.setAttribute('aria-label', `${sticker.title} 스티커 PNG 저장`);
           download.append(actionIcon('M12 3v12 M7 10l5 5 5-5 M4 16v5h16v-5'));
           download.href = url;
-          download.download = `move-diary-${sticker.id}-${dateKey(dates[0])}.png`;
+          download.download = `fiticker-${sticker.id}-${dateKey(dates[0])}.png`;
           actions.append(copy, download);
           const heading = el('div', 'sticker-card-heading');
           heading.append(el('h3', '', sticker.title));

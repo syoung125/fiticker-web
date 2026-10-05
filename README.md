@@ -1,8 +1,8 @@
-# Fiticker
+# fiticker-web
 
 건강한 일상을 스티커로 만드는 모바일 웹입니다. 현재 위클리 운동 기록 스티커를 제공합니다.
 
-**[웹사이트](https://syoung125.github.io/move-diary/)** · **[유지보수 가이드](docs/maintenance.md)**
+**[웹사이트](https://fiticker.com/)** · **[유지보수 가이드](docs/maintenance.md)**
 
 이 저장소는 수정 가능한 전체 개발 프로젝트입니다. 원본은 `src/`와 `index.html`에 있으며, `dist/`는 빌드할 때 만들어지는 배포 결과물입니다. **`dist/`와 `node_modules/`는 Git에 올리지 않습니다.** 필요한 버전은 `package-lock.json`으로 재현합니다.
 
@@ -11,8 +11,8 @@
 Node.js 22.12 이상(22 LTS 권장)과 Git이 필요합니다. Python, API 키, 환경변수, 백엔드 설정은 필요하지 않습니다.
 
 ```sh
-git clone https://github.com/syoung125/move-diary.git
-cd move-diary
+git clone https://github.com/syoung125/fiticker-web.git
+cd fiticker-web
 # nvm을 쓴다면: nvm install && nvm use
 npm ci
 npm run dev
@@ -36,7 +36,7 @@ npm run dev
 ## 프로젝트 구조
 
 ```text
-move-diary/
+fiticker-web/
 ├── index.html                 # 서비스 소개 홈
 ├── weekly/index.html          # 위클리 기록·스티커·입력 모달
 ├── feedback/index.html        # 의견 보내기
@@ -91,6 +91,6 @@ GitHub **Settings → Pages → Source**는 **GitHub Actions**를 사용합니�
 - `/weekly/`: 운동 기록과 스티커 만들기
 - `/feedback/`: 의견 작성 후 메일 앱으로 전달
 
-GitHub Pages에서는 위 경로 앞에 `/move-diary`가 붙습니다. Vite의 다중 HTML 진입점으로 각 경로에 실제 `index.html`을 빌드하므로 직접 접속과 새로고침에 별도 서버 리라이트가 필요하지 않습니다. 페이지별 코드는 `src/main.js`에서 필요한 경우에만 불러옵니다. 공통 헤더 메뉴는 세 HTML에서 동일하게 유지하세요.
+서비스 도메인은 `https://fiticker.com`이며 위 경로를 루트 기준으로 제공합니다. Vite의 다중 HTML 진입점으로 각 경로에 실제 `index.html`을 빌드하므로 직접 접속과 새로고침에 별도 서버 리라이트가 필요하지 않습니다. 페이지별 코드는 `src/main.js`에서 필요한 경우에만 불러옵니다. 공통 헤더 메뉴는 세 HTML에서 동일하게 유지하세요.
 
 의견 페이지는 서버에 의견을 수집하지 않습니다. `gogumang.dev@gmail.com`으로 보내는 메일을 작성해 메일 앱에서 최종 전송합니다. 주소 변경 시 `feedback/index.html`과 `src/domain/feedback.js`를 함께 수정하세요.
