@@ -17,21 +17,13 @@ if (gallery) {
   let position = 0;
   let visible = false;
   let touching = false;
-  let hovering = false;
   let dragging = false;
   let held = false;
   let timer;
   let dragStart = 0;
   let dragScroll = 0;
   const canPlay = () =>
-    visible &&
-    !document.hidden &&
-    !reduced.matches &&
-    !touching &&
-    !hovering &&
-    !dragging &&
-    !held &&
-    !viewport.matches(':focus-visible');
+    visible && !document.hidden && !reduced.matches && !touching && !dragging && !held;
   const tick = (time) => {
     frame = 0;
     if (!canPlay()) return;
@@ -49,7 +41,7 @@ if (gallery) {
     position = viewport.scrollLeft;
     if (canPlay()) frame = requestAnimationFrame(tick);
   };
-  const hold = (duration = 5000) => {
+  const hold = (duration = 500) => {
     clearTimeout(timer);
     held = true;
     sync();
@@ -62,15 +54,6 @@ if (gallery) {
     cycleWidth = track.children[originals.length].offsetLeft - track.children[0].offsetLeft;
     sync();
   };
-  viewport.addEventListener('pointerenter', (event) => {
-    if (event.pointerType !== 'mouse') return;
-    hovering = true;
-    sync();
-  });
-  viewport.addEventListener('pointerleave', () => {
-    hovering = false;
-    sync();
-  });
   viewport.addEventListener('pointerdown', (event) => {
     dragging = true;
     hold();
@@ -108,8 +91,6 @@ if (gallery) {
   viewport.addEventListener('touchcancel', endTouch, { passive: true });
   viewport.addEventListener('wheel', () => hold(), { passive: true });
   viewport.addEventListener('keydown', () => hold());
-  viewport.addEventListener('focusin', sync);
-  viewport.addEventListener('focusout', () => requestAnimationFrame(sync));
   document.addEventListener('visibilitychange', sync);
   reduced.addEventListener('change', measure);
   new ResizeObserver(measure).observe(viewport);
