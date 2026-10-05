@@ -39,7 +39,9 @@
   border-radius: 9px;
   font-size: 14px;
 }
-.site-menu nav a:hover,
+.site-menu nav a:hover {
+  background: #edf1e2;
+}
 .site-menu nav a[aria-current='page'] {
   background: var(--lime);
 }
