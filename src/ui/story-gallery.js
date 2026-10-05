@@ -2,7 +2,6 @@ const gallery = document.querySelector('.story-gallery');
 if (gallery) {
   const viewport = gallery.querySelector('.story-viewport');
   const track = gallery.querySelector('.story-track');
-  const toggle = gallery.querySelector('.story-motion-toggle');
   const originals = [...track.children];
   for (const slide of originals) {
     const copy = slide.cloneNode(true);
@@ -17,7 +16,7 @@ if (gallery) {
   let previous = 0;
   let position = 0;
   let visible = false;
-  let paused = false;
+  let touching = false;
   let hovering = false;
   let dragging = false;
   let held = false;
@@ -28,7 +27,7 @@ if (gallery) {
     visible &&
     !document.hidden &&
     !reduced.matches &&
-    !paused &&
+    !touching &&
     !hovering &&
     !dragging &&
     !held &&
@@ -63,21 +62,6 @@ if (gallery) {
     cycleWidth = track.children[originals.length].offsetLeft - track.children[0].offsetLeft;
     sync();
   };
-  const updateToggle = () => {
-    toggle.hidden = reduced.matches;
-    toggle.dataset.paused = String(paused);
-    toggle.setAttribute(
-      'aria-label',
-      paused ? '스토리 자동 넘김 재생' : '스토리 자동 넘김 일시정지',
-    );
-  };
-  toggle.addEventListener('click', () => {
-    paused = !paused;
-    clearTimeout(timer);
-    held = false;
-    updateToggle();
-    sync();
-  });
   viewport.addEventListener('pointerenter', (event) => {
     if (event.pointerType !== 'mouse') return;
     hovering = true;
@@ -108,15 +92,26 @@ if (gallery) {
   viewport.addEventListener('pointerup', endDrag);
   viewport.addEventListener('pointercancel', endDrag);
   viewport.addEventListener('lostpointercapture', endDrag);
+  viewport.addEventListener(
+    'touchstart',
+    () => {
+      touching = true;
+      hold();
+    },
+    { passive: true },
+  );
+  const endTouch = () => {
+    touching = false;
+    hold();
+  };
+  viewport.addEventListener('touchend', endTouch, { passive: true });
+  viewport.addEventListener('touchcancel', endTouch, { passive: true });
   viewport.addEventListener('wheel', () => hold(), { passive: true });
   viewport.addEventListener('keydown', () => hold());
   viewport.addEventListener('focusin', sync);
   viewport.addEventListener('focusout', () => requestAnimationFrame(sync));
   document.addEventListener('visibilitychange', sync);
-  reduced.addEventListener('change', () => {
-    updateToggle();
-    measure();
-  });
+  reduced.addEventListener('change', measure);
   new ResizeObserver(measure).observe(viewport);
   new IntersectionObserver(
     ([entry]) => {
@@ -125,7 +120,6 @@ if (gallery) {
     },
     { threshold: 0.1 },
   ).observe(viewport);
-  updateToggle();
   measure();
   hold(1800);
 }
