@@ -320,6 +320,9 @@
   .story-viewport {
     border-radius: 0;
   }
+  .story-track {
+    padding-inline: 22px;
+  }
   .story-gallery-footer {
     margin-inline: 22px;
   }
