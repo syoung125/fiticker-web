@@ -14,7 +14,8 @@ if (gallery) {
   let cycleWidth = 0;
   let frame = 0;
   let previous = 0;
-  let position = 0;
+  let offset = 0;
+  let animating = false;
   let visible = false;
   let touching = false;
   let dragging = false;
@@ -28,8 +29,8 @@ if (gallery) {
     frame = 0;
     if (!canPlay()) return;
     if (previous && cycleWidth > 0) {
-      position = (position + (Math.min(time - previous, 50) / 1000) * 18) % cycleWidth;
-      viewport.scrollLeft = position;
+      offset = (offset + (Math.min(time - previous, 50) / 1000) * 18) % cycleWidth;
+      track.style.transform = `translate3d(${-offset}px, 0, 0)`;
     }
     previous = time;
     frame = requestAnimationFrame(tick);
@@ -38,8 +39,17 @@ if (gallery) {
     cancelAnimationFrame(frame);
     frame = 0;
     previous = 0;
-    position = viewport.scrollLeft;
-    if (canPlay()) frame = requestAnimationFrame(tick);
+    const next = canPlay();
+    if (next !== animating) {
+      // Transfer the visible position between native swiping and subpixel animation.
+      const position = viewport.scrollLeft + offset;
+      track.style.transform = '';
+      viewport.scrollLeft = next ? 0 : position;
+      offset = position - viewport.scrollLeft;
+      track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+      animating = next;
+    }
+    if (next) frame = requestAnimationFrame(tick);
   };
   const hold = (duration = 500) => {
     clearTimeout(timer);
@@ -89,6 +99,14 @@ if (gallery) {
   };
   viewport.addEventListener('touchend', endTouch, { passive: true });
   viewport.addEventListener('touchcancel', endTouch, { passive: true });
+  viewport.addEventListener(
+    'scroll',
+    () => {
+      // Let native momentum finish before resuming automatic movement.
+      if (!animating && !touching && !dragging) hold();
+    },
+    { passive: true },
+  );
   viewport.addEventListener('wheel', () => hold(), { passive: true });
   viewport.addEventListener('keydown', () => hold());
   document.addEventListener('visibilitychange', sync);

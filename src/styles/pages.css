@@ -110,6 +110,7 @@
   outline-offset: 5px;
 }
 .story-track {
+  will-change: transform;
   display: flex;
   gap: 16px;
   width: max-content;
