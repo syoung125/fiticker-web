@@ -74,24 +74,29 @@ export function weekNumber(start) {
   const jan4 = weekDates(new Date(thu.getFullYear(), 0, 4))[3];
   return 1 + Math.round((thu - jan4) / 604800000);
 }
+// Legacy dates contain one object; new dates may contain several ordered sessions.
+export function dayRecords(records, key) {
+  const value = records[key];
+  return Array.isArray(value) ? value : value ? [value] : [];
+}
+export function setDayRecords(records, key, items) {
+  if (!items.length) delete records[key];
+  else records[key] = items.length === 1 ? items[0] : items;
+}
+export function activeDays(dates, records) {
+  return dates.filter((date) => dayRecords(records, dateKey(date)).length > 0).length;
+}
 export function summarize(dates, records) {
-  return dates.reduce(
-    (s, d) => {
-      const r = records[dateKey(d)];
-      if (r) {
-        s.count++;
-        s.minutes += r.minutes || 0;
-      }
-      return s;
-    },
-    { count: 0, minutes: 0 },
-  );
+  return dates
+    .flatMap((date) => dayRecords(records, dateKey(date)))
+    .reduce(
+      (sum, record) => ({ count: sum.count + 1, minutes: sum.minutes + (record.minutes || 0) }),
+      { count: 0, minutes: 0 },
+    );
 }
 export function summarizeBySport(dates, records) {
   const groups = new Map();
-  for (const day of dates) {
-    const record = records[dateKey(day)];
-    if (!record) continue;
+  for (const record of dates.flatMap((day) => dayRecords(records, dateKey(day)))) {
     const name = record.type === 'other' ? record.name.trim() : TYPES[record.type].label;
     const key = record.type === 'other' ? `other:${name}` : record.type;
     if (!groups.has(key)) groups.set(key, { name, minutes: null });

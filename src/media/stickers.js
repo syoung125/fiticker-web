@@ -1,3 +1,4 @@
+import { hasMultiple, multiDimensions, drawMultiCalendar } from './multi-calendar.js';
 import { calendarMemoHeight, drawMemo } from './memo.js';
 import { EXTRA_STICKERS } from './sticker-designs.js';
 import { DAYS, recordIcon, dateKey, weekLabel, duration } from '../domain/workouts.js';
@@ -64,6 +65,8 @@ export const DEFAULT_STICKER_BACKGROUNDS = {
 export function stickerDimensions(id, showTime = true, records = {}, dates = []) {
   const extra = EXTRA_STICKERS.find((sticker) => sticker.id === id);
   if (extra) return extra.dimensions(showTime, records, dates);
+  if (id === 'calendar' && hasMultiple(dates, records))
+    return multiDimensions('calendar', dates, records, showTime);
   if (id === 'calendar')
     return {
       width: 996,
@@ -103,6 +106,10 @@ export const STICKERS = [
       showTime = true,
       inSquare = false,
     ) {
+      if (hasMultiple(dates, records)) {
+        drawMultiCalendar(ctx, dates, records, theme, 'calendar', showTime, showHeading);
+        return;
+      }
       if (theme.background) {
         ctx.fillStyle = theme.background;
         ctx.beginPath();
@@ -195,8 +202,19 @@ export const STICKERS = [
       });
       ctx.save();
       const memoHeight = calendarMemoHeight(dates, records, 116, 23, 30);
-      const calendarScale = memoHeight ? Math.min(1, 390 / (352 + memoHeight)) : 1;
-      ctx.translate(inset + (SUMMARY_WIDTH * (1 - calendarScale)) / 2, 650);
+      const multi = hasMultiple(dates, records);
+      const calendarHeight = multi
+        ? multiDimensions('calendar', dates, records, true).height
+        : 352 + memoHeight;
+      const calendarScale = multi
+        ? Math.min(SUMMARY_WIDTH / 996, 390 / calendarHeight)
+        : memoHeight
+          ? Math.min(1, 390 / calendarHeight)
+          : 1;
+      ctx.translate(
+        inset + (SUMMARY_WIDTH - (multi ? 996 : SUMMARY_WIDTH) * calendarScale) / 2,
+        650,
+      );
       ctx.scale(calendarScale, calendarScale);
       STICKERS.find((sticker) => sticker.id === 'calendar').draw(
         ctx,

@@ -1,5 +1,5 @@
 import { loadCustomSports, rememberCustomSport } from '../domain/custom-sports.js';
-import { TYPES, dateKey, validEmoji } from '../domain/workouts.js';
+import { TYPES, dateKey, validEmoji, dayRecords, setDayRecords } from '../domain/workouts.js';
 import { updateRecord } from '../domain/record-actions.js';
 import { createDurationPicker } from './duration-picker.js';
 import { $, el } from './dom.js';
@@ -12,7 +12,7 @@ export function createRecordSheet({ records, onSave }) {
   const picker = createDurationPicker($('#duration-picker'));
   const customSports = loadCustomSports();
   let selectedIcon = '✳️';
-  let key, action;
+  let key, action, recordIndex;
   const titles = {
     type: '어떤 운동을 했나요?',
     time: '운동 시간',
@@ -22,15 +22,24 @@ export function createRecordSheet({ records, onSave }) {
 
   function commit(data, cleared = false) {
     try {
-      if (action === 'delete') delete records[key];
-      else records[key] = updateRecord(records[key], action, data);
+      const items = [...dayRecords(records, key)];
+      let updated;
+      if (action === 'delete') items.splice(recordIndex, 1);
+      else {
+        updated = updateRecord(items[recordIndex], action, data);
+        if (recordIndex < 0 || !items[recordIndex]) {
+          recordIndex = items.length;
+          items.push(updated);
+        } else items[recordIndex] = updated;
+      }
+      setDayRecords(records, key, items);
       const customSaved =
-        action === 'type' && records[key]?.type === 'other'
-          ? rememberCustomSport(customSports, records[key])
+        action === 'type' && updated?.type === 'other'
+          ? rememberCustomSport(customSports, updated)
           : true;
       dialog.close();
-      if (customSaved) onSave(key, action, cleared);
-      else onSave(key, action, cleared, false);
+      if (customSaved) onSave(key, action, cleared, true, recordIndex);
+      else onSave(key, action, cleared, false, recordIndex);
     } catch (e) {
       error.textContent = e.message;
     }
@@ -115,7 +124,7 @@ export function createRecordSheet({ records, onSave }) {
     if (action === 'time') return commit({ hours: '', mins: '' }, true);
     if (action === 'memo') return commit({ memo: '' }, true);
     dialog.close();
-    open(new Date(`${key}T12:00:00`), 'delete');
+    open(new Date(`${key}T12:00:00`), 'delete', recordIndex);
   };
   dialog.addEventListener('click', (event) => {
     if (event.target !== dialog) return;
@@ -145,11 +154,12 @@ export function createRecordSheet({ records, onSave }) {
     else if (action === 'memo') commit({ memo: $('#memo').value });
     else if (action === 'delete') commit();
   };
-  function open(date, mode = 'type') {
+  function open(date, mode = 'type', index = 0) {
+    recordIndex = index;
     key = dateKey(date);
     action = mode;
     form.reset();
-    const record = records[key];
+    const record = dayRecords(records, key)[recordIndex];
     const remove = $('#open-delete');
     remove.hidden = !record || !['type', 'time', 'memo'].includes(action);
     const removeLabel =

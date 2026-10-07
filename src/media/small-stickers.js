@@ -1,5 +1,6 @@
+import { hasMultiple, multiDimensions, drawMultiCalendar } from './multi-calendar.js';
 import { calendarMemoHeight, drawMemo } from './memo.js';
-import { DAYS, recordIcon, dateKey, duration } from '../domain/workouts.js';
+import { activeDays, DAYS, recordIcon, dateKey, duration } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 import { createIconRenderer } from './icon.js';
 
@@ -29,10 +30,7 @@ export const SMALL_STICKERS = [
     defaultBackground: 'lime',
     dimensions: () => ({ width: 840, height: 188 }),
     draw(ctx, dates, records, theme) {
-      const count = Math.min(
-        7,
-        new Set(dates.filter((date) => records[dateKey(date)]).map(dateKey)).size,
-      );
+      const count = activeDays(dates, records);
       background(ctx, 840, 188, theme, 26);
       ctx.font = `500 27px ${FONT}`;
       ctx.fillStyle = theme.secondary;
@@ -93,11 +91,16 @@ export const SMALL_STICKERS = [
     category: 'calendar',
     title: '캘린더 · 미니멀',
     defaultBackground: 'white',
-    dimensions: (showTime = true, records = {}, dates = []) => ({
-      width: 840,
-      height: (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 19, 28, 600),
-    }),
+    dimensions: (showTime = true, records = {}, dates = []) =>
+      hasMultiple(dates, records)
+        ? multiDimensions('minimal', dates, records, showTime)
+        : {
+            width: 840,
+            height: (showTime ? 180 : 136) + calendarMemoHeight(dates, records, 106, 19, 28, 600),
+          },
     draw(ctx, dates, records, theme, _heading, showTime = true) {
+      if (hasMultiple(dates, records))
+        return drawMultiCalendar(ctx, dates, records, theme, 'minimal', showTime);
       background(
         ctx,
         840,

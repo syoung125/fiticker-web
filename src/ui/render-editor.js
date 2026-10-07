@@ -1,4 +1,12 @@
-import { recordIcon, DAYS, dateKey, weekLabel, weekDates, duration } from '../domain/workouts.js';
+import {
+  dayRecords,
+  recordIcon,
+  DAYS,
+  dateKey,
+  weekLabel,
+  weekDates,
+  duration,
+} from '../domain/workouts.js';
 import { $, el } from './dom.js';
 import { summaryModel } from '../media/summary.js';
 import { renderSummary } from './render-summary.js';
@@ -40,47 +48,52 @@ export function renderEditor({ dates, records, onEdit }) {
   renderSummary($('#summary-canvas'), summaryModel(dates, records));
   $('#calendar').replaceChildren();
   dates.forEach((date, index) => {
-    const key = dateKey(date),
-      record = records[key];
+    const key = dateKey(date);
+    const items = dayRecords(records, key);
+    const label = `${date.getMonth() + 1}월 ${date.getDate()}일`;
     const cell = el('div', 'calendar-day');
-    const button = el('button', `day${key === dateKey(new Date()) ? ' is-today' : ''}`);
-    button.type = 'button';
-    button.dataset.date = key;
-    button.setAttribute(
-      'aria-label',
-      `${date.getMonth() + 1}월 ${date.getDate()}일 ${record ? record.name + ' 기록 편집' : '운동 추가'}`,
+    const heading = el(
+      'button',
+      `day day-heading${key === dateKey(new Date()) ? ' is-today' : ''}`,
     );
-    if (key === dateKey(new Date())) button.setAttribute('aria-current', 'date');
-    button.append(
-      el('span', 'weekday', DAYS[index]),
-      el('span', 'date', date.getDate()),
-      el('span', record ? 'day-icon' : 'day-icon plus', record ? recordIcon(record) : '＋'),
-    );
-    button.onclick = () => onEdit(date, 'type');
-    cell.append(button);
-    if (record) {
-      const time = detailButton(
-        'day-time',
-        record.minutes == null ? null : duration(record.minutes),
-        '시간',
-      );
-      time.type = 'button';
-      time.dataset.recordAction = 'time';
-      time.dataset.recordDate = key;
-      time.setAttribute('aria-label', `${date.getMonth() + 1}월 ${date.getDate()}일 시간 설정`);
-      time.onclick = () => onEdit(date, 'time');
-      const memo = detailButton('day-memo', record.memo, '메모');
-      memo.type = 'button';
-      memo.dataset.recordAction = 'memo';
-      memo.dataset.recordDate = key;
-      memo.title = record.memo || '메모 추가';
-      memo.setAttribute(
-        'aria-label',
-        `${date.getMonth() + 1}월 ${date.getDate()}일 메모 ${record.memo ? '편집: ' + record.memo : '추가'}`,
-      );
-      memo.onclick = () => onEdit(date, 'memo');
-      cell.append(time, memo);
-    }
+    heading.type = 'button';
+    heading.dataset.date = key;
+    heading.setAttribute('aria-label', `${label} 운동 추가`);
+    if (key === dateKey(new Date())) heading.setAttribute('aria-current', 'date');
+    heading.append(el('span', 'weekday', DAYS[index]), el('span', 'date', date.getDate()));
+    heading.onclick = () => onEdit(date, 'type', -1);
+    cell.append(heading);
+    items.forEach((record, recordIndex) => {
+      const group = el('div', 'day-session');
+      const button = el('button', 'day-session-icon');
+      button.type = 'button';
+      button.textContent = recordIcon(record);
+      button.setAttribute('aria-label', `${label} ${recordIndex + 1}번째 ${record.name} 기록 편집`);
+      button.onclick = () => onEdit(date, 'type', recordIndex);
+      group.append(button);
+      for (const [action, value, placeholder] of [
+        ['time', record.minutes == null ? null : duration(record.minutes), '시간'],
+        ['memo', record.memo, '메모'],
+      ]) {
+        const detail = detailButton(`day-${action}`, value, placeholder);
+        detail.type = 'button';
+        detail.dataset.recordAction = action;
+        detail.dataset.recordDate = key;
+        detail.dataset.recordIndex = String(recordIndex);
+        detail.setAttribute(
+          'aria-label',
+          `${label} ${recordIndex + 1}번째 ${record.name} ${placeholder} 설정`,
+        );
+        detail.onclick = () => onEdit(date, action, recordIndex);
+        group.append(detail);
+      }
+      cell.append(group);
+    });
+    const add = el('button', 'day-add', '＋');
+    add.type = 'button';
+    add.setAttribute('aria-label', `${label} 운동 추가`);
+    add.onclick = () => onEdit(date, 'type', -1);
+    cell.append(add);
     $('#calendar').append(cell);
   });
 }

@@ -107,10 +107,11 @@ export function drawSummary(
   if (detailed) {
     ctx.fillStyle = divider;
     ctx.fillRect(originX + columnWidth * 2, originY + 28, 1, BODY_HEIGHT - 56);
-    const lineHeight = 34;
+    const lineHeight = Math.min(34, 238 / model.sports.length);
+    const sportSize = model.sports.length <= 7 ? 32 : lineHeight * 0.94;
     const rowBounds = model.sports.flatMap((sport) => [
-      bounds(sport.name, 32),
-      bounds(sport.time, fitSize(sport.time, 32, 125)),
+      bounds(sport.name, sportSize),
+      bounds(sport.time, fitSize(sport.time, sportSize, 125)),
     ]);
     const rowAscent = Math.max(...rowBounds.map((b) => b.ascent));
     const rowDescent = Math.max(...rowBounds.map((b) => b.descent));
@@ -118,11 +119,11 @@ export function drawSummary(
     // Lift the sport list slightly to visually align it with the large metric groups.
     const start = (BODY_HEIGHT - listHeight) / 2 + rowAscent - 12;
     model.sports.forEach((sport, index) => {
-      const timeSize = fitSize(sport.time, 32, 125);
+      const timeSize = fitSize(sport.time, sportSize, 125);
       font(timeSize);
       const timeWidth = ctx.measureText(sport.time).width;
       const nameWidth = 914 - (columnWidth * 2 + 34) - timeWidth - 16;
-      font(32);
+      font(sportSize);
       let name = sport.name;
       // Preserve readable type rather than shrinking long custom names to a few pixels.
       if (ctx.measureText(name).width > nameWidth) {
@@ -132,7 +133,7 @@ export function drawSummary(
         name = letters.join('') + '…';
       }
       const y = start + index * lineHeight;
-      text(name, columnWidth * 2 + 34, y, 32, 500, 'left', secondary);
+      text(name, columnWidth * 2 + 34, y, sportSize, 500, 'left', secondary);
       text(sport.time, 914, y, timeSize, 500, 'right', secondary);
     });
   }

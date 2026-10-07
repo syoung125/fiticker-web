@@ -1,3 +1,4 @@
+import { dayRecords } from '../domain/workouts.js';
 import {
   createStickers,
   STICKERS,
@@ -114,9 +115,15 @@ export function createStickerGallery({ notify }) {
         dates
           .filter((date) => records[dateKey(date)])
           .map((date) => {
-            const key = dateKey(date),
-              { type, name, minutes, memo, icon } = records[key];
-            return [key, { type, name, minutes, memo, icon }];
+            const key = dateKey(date);
+            const items = dayRecords(records, key).map(({ type, name, minutes, memo, icon }) => ({
+              type,
+              name,
+              minutes,
+              memo,
+              icon,
+            }));
+            return [key, items.length === 1 ? items[0] : items];
           }),
       );
       const nextSignature = JSON.stringify([

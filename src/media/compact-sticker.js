@@ -1,4 +1,4 @@
-import { dateKey } from '../domain/workouts.js';
+import { dateKey, dayRecords } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 
 const PADDING = 24;
@@ -45,7 +45,7 @@ export const COMPACT_STICKER = {
     text('TOTAL TIME', 369, 395, 35, theme.secondary);
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     dates.forEach((date, index) => {
-      const active = Boolean(records[dateKey(date)]),
+      const active = dayRecords(records, dateKey(date)).length > 0,
         x = 60 + index * 132;
       ctx.globalAlpha = active ? 1 : 0.4;
       text(days[index], x, 533, 39, theme.ink, false, undefined, 'center');

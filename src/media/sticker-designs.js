@@ -1,3 +1,4 @@
+import { hasMultiple, multiDimensions, drawMultiCalendar } from './multi-calendar.js';
 import { memoLines, drawMemo, calendarMemoHeight } from './memo.js';
 import { SMALL_STICKERS } from './small-stickers.js';
 import { COMPACT_STICKER } from './compact-sticker.js';
@@ -52,6 +53,8 @@ function ticketMemoHeight(dates, records) {
   );
 }
 function calendar(ctx, dates, records, theme, style, showTime) {
+  if (hasMultiple(dates, records))
+    return drawMultiCalendar(ctx, dates, records, theme, style, showTime);
   const icon = createIconRenderer(ctx);
   const height =
     style === 'ticket'
@@ -137,6 +140,7 @@ export const EXTRA_STICKERS = styles.map((style) => ({
   title: style === 'poster' ? '주간 기록 · 포스터' : '캘린더 · 티켓',
   defaultBackground: style === 'poster' ? 'dark' : 'lavender',
   dimensions(showTime = true, records = {}, dates = []) {
+    if (hasMultiple(dates, records)) return multiDimensions(style, dates, records, showTime);
     return {
       width: style === 'ticket' ? 520 : 1000,
       height:

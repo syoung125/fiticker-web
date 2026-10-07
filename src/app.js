@@ -11,11 +11,13 @@ let dates = weekDates(new Date()),
 const stickerGallery = createStickerGallery({ notify: toast });
 const recordSheet = createRecordSheet({
   records,
-  onSave(key, action, cleared, customSaved = true) {
+  onSave(key, action, cleared, customSaved = true, recordIndex = 0) {
     const cached = saveSessionRecords(records);
     render();
     const target = ['time', 'memo'].includes(action)
-      ? $(`[data-record-date="${key}"][data-record-action="${action}"]`)
+      ? $(
+          `[data-record-date="${key}"][data-record-action="${action}"][data-record-index="${recordIndex}"]`,
+        )
       : $(`[data-date="${key}"]`);
     target?.focus({ preventScroll: true });
     toast(
@@ -41,7 +43,11 @@ function toast(message) {
 }
 function render() {
   void stickerGallery.update(dates, records);
-  renderEditor({ dates, records, onEdit: (date, action) => recordSheet.open(date, action) });
+  renderEditor({
+    dates,
+    records,
+    onEdit: (date, action, index) => recordSheet.open(date, action, index),
+  });
 }
 function moveWeek(offset) {
   dates = navigateWeek(dates[0], offset);

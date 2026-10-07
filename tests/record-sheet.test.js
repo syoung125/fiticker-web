@@ -121,7 +121,7 @@ test('separate sheets add sport in one step, preserve unrelated fields, and clea
     get('#open-delete').onclick();
     assert.equal(records[key].minutes, null);
     assert.equal(records[key].memo, '오늘도 완료');
-    assert.deepEqual(saved.at(-1), [key, 'time', true]);
+    assert.deepEqual(saved.at(-1), [key, 'time', true, true, 0]);
 
     sheet.open(date, 'memo');
     assert.equal(get('#open-delete').attributes['aria-label'], '메모 지우기');
@@ -227,5 +227,49 @@ test('more sports starts collapsed, expands without saving and selects a sport i
   } finally {
     if (previous === undefined) delete globalThis.document;
     else globalThis.document = previous;
+  }
+});
+
+test('adding, editing, clearing and deleting one of multiple same-day sessions preserves siblings', () => {
+  const previous = globalThis.document;
+  const { doc, get } = fixture();
+  globalThis.document = doc;
+  try {
+    const records = {};
+    const sheet = createRecordSheet({ records, onSave() {} });
+    const date = new Date(2026, 9, 5);
+    const key = '2026-10-05';
+    const choose = (type) =>
+      get('#types')
+        .children.find((b) => b.dataset.type === type)
+        .onclick();
+    const submit = () => get('#workout-form').onsubmit({ preventDefault() {} });
+    sheet.open(date, 'type', -1);
+    choose('running');
+    sheet.open(date, 'memo', 0);
+    get('#memo').value = '아침 5km';
+    submit();
+    sheet.open(date, 'type', -1);
+    choose('running');
+    assert.equal(records[key].length, 2);
+    sheet.open(date, 'memo', 1);
+    get('#memo').value = '저녁 3km';
+    submit();
+    assert.equal(records[key][0].memo, '아침 5km');
+    assert.equal(records[key][1].memo, '저녁 3km');
+    sheet.open(date, 'memo', 1);
+    get('#open-delete').onclick();
+    assert.equal(records[key][0].memo, '아침 5km');
+    assert.equal(records[key][1].memo, '');
+    sheet.open(date, 'type', 1);
+    get('#open-delete').onclick();
+    submit();
+    assert.equal(records[key].memo, '아침 5km');
+    sheet.open(date, 'type', 0);
+    get('#open-delete').onclick();
+    submit();
+    assert.equal(records[key], undefined);
+  } finally {
+    globalThis.document = previous;
   }
 });
