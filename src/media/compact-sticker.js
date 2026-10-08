@@ -1,4 +1,4 @@
-import { dateKey, dayRecords } from '../domain/workouts.js';
+import { dateKey, dayRecords, TYPES } from '../domain/workouts.js';
 import { summaryModel } from './summary.js';
 
 const PADDING = 24;
@@ -12,8 +12,14 @@ export const COMPACT_STICKER = {
   title: '주간 기록 · 심플',
   defaultBackground: 'transparentWhite',
   supportsDailyTime: false,
-  dimensions: () => ({ width: WIDTH, height: HEIGHT }),
+  dimensions: (_showTime, records = {}, dates = []) => ({
+    width: WIDTH,
+    height:
+      HEIGHT +
+      Math.max(0, ...dates.map((date) => dayRecords(records, dateKey(date)).length - 1)) * 32,
+  }),
   draw(ctx, dates, records, theme) {
+    const { height } = COMPACT_STICKER.dimensions(false, records, dates);
     const { count, total } = summaryModel(dates, records);
     function text(value, x, y, size, color, bold = false, maxWidth, align = 'left') {
       const font = () =>
@@ -26,13 +32,14 @@ export const COMPACT_STICKER = {
       ctx.fillStyle = color;
       ctx.textAlign = align;
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText(value, x, y);
+      if (maxWidth) ctx.fillText(value, x, y, maxWidth);
+      else ctx.fillText(value, x, y);
     }
     ctx.save();
     if (theme.background) {
       ctx.fillStyle = theme.background;
       ctx.beginPath();
-      ctx.roundRect(0, 0, WIDTH, HEIGHT, 24);
+      ctx.roundRect(0, 0, WIDTH, height, 24);
       ctx.fill();
     }
     ctx.translate(PADDING, PADDING);
@@ -45,7 +52,8 @@ export const COMPACT_STICKER = {
     text('TOTAL TIME', 369, 395, 35, theme.secondary);
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     dates.forEach((date, index) => {
-      const active = dayRecords(records, dateKey(date)).length > 0,
+      const sessions = dayRecords(records, dateKey(date));
+      const active = sessions.length > 0,
         x = 60 + index * 132;
       ctx.globalAlpha = active ? 1 : 0.4;
       text(days[index], x, 533, 39, theme.ink, false, undefined, 'center');
@@ -55,6 +63,18 @@ export const COMPACT_STICKER = {
         ctx.beginPath();
         ctx.arc(x, 591, 10, 0, Math.PI * 2);
         ctx.fill();
+        sessions.forEach((record, row) => {
+          text(
+            record.name || TYPES[record.type].label,
+            x,
+            638 + row * 32,
+            21,
+            theme.secondary,
+            false,
+            116,
+            'center',
+          );
+        });
       }
     });
     ctx.restore();
